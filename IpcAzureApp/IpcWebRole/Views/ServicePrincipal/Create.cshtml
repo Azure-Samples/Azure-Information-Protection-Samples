@@ -1,0 +1,58 @@
+﻿@model DataModel.Models.ServicePrincipalModel
+
+@{
+    ViewBag.Title = "Create Service Principal";
+}
+
+<h2>Create Service Principal</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <fieldset>
+        <legend>ServicePrincipal</legend>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.TenantName)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.TenantName)
+            @Html.ValidationMessageFor(model => model.TenantName)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.TenantId)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.TenantId)
+            @Html.ValidationMessageFor(model => model.TenantId)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.AppId)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.AppId)
+            @Html.ValidationMessageFor(model => model.AppId)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.Key)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.Key)
+            @Html.ValidationMessageFor(model => model.Key)
+        </div>
+
+        <p>
+            <input type="submit" value="Create" />
+        </p>
+    </fieldset>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+

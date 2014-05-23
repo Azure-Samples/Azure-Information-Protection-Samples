@@ -1,0 +1,60 @@
+﻿@model DataModel.Models.ServicePrincipalModel
+
+@{
+    ViewBag.Title = "Edit Service Principal";
+}
+
+<h2>Edit Service Principal</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    @*@Html.ValidationSummary(true)
+
+        @Html.HiddenFor(model => model.ETag)*@
+
+    <fieldset>
+        <legend>ServicePrincipal</legend>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.TenantName)
+        </div>
+        <div class="editor-field">
+            @Html.DisplayFor(model => model.TenantName)
+        </div>
+
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.TenantId)
+        </div>
+        <div class="editor-field">
+            @Html.DisplayFor(model => model.TenantId)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.AppId)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.AppId)
+            @Html.ValidationMessageFor(model => model.AppId)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.Key)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.Key)
+            @Html.ValidationMessageFor(model => model.Key)
+        </div>
+
+
+        <p>
+            <input type="submit" value="Save" />
+        </p>
+    </fieldset>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+

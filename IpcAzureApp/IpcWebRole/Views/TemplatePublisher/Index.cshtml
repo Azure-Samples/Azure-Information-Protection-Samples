@@ -1,0 +1,99 @@
+﻿@model IpcWebRole.Models.TemplatePublisherModel
+
+@{
+    ViewBag.Title = "Publish file using a template";
+}
+
+<h2>Publish File Using a Template</h2>
+
+@if (Model.Templates == null)
+{
+    <p>
+        Select your organization name and click get templates. This may take few seconds...
+    </p>
+    using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true)
+
+        <fieldset>
+            <table border="1">
+                <tr>
+                    <th>
+
+                        <div class="editor-label">
+                            @Html.DisplayNameFor(model => model.ServicePrincipal.TenantName)
+                        </div>
+                    </th>
+                    <td>
+                        <div class="editor-field">
+                            @Html.DropDownListFor(model => model.ServicePrincipal.TenantId, new SelectList(Model.ServicePrincipals, "TenantId", "TenantName"), "Select an tenant...")
+                            @Html.ValidationMessageFor(model => model.ServicePrincipal.TenantId)
+                        </div>
+                    </td>
+                </tr>
+            </table>
+            <p>
+                <input type="submit" value="GetTemplates" />
+            </p>
+        </fieldset>
+    }
+}
+else
+{
+    <p>
+        Select a template and browse to a (*.docx, *.xlsx, *.pptx) and click publish. Your file will be published with selected template
+        and you will be prompted to download the published file in few seconds...
+    </p>
+
+    using (Html.BeginForm("Publish", "TemplatePublisher", new { tenantId = Model.ServicePrincipal.TenantId }, FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true)
+
+        <fieldset>
+            <table border="1">
+                <tr>
+                    <th>
+                        <div class="editor-label">
+                            @Html.DisplayNameFor(model => model.ServicePrincipal.TenantName)
+                        </div>
+                    </th>
+                    <td>
+                        <div class="editor-field">
+                            @Html.DisplayFor(model => model.ServicePrincipal.TenantName)
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        <div class="editor-label">
+                            @Html.DisplayNameFor(model => model.Template.TemplateDescription)
+                        </div>
+                    </th>
+                    <td>
+                        <div class="editor-field">
+                            @Html.DropDownListFor(model => model.Template.TemplateId, new SelectList(Model.Templates, "TemplateId", "TemplateName"), "Select an template...")
+                            @Html.ValidationMessageFor(model => model.Template.TemplateId)
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        <div class="editor-label">
+                            Upload the file
+                        </div>
+                    </th>
+                    <td>
+                        <div class="editor-field">
+                            <input type="file" name="file" />
+                        </div>
+                    </td>
+                </tr>
+            </table>
+            <p>
+                <input type="submit" value="Publish" />
+            </p>
+        </fieldset>
+    }
+}

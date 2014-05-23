@@ -1,0 +1,54 @@
+﻿@model IEnumerable<DataModel.Models.ServicePrincipalModel>
+
+@{
+    ViewBag.Title = "Add Service Principal";
+}
+
+<h2>Service Principals</h2>
+<p>
+    Service Principal identity is used by the service to protect documents.
+</p>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table border="1">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.TenantName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.TenantId)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.AppId)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Key)
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.TenantName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TenantId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.AppId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Key)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { PartitionKey = item.PartitionKey, RowKey = item.RowKey }) |
+                @Html.ActionLink("Delete", "Delete", new { PartitionKey = item.PartitionKey, RowKey = item.RowKey })
+            </td>
+        </tr>
+    }
+
+</table>

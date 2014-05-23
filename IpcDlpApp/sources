@@ -1,0 +1,34 @@
+!INCLUDE $(INETROOT)\build\sources.all
+
+TARGETNAME          = IpcDlp
+TARGETTYPE          = PROGRAM
+TARGET_DESTINATION  = $(TARGET_DESTINATION_ROOT)\sdk\samples
+ALLOW_DLL_REFERENCES= 1
+
+UMTYPE              = windows
+
+PRECOMPILED_INCLUDE = StdAfx.h
+PRECOMPILED_CXX     = 1
+PRECOMPILED_OBJ     = StdAfx.obj
+
+MANAGED_CXX         = 1
+URT_VER             = 2.0
+USE_MSVCRT          = 1
+
+SOURCES    = IpcDlp.cpp \
+             IpcFileAPI.cpp \
+             app.rc \
+             
+
+REFERENCES = $(CLR_REF_PATH)\System.dll; \
+             $(CLR_REF_PATH)\System.Data.dll; \
+             $(CLR_REF_PATH)\System.Drawing.dll; \
+             $(CLR_REF_PATH)\System.Windows.Forms.dll; \
+
+TARGETLIBS=\
+    $(TARGETLIBS) \
+    $(CLIENT_LIB_PATH)\msipc.lib \
+    $(CLIENT_LIB_PATH)\msipc_s.lib \
+
+
+DELAYLOAD=msipc.dll    
