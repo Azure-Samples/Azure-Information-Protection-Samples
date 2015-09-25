@@ -1,9 +1,3 @@
----
-services:
-platforms:
-author: azure
----
-
 rms-samples-for-net
 ===================
 
