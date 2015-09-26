@@ -1,3 +1,9 @@
+---
+services: active-directory
+platforms: dotnet
+author: yaircohen
+---
+
 rms-samples-for-net
 ===================
 
@@ -34,5 +40,6 @@ This Windows application tool can give information about any RMS protected file 
 ### RmsFileWatcher
 
 This sample demonstrates how to build a Windows application that watches directories in the file system and applies RMS protection policies on every change (e.g. file added, file modified, etc).
+
 
 
