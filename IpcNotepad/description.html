@@ -1,0 +1,301 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+    <head><link rel="stylesheet" type="text/css" href="https://assets.onestore.ms/cdnfiles/onestorerolling-1602-26000/shell/v3/scss/shellnoresponsive.min.css" xmlns="http://www.w3.org/1999/xhtml" />
+<link rel="stylesheet" type="text/css" href="https://i-msdn.sec.s-msft.com/Combined.css?resources=0:Header,0:sprite;/Areas/Epx/Themes/Windows/Content:0&amp;amp;v=36CDA0CC659732E457F58FFB64E7ABFB" xmlns="http://www.w3.org/1999/xhtml" />
+<link rel="stylesheet" type="text/css" href="https://i-msdn.sec.s-msft.com/Areas/Epx/Themes/Windows/Content/UhfHeader.css?v=635914626451408948" data-do-not-move="true" xmlns="http://www.w3.org/1999/xhtml" />
+<link rel="stylesheet" type="text/css" href="https://i-msdn.sec.s-msft.com/Combined.css?resources=0:Footer,0:sprite,1:SelectLocaleFromPopUp;/Areas/Epx/Themes/Windows/Content:0,/Areas/Epx/Themes/Base/Content:1&amp;amp;v=1FFD7767A2975ECFD28782B2B77ACC25" xmlns="http://www.w3.org/1999/xhtml" />
+<link rel="stylesheet" type="text/css" href="https://i-msdn.sec.s-msft.com/Areas/Epx/Themes/Windows/Content/UhfFooter.css?v=635914626451096467" data-do-not-move="true" xmlns="http://www.w3.org/1999/xhtml" />
+
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>IPCNotepad Sample</title>
+        <link href="description/Galleries.css" type="text/css" rel="Stylesheet" /><link href="description/Layout.css" type="text/css" rel="Stylesheet" /><link href="description/Brand.css" type="text/css" rel="Stylesheet" /><link href="description/5490f242-d643-4c48-8dbd-5a6b9528c9feBrand.css" type="text/css" rel="Stylesheet" />
+        <link href="https://i1.code.msdn.s-msft.com/windowsdesktop/content/windowsdesktop/iframedescription.css" rel="Stylesheet" type="text/css" />
+        <script src="https://i1.code.msdn.s-msft.com/windowsdesktop/content/common/offline.js" type="text/javascript"></script>
+        <style type="text/css">
+            #projectInfo {
+                overflow: auto;
+            }
+            #longDesc {
+                clear:both;
+                margin: 25px 0 10px 0;
+            }
+
+            #SampleIndexList{
+                margin-left: 15px;
+            }
+        </style>
+    </head>
+<body>
+    <div id="offlineDescription">
+        <h1>IPCNotepad Sample</h1>
+        <br/>
+        <div id="projectInfo">
+            <div class="section">
+                    <div class="itemBarLong tagsContainer">
+                        <label for="Technologies">Technologies</label>
+                        <div id="Technologies">
+                            Active Directory Rights Management Service SDK 2.0
+                        </div>
+                    </div>
+                    <div class="itemBarLong tagsContainer">
+                        <label for="Topics">Topics</label>
+                        <div id="Topics">
+                            application development
+                        </div>
+                    </div>
+                <div class="itemBarLong">
+                    <label for="Platforms">Platforms</label>
+                    <div id="Platforms">
+                        Desktop
+                    </div>
+                </div>
+                <div class="itemBarLong">
+                    <label for="Requirements">Requirements</label>
+                    <div id="Requirements">
+                        
+                    </div>
+                </div>
+                <div class="itemBar">
+                    <label for="LastUpdated">Primary language</label>
+                    <div id="LastUpdated">en-US</div>
+                </div>
+                <div class="itemBar">
+                    <label for="LastUpdated">Updated</label>
+                    <div id="LastUpdated">3/14/2016</div>
+                </div>
+                <div class="itemBarLong">
+                    <label for="License">License</label>
+                    <div id="License">
+                        <a href="license.rtf">Apache License, Version 2.0</a></div>
+                </div>
+                <div class="itemBar">
+                    <div class="viewonlinecont">
+                        <a data-link="online" href="https://code.msdn.microsoft.com/windowsdesktop/IPCNotepad-Sample-f67dae80">View this sample online</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+                   
+<script type="text/javascript">
+    function initializePage() {
+        var otherTabClass = 'otherTab';
+        var hiddenPreClass = 'hidden';
+
+        var htmlDecode = function(encodedData) {
+            var decodedData = "";
+            if (encodedData) {
+                var div = document.createElement('div');
+                div.innerHTML = encodedData;
+                decodedData = div.firstChild.nodeValue.replace( /\\r\\n/ig , '\r\n');
+            }
+            return decodedData;
+        };
+                
+        Galleries.iterateElem(Galleries.findElem(null, 'div', 'scriptcode'), function (index, scriptBlock) {
+            var titleElem = Galleries.findElem(scriptBlock, 'div', 'title')[0];
+            var labelElems = Galleries.findElem(titleElem, 'span');
+            if (labelElems.length == 0) {
+                labelElems = titleElem;
+            }
+            var languageSpans = Galleries.findElem(scriptBlock, 'span', 'hidden');
+            var pres = Galleries.findElem(scriptBlock, 'pre');
+            if (languageSpans.length > 0 && pres.length > 1) {
+                Galleries.iterateElem(labelElems, function(index, elem) {
+                    var codePre = pres[index];
+                    var labelSpan = elem;
+                    var languageSpan = languageSpans[index];
+                            
+                    elem.code = codePre.innerHTML.replace( /(\r(\n)?)|((\r)?\n)/ig , '\\r\\n');
+                            
+                    codePre.className = codePre.className.replace(hiddenPreClass, '');
+                            
+                    languageSpan.parentNode.removeChild(languageSpan);
+                });
+
+                pres = Galleries.findElem(scriptBlock, 'pre');
+                Galleries.iterateElem(labelElems, function(index, elem) {
+                    var codePre = pres[index];
+                    var labelSpan = elem;
+                    if (index == 0) {
+                        scriptBlock.activeTab = 0;
+                    }
+                    else {
+                        labelSpan.className += otherTabClass;
+                        codePre.className += hiddenPreClass;
+                    }
+                    Galleries.attachEventHandler(labelSpan, 'click', function(e) {
+                        var activeTab = scriptBlock.activeTab;
+                        labelElems[activeTab].className += otherTabClass;
+                        pres[activeTab].className += hiddenPreClass;
+
+                        codePre.className = codePre.className.replace(hiddenPreClass, '');
+                        labelSpan.className = labelSpan.className.replace(otherTabClass, '');
+                        scriptBlock.activeTab = index;
+                    });
+                });
+
+                var preview = Galleries.findElem(scriptBlock, 'div', 'preview');
+                if (preview.length == 0) {
+                    preview.push(pres[pres.length - 1]);
+                }
+                Galleries.iterateElem(preview, function(index, elem) {
+                    elem.parentNode.removeChild(elem);
+                });
+
+                if (window.clipboardData && clipboardData.setData) {
+                    var copyLink = document.createElement('a');
+                    copyLink.href = 'javascript:void(0);';
+                    copyLink.className = 'copyCode';
+                    copyLink.innerHTML = 'Copy code';
+                    Galleries.attachEventHandler(copyLink, 'click', function (e) {
+                        clipboardData.setData("Text", htmlDecode(labelElems[scriptBlock.activeTab].code));
+                        return false;
+                    });
+                    scriptBlock.insertBefore(copyLink, scriptBlock.childNodes[0]);
+                }
+            }
+        });
+    }
+
+    Galleries.onWindowLoad(function(){
+        initializePage();
+    });
+
+</script>
+<div id="longDesc">
+    
+<div class="WordSection1">
+<p class="MsoNormal" style="line-height:normal"><strong><span style="font-size:15.0pt; font-family:&quot;Verdana&quot;,&quot;sans-serif&quot;; color:black">Introduction</span></strong></p>
+<p class="MsoNormal" style="line-height:normal"><span class="SpellE"><span style="font-size:10.0pt; font-family:&quot;Verdana&quot;,&quot;sans-serif&quot;; color:black">IPCNotepad</span></span><span style="font-size:10.0pt; font-family:&quot;Verdana&quot;,&quot;sans-serif&quot;; color:black">
+ is a sample rights-enabled application utilizing AD RMS SDK 2.1. This sample code takes the user through the basic steps that each rights-enabled application should perform when protecting and consuming restricted content.
+</span></p>
+<p class="MsoNormal" style="line-height:normal"><strong><span style="font-size:15.0pt; font-family:&quot;Verdana&quot;,&quot;sans-serif&quot;; color:black">Building the Sample</span></strong></p>
+<p class="MsoNormal" style="line-height:normal"><span style="font-size:10.0pt; font-family:&quot;Verdana&quot;,&quot;sans-serif&quot;; color:black">Building this sample assumes that you already have AD RMS server installed in the pre-production/ISV hierarchy. You can deploy
+ a 1-box AD RMS ISV environment by downloading the 1-box VHD from </span><a href="https://code.msdn.microsoft.com/windowsdesktop/IPCNotepad-Sample-f67dae80/https://connect.microsoft.com/site1170/Downloads/DownloadDetails.aspx?DownloadID=42440"><span style="font-size:10.0pt; font-family:&quot;Verdana&quot;,&quot;sans-serif&quot;">here</span></a><span style="font-size:10.0pt; font-family:&quot;Verdana&quot;,&quot;sans-serif&quot;; color:black">.
+ (For this, you first need to join Microsoft Connect. Go to <a href="http://connect.microsoft.com">
+http://connect.microsoft.com</a>, sign&nbsp;in with your Microsoft account &gt; Directory &gt; View Connect products currently not accepting feedbback&nbsp;&gt; &nbsp;Search for Rights Management Services &gt; Join).
+</span></p>
+<p class="MsoNormal" style="line-height:normal"><span style="font-size:10.0pt; font-family:&quot;Verdana&quot;,&quot;sans-serif&quot;; color:black">Read
+</span><span style="font-size:10.0pt; font-family:&quot;Verdana&quot;,&quot;sans-serif&quot;"><a href="http://msdn.microsoft.com/en-us/library/dn715744(v=vs.85).aspx">here</a></span><span style="font-size:10.0pt; font-family:&quot;Verdana&quot;,&quot;sans-serif&quot;; color:black"><a href="http://msdn.microsoft.com/en-us/library/dn715744(v=vs.85).aspx">
+</a>for more information about the ISV hierarchy. You will also need to install AD RMS SDK 2.1 on your machine. Install AD RMS SDK 2.1 from
+</span><a href="http://www.microsoft.com/en-us/download/details.aspx?id=38397"><span style="font-size:10.0pt; font-family:&quot;Verdana&quot;,&quot;sans-serif&quot;">here</span></a></p>
+<ul>
+<li>
+<div class="MsoListParagraphCxSpFirst" style="text-indent:-.25in; line-height:normal">
+<span style="font-size:10.0pt; font-family:&quot;Verdana&quot;,&quot;sans-serif&quot;; color:black"><span>1.<span style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;
+</span></span></span><span style="font-size:10.0pt; font-family:&quot;Verdana&quot;,&quot;sans-serif&quot;; color:black">Unzip the Sample content to a suitable location on your development machine</span></div>
+</li><li>
+<div class="MsoListParagraphCxSpMiddle" style="text-indent:-.25in; line-height:normal">
+<span style="font-size:10.0pt; font-family:&quot;Verdana&quot;,&quot;sans-serif&quot;; color:black"><span>2.<span style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;
+</span></span></span><span style="font-size:10.0pt; font-family:&quot;Verdana&quot;,&quot;sans-serif&quot;; color:black">Open the
+<span class="SpellE">IPCNotepad</span> Solution</span></div>
+</li><li>
+<div class="MsoListParagraphCxSpLast" style="text-indent:-.25in; line-height:normal">
+<span style="font-size:10.0pt; font-family:&quot;Verdana&quot;,&quot;sans-serif&quot;; color:black"><span>3.<span style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;
+</span></span></span><span style="font-size:10.0pt; font-family:&quot;Verdana&quot;,&quot;sans-serif&quot;; color:black">Build the Sample solution</span></div>
+</li></ul>
+<h3><span style="font-size:13.0pt; line-height:115%; font-family:&quot;Verdana&quot;,&quot;sans-serif&quot;; color:black">Running this sample</span></h3>
+<p><span style="font-size:9.5pt; font-family:&quot;Verdana&quot;,&quot;sans-serif&quot;; color:black">Before running your first application, you need to generate the application manifest.</span></p>
+<p style="margin-left:.5in; text-indent:-.25in"><span style="font-size:9.5pt; font-family:&quot;Verdana&quot;,&quot;sans-serif&quot;; color:black"><span>1.<span style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;
+</span></span></span><span style="font-size:9.5pt; font-family:&quot;Verdana&quot;,&quot;sans-serif&quot;; color:black">Open the Visual Studio solution file</span></p>
+<p style="margin-left:.5in; text-indent:-.25in"><span style="font-size:9.5pt; font-family:&quot;Verdana&quot;,&quot;sans-serif&quot;; color:black"><span>2.<span style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;
+</span></span></span><span style="font-size:9.5pt; font-family:&quot;Verdana&quot;,&quot;sans-serif&quot;; color:black">Compile the project</span></p>
+<p class="MsoNormal" style="margin-left:.5in; text-indent:-.25in; line-height:normal">
+<span style="font-size:9.5pt; font-family:&quot;Verdana&quot;,&quot;sans-serif&quot;; color:black"><span>3.<span style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;
+</span></span></span><span style="font-size:9.5pt; font-family:&quot;Verdana&quot;,&quot;sans-serif&quot;; color:black">The last step in the setup is to generate a manifest for your application before running it. For more information, see
+</span><a href="http://msdn.microsoft.com/en-us/library/hh971319(v=vs.85).aspx"><span style="font-size:9.5pt; font-family:&quot;Verdana&quot;,&quot;sans-serif&quot;">Testing your rights-enabled Application</span></a><span style="font-size:9.5pt; font-family:&quot;Verdana&quot;,&quot;sans-serif&quot;; color:black">.</span></p>
+<p class="MsoNormal" style="margin-left:.5in; text-indent:-.25in; line-height:normal">
+<span style="font-size:9.5pt; font-family:&quot;Verdana&quot;,&quot;sans-serif&quot;; color:black"><span>4.<span style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;
+</span></span></span><span style="font-size:9.5pt; font-family:&quot;Verdana&quot;,&quot;sans-serif&quot;; color:black">Copy the following files from their install directories to the same folder as your application:</span></p>
+<p class="MsoNormal" style="margin-top:0in; margin-right:0in; margin-bottom:.0001pt; margin-left:.5in">
+<span style="font-size:9.5pt; line-height:115%; font-family:&quot;Verdana&quot;,&quot;sans-serif&quot;; color:black">%<span class="SpellE">MsipcSDKDir</span>%\Tools\Genmanifest.exe
+</span></p>
+<p class="MsoNormal" style="margin-top:0in; margin-right:0in; margin-bottom:.0001pt; margin-left:.5in">
+<span style="font-size:9.5pt; line-height:115%; font-family:&quot;Verdana&quot;,&quot;sans-serif&quot;; color:black">%<span class="SpellE">MsipcSDKDir</span>%\bin\Isvtier5appsigningprivkey.dat</span></p>
+<p class="MsoNormal" style="margin-top:0in; margin-right:0in; margin-bottom:.0001pt; margin-left:.5in">
+<span style="font-size:9.5pt; line-height:115%; font-family:&quot;Verdana&quot;,&quot;sans-serif&quot;; color:black">%<span class="SpellE">MsipcSDKDir</span>%\bin\Isvtier5appsignsdk_client.xml</span></p>
+<p class="MsoNormal" style="margin-top:0in; margin-right:0in; margin-bottom:.0001pt; margin-left:.5in">
+<span style="font-size:9.5pt; line-height:115%; font-family:&quot;Verdana&quot;,&quot;sans-serif&quot;; color:black">%<span class="SpellE">MsipcSDKDir</span>%\bin\</span>
+<span class="SpellE"><span style="font-size:9.5pt; line-height:115%; font-family:&quot;Verdana&quot;,&quot;sans-serif&quot;; color:black">YourAppName.isv.mcf</span></span><span style="font-size:9.5pt; line-height:115%; font-family:&quot;Verdana&quot;,&quot;sans-serif&quot;; color:black">.
+</span></p>
+<p class="MsoNormal" style="margin-left:.5in; text-indent:-.25in; line-height:normal">
+<span style="font-size:9.5pt; font-family:&quot;Verdana&quot;,&quot;sans-serif&quot;; color:black"><span>5.<span style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;
+</span></span></span><span style="font-size:9.5pt; font-family:&quot;Verdana&quot;,&quot;sans-serif&quot;; color:black">Rename
+<span class="SpellE">YourAppName.isv.mcf</span> to <span class="SpellE">IPCNotepad.mcf</span></span></p>
+<p class="MsoNormal" style="margin-left:.5in; text-indent:-.25in; line-height:normal">
+<span style="font-size:9.5pt; font-family:&quot;Verdana&quot;,&quot;sans-serif&quot;; color:black"><span>6.<span style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;
+</span></span></span><span style="font-size:9.5pt; font-family:&quot;Verdana&quot;,&quot;sans-serif&quot;; color:black">Open IPCNotepad.mcf and replace &lt;<span class="SpellE">yourappname</span>&gt;.exe in
+<span class="SpellE">IPCNotepad.mcf</span> with <em><span style="font-family:&quot;Verdana&quot;,&quot;sans-serif&quot;">IPCNotepad</span></em>.exe</span></p>
+<p class="MsoNormal" style="margin-left:.5in; text-indent:-.25in; line-height:normal">
+<strong><span style="font-size:9.5pt; font-family:&quot;Verdana&quot;,&quot;sans-serif&quot;; color:black; font-weight:normal"><span>7.<span style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;
+</span></span></span></strong><span style="font-size:9.5pt; font-family:&quot;Verdana&quot;,&quot;sans-serif&quot;; color:black">Run
+<strong><span style="font-family:&quot;Verdana&quot;,&quot;sans-serif&quot;">genmanifest.exe -chain isvtier5appsignsdk_client.xml
+<span class="SpellE">IPCNotepad.mcf</span> </span></strong><span class="SpellE"><em><strong><span style="font-family:&quot;Verdana&quot;,&quot;sans-serif&quot;; font-style:normal">IPCNotepad</span></strong></em><strong><span style="font-family:&quot;Verdana&quot;,&quot;sans-serif&quot;; font-weight:normal">.</span></strong><strong><span style="font-family:&quot;Verdana&quot;,&quot;sans-serif&quot;">exe.man</span></strong></span><strong>&nbsp;</strong></span></p>
+<p class="MsoNormal" style="margin-left:.5in; text-indent:-.25in; line-height:normal">
+<strong><span style="font-size:9.5pt; font-family:&quot;Verdana&quot;,&quot;sans-serif&quot;; color:black"><span>8.<span style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;
+</span></span></span></strong><strong><span style="font-size:9.5pt; font-family:&quot;Verdana&quot;,&quot;sans-serif&quot;; color:black; font-weight:normal">The
+<span class="SpellE">IPCNotepad.exe.man</span> file must be present in the same location as IPCNotepad.exe and must be regenerated every time the project is recompiled.</span></strong><strong>&nbsp;</strong></p>
+<p class="note" style="margin-left:.5in; text-indent:-.25in"><span style="font-size:9.5pt; font-family:&quot;Verdana&quot;,&quot;sans-serif&quot;; color:black"><span>9.<span style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;
+</span></span></span><span style="font-size:9.5pt; font-family:&quot;Verdana&quot;,&quot;sans-serif&quot;; color:black">Copy the entire directory (where IPCNotepad.exe is placed) to the AD RMS 1-box environment</span></p>
+<p class="note" style="margin-left:.5in; text-indent:-.25in"><span style="font-size:9.5pt; font-family:&quot;Verdana&quot;,&quot;sans-serif&quot;; color:black">10.
+<span>Copy ipcsecproc_isv.dll from %MSIPCSDKDIR%\bin\x64 to C:\Program Files\Active Directory Rights Management Servervices Client 2.1</span></span></p>
+<p class="note" style="margin-left:.5in; text-indent:-.25in"><span style="font-size:9.5pt; font-family:&quot;Verdana&quot;,&quot;sans-serif&quot;; color:black"><span>&nbsp;&nbsp;&nbsp;&nbsp; If you are building&nbsp;IPCNotepad.exe in&nbsp;32-bit, then copy %MSIPCSDKDIR%\bin\x86
+ to C:\Program Files(x86)\Active Directory Rights Management Servervices Client 2.1 &nbsp;<span style="color:#1f497d; font-family:&quot;Calibri&quot;,&quot;sans-serif&quot;; font-size:11pt"><br>
+&nbsp; </span></span></span></p>
+<p class="note" style="margin-left:.5in; text-indent:-.25in"><span style="font-size:9.5pt; font-family:&quot;Verdana&quot;,&quot;sans-serif&quot;; color:black"><span>11.<span style="font:7.0pt &quot;Times New Roman&quot;">
+</span></span></span><span style="font-size:9.5pt; font-family:&quot;Verdana&quot;,&quot;sans-serif&quot;; color:black">Now run IPCNotepad.exe</span></p>
+<p class="note" style="margin-left:.5in; text-indent:-.25in"><span style="font-size:9.5pt; font-family:&quot;Verdana&quot;,&quot;sans-serif&quot;; color:black"><span>12.<span style="font:7.0pt &quot;Times New Roman&quot;">
+</span></span></span><span style="font-size:9.5pt; font-family:&quot;Verdana&quot;,&quot;sans-serif&quot;; color:black">In case you deployed your own private RMS server and not the 1-box AD RMS ISV environment:</span></p>
+<p class="note" style="margin-left:1.0in; text-indent:-.25in"><span style="font-size:9.5pt; font-family:Symbol; color:black"><span>&middot;<span style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><span style="font-size:9.5pt; font-family:&quot;Verdana&quot;,&quot;sans-serif&quot;; color:black">Set the AD RMS server to ISV hierarchy</span></p>
+<p class="note" style="margin-left:1.0in; text-indent:-.25in"><span style="font-size:9.5pt; font-family:Symbol; color:black"><span>&middot;<span style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><span style="font-size:9.5pt; font-family:&quot;Verdana&quot;,&quot;sans-serif&quot;; color:black">On the machine where IPCNOtepad.exe is running set hierarchy registry key value to 1:</span></p>
+<p style="text-indent:.5in"><strong><span style="font-size:9.5pt; font-family:&quot;Verdana&quot;,&quot;sans-serif&quot;; color:black">HKEY_LOCAL_MACHINE</span></strong><span style="font-size:9.5pt; font-family:&quot;Verdana&quot;,&quot;sans-serif&quot;; color:black">\<strong><span style="font-family:&quot;Verdana&quot;,&quot;sans-serif&quot;">SOFTWARE</span></strong>\<strong><span style="font-family:&quot;Verdana&quot;,&quot;sans-serif&quot;">Microsoft</span></strong>\<strong><span style="font-family:&quot;Verdana&quot;,&quot;sans-serif&quot;">MSIPC</span></strong>\<strong><span style="font-family:&quot;Verdana&quot;,&quot;sans-serif&quot;">&quot;Hierarchy&quot;</span></strong>\
+ = dword<span class="GramE">:00000001</span></span></p>
+<p class="note"><span style="font-size:9.5pt; font-family:&quot;Verdana&quot;,&quot;sans-serif&quot;; color:black">&nbsp;</span></p>
+<p class="MsoNormal" style="line-height:normal"><strong><span style="font-size:15.0pt; font-family:&quot;Verdana&quot;,&quot;sans-serif&quot;; color:black">Description</span></strong></p>
+<p class="MsoNormal" style="line-height:normal"><span class="SpellE"><span style="font-size:10.0pt; font-family:&quot;Verdana&quot;,&quot;sans-serif&quot;; color:black">IPCNotepad</span></span><span style="font-size:10.0pt; font-family:&quot;Verdana&quot;,&quot;sans-serif&quot;; color:black">
+ is a rich rights-enabled application that runs on Windows Operating system.<span>&nbsp;
+</span><span class="SpellE">IPCNotepad</span> allows you to: </span></p>
+<ul>
+<li>
+<div class="MsoListParagraphCxSpFirst" style="text-indent:-.25in; line-height:normal">
+<span style="font-size:10.0pt; font-family:&quot;Verdana&quot;,&quot;sans-serif&quot;; color:black"><span><span style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;
+</span></span></span><span style="font-size:10.0pt; font-family:&quot;Verdana&quot;,&quot;sans-serif&quot;; color:black">Publish: Restrict the permissions on a text file (.<span class="SpellE">ptxt</span> format). The user can choose from the list of templates that are made
+ available on the RMS server</span></div>
+</li><li>
+<div class="MsoListParagraphCxSpLast" style="text-indent:-.25in; line-height:normal">
+<span style="font-size:10.0pt; font-family:&quot;Verdana&quot;,&quot;sans-serif&quot;; color:black"><span><span style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;
+</span></span></span><span style="font-size:10.0pt; font-family:&quot;Verdana&quot;,&quot;sans-serif&quot;; color:black">Consume:<span>&nbsp;
+</span>View and enforce permissions on restricted .<span class="SpellE">ptxt</span> files. If the user has privileges, he can view the restricted file and permissions, such as Print permissions, are enforced by
+<span class="SpellE">IPCNotepad</span>.</span></div>
+</li></ul>
+<p class="MsoNormal" style="line-height:normal"><span class="SpellE"><span style="font-size:10.0pt; font-family:&quot;Verdana&quot;,&quot;sans-serif&quot;; color:black">IPCNotepad</span></span><span style="font-size:10.0pt; font-family:&quot;Verdana&quot;,&quot;sans-serif&quot;; color:black">
+ requires that:</span></p>
+<ul>
+<li>
+<div class="MsoListParagraphCxSpFirst" style="text-indent:-.25in; line-height:normal">
+<span style="font-size:10.0pt; font-family:&quot;Verdana&quot;,&quot;sans-serif&quot;; color:black"><span><span style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;
+</span></span></span><span style="font-size:10.0pt; font-family:&quot;Verdana&quot;,&quot;sans-serif&quot;; color:black">AD RMS Client 2.1 is installed on the machine</span></div>
+</li><li>
+<div class="MsoListParagraphCxSpLast" style="text-indent:-.25in; line-height:normal">
+<span style="font-size:10.0pt; font-family:&quot;Verdana&quot;,&quot;sans-serif&quot;; color:black"><span><span style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;
+</span></span></span><span style="font-size:10.0pt; font-family:&quot;Verdana&quot;,&quot;sans-serif&quot;; color:black">There&rsquo;s an AD RMS server available for
+<span class="SpellE">IPCNotepad</span>.</span></div>
+</li></ul>
+<p class="MsoNormal" style="line-height:normal"><strong><span style="font-size:15.0pt; font-family:&quot;Verdana&quot;,&quot;sans-serif&quot;; color:black">More Information</span></strong></p>
+<p class="MsoListParagraph" style="text-indent:-.25in; line-height:normal"><span style="font-size:10.0pt; font-family:&quot;Verdana&quot;,&quot;sans-serif&quot;; color:black"><span>-<span style="font:7.0pt &quot;Times New Roman&quot;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><span style="font-size:10.0pt; font-family:&quot;Verdana&quot;,&quot;sans-serif&quot;; color:black">Provide feedback for
+<span class="SpellE">IPCNotepad</span> </span><a href="https://code.msdn.microsoft.com/windowsdesktop/IPCNotepad-Sample-f67dae80/https://connect.microsoft.com/site1170/Feedback"><span style="font-size:10.0pt; font-family:&quot;Verdana&quot;,&quot;sans-serif&quot;">here</span></a><span style="font-size:10.0pt; font-family:&quot;Verdana&quot;,&quot;sans-serif&quot;; color:black">.
+ You can also provide private feedback on this link.<span>&nbsp;&nbsp;&nbsp; </span>
+</span></p>
+<p class="MsoNormal">&nbsp;</p>
+</div>
+
+</div>
+
+
+    </div>
+</body>
+</html>
