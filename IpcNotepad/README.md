@@ -40,40 +40,15 @@ Before running your first application, you need to generate the application mani
 2.    Compile the project
 
 3.    The last step in the setup is to generate a manifest for your application before running it. For more information, see https://docs.microsoft.com/en-us/information-protection/develop/how-to-use-file-api-with-aadrm-cloud for Azure or for On-premises https://docs.microsoft.com/en-us/information-protection/develop/how-to-set-up-your-test-environment
+ 
+4. Now run IPCNotepad.exe
 
-4.    Copy the following files from their install directories to the same folder as your application:
-
-	    %MsipcSDKDir%\Tools\Genmanifest.exe 
-
-        %MsipcSDKDir%\bin\Isvtier5appsigningprivkey.dat
-
-	    %MsipcSDKDir%\bin\Isvtier5appsignsdk_client.xml
-
-	    %MsipcSDKDir%\bin\ YourAppName.isv.mcf. 
-
-5.    Rename YourAppName.isv.mcf to IPCNotepad.mcf
-
-6.    Open IPCNotepad.mcf and replace <yourappname>.exe in IPCNotepad.mcf with IPCNotepad.exe
-
-7.    Run genmanifest.exe -chain isvtier5appsignsdk_client.xml IPCNotepad.mcf IPCNotepad.exe.man 
-
-8.    The IPCNotepad.exe.man file must be present in the same location as IPCNotepad.exe and must be regenerated every time the project is recompiled.
- 
-9.    Copy the entire directory (where IPCNotepad.exe is placed) to the AD RMS 1-box environment
-
-10. Copy ipcsecproc_isv.dll from %MSIPCSDKDIR%\bin\x64 to C:\Program Files\Active Directory Rights Management Servervices Client 2.1
-
-     If you are building IPCNotepad.exe in 32-bit, then copy %MSIPCSDKDIR%\bin\x86 to C:\Program Files(x86)\Active Directory Rights Management Servervices Client 2.1  
-
-  
-11. Now run IPCNotepad.exe
-
-12. In case you deployed your own private RMS server and not the 1-box AD RMS ISV environment:
+5. In case you deployed your own private RMS server:
 
 		·         Set the AD RMS server to ISV hierarchy
 
 		·         On the machine where IPCNOtepad.exe is running set hierarchy registry key value to 1:
-        
+
                   HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\MSIPC\"Hierarchy"\ = dword:00000001
 
 
