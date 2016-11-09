@@ -48,7 +48,9 @@ Building the IPCNotepad sample
 
                   HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\MSIPC\"Hierarchy"\ = dword:00000001
 
-For more information, see https://docs.microsoft.com/en-us/information-protection/develop/how-to-use-file-api-with-aadrm-cloud for Azure or for On-premises https://docs.microsoft.com/en-us/information-protection/develop/how-to-set-up-your-test-environment
+#### More Information
+For Azure  see https://docs.microsoft.com/en-us/information-protection/develop/how-to-use-file-api-with-aadrm-cloud  
+For On-premises https://docs.microsoft.com/en-us/information-protection/develop/how-to-set-up-your-test-environment
 
 
 
