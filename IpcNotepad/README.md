@@ -5,15 +5,15 @@ IPC Notepad application
 
 IPCNotepad is a rich rights-enabled application that runs on Windows Operating system.  IPCNotepad allows you to: 
 
-	•         Publish: Restrict the permissions on a text file (.ptxt format). The user can choose from the list of templates that are made available on the RMS server
+	-         Publish: Restrict the permissions on a text file (.ptxt format). The user can choose from the list of templates that are made available on the RMS server
 
-	•        Consume:  View and enforce permissions on restricted .ptxt files. If the user has privileges, he can view the restricted file and permissions, such as Print permissions, are enforced by IPCNotepad
+	-         Consume:  View and enforce permissions on restricted .ptxt files. If the user has privileges, he can view the restricted file and permissions, such as Print permissions, are enforced by IPCNotepad
 
 IPCNotepad requires that:
 
-	•         AD RMS Client 2.1 is installed on the machine
+	-         AD RMS Client 2.1 is installed on the machine
 
-	•         There’s an AD RMS server available for IPCNotepad
+	-         There’s an AD RMS server available for IPCNotepad
         
 
 # How to build the IPCNotepad Sample Application
@@ -27,23 +27,20 @@ You will also need to install AD RMS SDK 2.1 on your machine. Install AD RMS SDK
 
 Building the IPCNotepad sample
 
-	1.    Unzip the Sample content to a suitable location on your development machine
+	-  Unzip the Sample content to a suitable location on your development workstation
 
-	2.    Open the IPCNotepad Solution
+	-  Open the IPCNotepad Solution
 
-	3.    Build the Sample solution
+	-  Build the Sample solution
 
-## Running this sample
-Before running your first application, you need to generate the application manifest.
-1.    Open the Visual Studio solution file
+## Running the sample
+-    Open the Visual Studio solution file
 
-2.    Compile the project
+-    Compile the project
 
-3.    The last step in the setup is to generate a manifest for your application before running it. For more information, see https://docs.microsoft.com/en-us/information-protection/develop/how-to-use-file-api-with-aadrm-cloud for Azure or for On-premises https://docs.microsoft.com/en-us/information-protection/develop/how-to-set-up-your-test-environment
- 
-4. Now run IPCNotepad.exe
+-    Now run IPCNotepad.exe
 
-5. In case you deployed your own private RMS server:
+-    In case you deployed your own private RMS server:
 
 		·         Set the AD RMS server to ISV hierarchy
 
@@ -51,7 +48,7 @@ Before running your first application, you need to generate the application mani
 
                   HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\MSIPC\"Hierarchy"\ = dword:00000001
 
-
+For more information, see https://docs.microsoft.com/en-us/information-protection/develop/how-to-use-file-api-with-aadrm-cloud for Azure or for On-premises https://docs.microsoft.com/en-us/information-protection/develop/how-to-set-up-your-test-environment
 
 
 
