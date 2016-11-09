@@ -34,9 +34,9 @@ Building the IPCNotepad sample
 	-  Build the Sample solution
 
 ## Running the sample
--    Open the Visual Studio solution file
+-    Open the Visual Studio solution file
 
--    Compile the project
+-    Compile the project
 
 -    Now run IPCNotepad.exe
 
