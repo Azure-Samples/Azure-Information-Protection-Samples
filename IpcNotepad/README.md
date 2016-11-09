@@ -23,7 +23,7 @@ This sample code takes the user through the basic steps that each rights-enabled
 Building this sample assumes that you already have AD RMS server installed in the pre-production/ISV hierarchy.
 If you don't have a AD RMS server configured then please refer to the following [link](https://docs.microsoft.com/en-us/information-protection/develop/how-to-install-and-configure-an-rms-server) or you can use your Azure RMS setup.
 For additional information on getting the environment setup please refer to the following [section](https://docs.microsoft.com/en-us/information-protection/develop/getting-started-with-ad-rms-2-0)
-You will also need to install AD RMS SDK 2.1 on your machine. Install AD RMS SDK 2.1 from [here ](http://https://www.microsoft.com/en-us/download/details.aspx?id=38397)
+You will also need to install AD RMS SDK 2.1 on your machine. Install AD RMS SDK 2.1 from [here ](https://www.microsoft.com/en-us/download/details.aspx?id=38397)
 
 Building the IPCNotepad sample
 
