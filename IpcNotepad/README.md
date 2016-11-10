@@ -11,19 +11,19 @@ IPCNotepad is a rich rights-enabled application that runs on Windows Operating s
 
 IPCNotepad requires that:
 
-	-         AD RMS Client 2.1 is installed on the machine
+	-         RMS Client 2.1 is installed on the machine
 
-	-         There’s an AD RMS server available for IPCNotepad
+	-         There’s an RMS server available for IPCNotepad
         
 
 # How to build the IPCNotepad Sample Application
-IPCNotepad is a sample rights-enabled application utilizing AD RMS SDK 2.1.
+IPCNotepad is a sample rights-enabled application utilizing RMS SDK 2.1.
 
 This sample code takes the user through the basic steps that each rights-enabled application should perform when protecting and consuming restricted content
-Building this sample assumes that you already have AD RMS server installed in the pre-production/ISV hierarchy.
-If you don't have a AD RMS server configured then please refer to the following [link](https://docs.microsoft.com/en-us/information-protection/develop/how-to-install-and-configure-an-rms-server) or you can use your Azure RMS setup.
+Building this sample assumes that you already have RMS server installed in the pre-production/ISV hierarchy.
+If you don't have a RMS server configured then please refer to the following [link](https://docs.microsoft.com/en-us/information-protection/develop/how-to-install-and-configure-an-rms-server) or you can use your Azure RMS setup.
 For additional information on getting the environment setup please refer to the following [section](https://docs.microsoft.com/en-us/information-protection/develop/getting-started-with-ad-rms-2-0)
-You will also need to install AD RMS SDK 2.1 on your machine. Install AD RMS SDK 2.1 from [here ](https://www.microsoft.com/en-us/download/details.aspx?id=38397)
+You will also need to install RMS SDK 2.1 on your machine. Install RMS SDK 2.1 from [here ](https://www.microsoft.com/en-us/download/details.aspx?id=38397)
 
 Building the IPCNotepad sample
 
@@ -42,7 +42,7 @@ Building the IPCNotepad sample
 
 -    In case you deployed your own private RMS server:
 
-		·         Set the AD RMS server to ISV hierarchy
+		·         Set the RMS server to ISV hierarchy
 
 		·         On the machine where IPCNOtepad.exe is running set hierarchy registry key value to 1:
 
