@@ -12,10 +12,10 @@
 
 
 using System;
-using System.Collections;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Runtime.InteropServices;
+using System.Windows.Interop;
 
 namespace Microsoft.InformationProtectionAndControl
 {
@@ -24,15 +24,13 @@ namespace Microsoft.InformationProtectionAndControl
         public InformationProtectionException(int hrError, string message)
             : base(string.Format("{0} HRESULT: 0x{1:X8}", message, hrError))
         {
-            m_hrError = hrError;
+            HResult = hrError;
         }
 
         public int ErrorCode
         {
-            get { return m_hrError; }
+            get { return HResult; }
         }
-
-        private int m_hrError = 0;
     };
 
     // API Mode values - http://msdn.microsoft.com/en-us/library/windows/desktop/hh535236(v=vs.85).aspx
@@ -70,7 +68,7 @@ namespace Microsoft.InformationProtectionAndControl
     // Connection Info - http://msdn.microsoft.com/en-us/library/windows/desktop/hh535274(v=vs.85).aspx
     public class ConnectionInfo
     {
-        public ConnectionInfo(Uri extranetUrl, Uri intranetUrl)
+        public ConnectionInfo(Uri extranetUrl, Uri intranetUrl, bool bConfigureForLicenseingOnlyClusters = false)
         {
             if (extranetUrl == null && intranetUrl == null)
             {
@@ -78,8 +76,18 @@ namespace Microsoft.InformationProtectionAndControl
             }
             m_extranetUrl = extranetUrl;
             m_intranetUrl = intranetUrl;
+
+            OverrideServiceDiscoveryForLicensing = bConfigureForLicenseingOnlyClusters;
         }
 
+        /// <summary>
+        /// This flag only applies to IpcGetTemplateIssuerList and IpcGetTemplateList. When set, this flag configures
+        /// MSIPC to work correctly with multiple AD RMS licensing-only clusters. When this flag is set, service
+        /// discovery will use these URLs to locate the appropriate licensing server. When this flag is not set,
+        /// service discovery will use these URLs to locate the certification cluster and then locate the licensing
+        /// service off of that certification cluster.
+        /// </summary>
+        public bool OverrideServiceDiscoveryForLicensing { get; private set; }
 
         public Uri ExtranetUrl
         {
@@ -195,6 +203,12 @@ namespace Microsoft.InformationProtectionAndControl
         {
             get { return m_duration; }
             set { m_duration = value; }
+        }
+
+        public static bool IsValid(Term validate)
+        {
+            DateTime termDisabled = DateTime.FromFileTime(0);
+            return (validate != null && (validate.From > termDisabled || validate.Duration.Ticks > 0));
         }
 
         private DateTime m_from = new DateTime();
@@ -356,5 +370,56 @@ namespace Microsoft.InformationProtectionAndControl
         internal SafeInformationProtectionLicenseHandle(IntPtr handle) : base(handle) { }
     }
 
+    public sealed class SafeInformationProtectionTokenHandle : SafeInformationProtectionHandle
+    {
+        internal SafeInformationProtectionTokenHandle() : base() { }
+        internal SafeInformationProtectionTokenHandle(IntPtr handle) : base(handle) { }
+    }
+
+    public sealed class SafeInformationProtectionFileHandle : SafeInformationProtectionHandle
+    {
+        internal SafeInformationProtectionFileHandle() : base() { }
+        internal SafeInformationProtectionFileHandle(IntPtr handle) : base(handle) { }
+    }
+
+    public class IpcWindow
+    {
+        private IpcWindow(IntPtr hWindow)
+        {
+            Handle = hWindow;
+        }
+
+        public static IpcWindow Create(object window)
+        {
+            if (null == window) { return new IpcWindow(IntPtr.Zero); }
+
+            IpcWindow ipcWindow = window as IpcWindow;
+            if (null != ipcWindow) { return ipcWindow; }
+
+            WindowInteropHelper helper = window as WindowInteropHelper;
+            if (null != helper)
+            {
+                return new IpcWindow(helper.Handle);
+            }
+
+            System.Windows.Window wpfWindow = window as System.Windows.Window;
+            if (null != wpfWindow)
+            {
+                return new IpcWindow(new WindowInteropHelper(wpfWindow).Handle);
+            }
+
+            System.Windows.Forms.Form formWindow = window as System.Windows.Forms.Form;
+            if (null != formWindow)
+            {
+                return new IpcWindow(formWindow.Handle);
+            }
+
+            throw new ArgumentException(
+                "The passed in window must be null or of type: " +
+                "WindowInteropHelper, System.Windows.Window, or System.Windows.Forms.Form", "window");
+        }
+
+        public IntPtr Handle { get; private set; }
+    }
 }
 

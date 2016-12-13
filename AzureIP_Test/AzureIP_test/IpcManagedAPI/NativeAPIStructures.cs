@@ -10,8 +10,12 @@
 //-----------------------------------------------------------------------------
 
 using System;
+using System.IO;
+using System.Collections.Specialized;
 using System.Runtime.InteropServices;
-using System.Security.Cryptography.X509Certificates;
+using Microsoft.Win32.SafeHandles;
+using System.Threading;
+using System.Collections.Generic;
 
 namespace Microsoft.InformationProtectionAndControl
 {
@@ -19,9 +23,12 @@ namespace Microsoft.InformationProtectionAndControl
     public enum EnvironmentInformationType : uint
     {
         SecurityMode = 3,
+        ApplicationId = 5,
+        StoreName = 0x10000001
     };
 
     // Prompt Context flags - http://msdn.microsoft.com/en-us/library/windows/desktop/hh535278(v=vs.85).aspx
+    [Flags]
     public enum PromptContextFlag : uint
     {
         Slient = 1,
@@ -37,15 +44,19 @@ namespace Microsoft.InformationProtectionAndControl
     }
 
     // IpcGetTemplateList() function flags - http://msdn.microsoft.com/en-us/library/windows/desktop/hh535267(v=vs.85).aspx
+    [Flags]
     public enum GetTemplateListFlags : uint
     {
-        ForceDownload = 1
+        ForceDownload = 1,
+        UseProvidedLicensingUrl = 2,
     }
 
     // IpcGetTemplateIssuerList() function flags - http://msdn.microsoft.com/en-us/library/windows/desktop/hh535266(v=vs.85).aspx
+    [Flags]
     public enum GetTemplateIssuerListFlags : uint
     {
-        DefaultServerOnly = 1
+        DefaultServerOnly = 1,
+        UseProvidedLicensingUrl = 2,
     }
 
     // License Property types - http://msdn.microsoft.com/en-us/library/windows/desktop/hh535287(v=vs.85).aspx
@@ -61,6 +72,7 @@ namespace Microsoft.InformationProtectionAndControl
         Descriptor = 8,
         ReferralInfoUrl = 10,
         ContentKey = 11,
+        ContentId = 12,
         AppSpecificDataNoEncryption = 13,
     };
 
@@ -69,54 +81,159 @@ namespace Microsoft.InformationProtectionAndControl
     {
         BlockSize = 2,
         License = 6,
-        UserDisplayName = 7,
+        UserDisplayName = 7, 
     };
+
+    [Flags]
+    public enum GetKeyFlags : uint
+    {
+        Default = 0,
+        NoPersistDisk = 1,
+    }
 
     public enum IpcCredentialType : uint
     {
         X509Certificate = 1,
-        SymmetricKey = 2
+        SymmetricKey = 2,
+        OAuth2 = 3,
+    }
+
+    //IPC_AAD_APPLICATION_ID
+    [StructLayout(LayoutKind.Sequential)]
+    public class IpcAadApplicationId
+    {
+        private readonly uint cbSize;
+
+        [MarshalAs(UnmanagedType.LPWStr)]
+        private readonly string wszClientId;
+
+        [MarshalAs(UnmanagedType.LPWStr)]
+        private readonly string wszRedirectUri;
+
+        public IpcAadApplicationId(string clientId, string redirectUri)
+        {
+            this.cbSize = (uint)Marshal.SizeOf(typeof(IpcAadApplicationId));
+            wszClientId = clientId;
+            wszRedirectUri = redirectUri;
+        }
+
+        public string ClientId
+        {
+            get
+            {
+                return wszClientId;
+            }
+        }
+
+        public string RedirectUri
+        {
+            get
+            { 
+                return wszRedirectUri;
+            }
+        }
+    }    
+
+    //IPC_AUTHENTICATION_CALLBACK_INFO
+    [StructLayout(LayoutKind.Sequential)]
+    internal class IpcOAuth2CallbackInfo
+    {
+        public delegate int IpcOAuth2Delegate(IntPtr context, IntPtr authenticationParameters, out IntPtr iph);
+        private uint cbSize;
+        private IpcOAuth2Delegate pfnGetToken;
+        private IntPtr pvContext;
+
+        public IpcOAuth2CallbackInfo(IpcOAuth2Delegate callback, IntPtr context)
+        {
+            this.cbSize = (uint)Marshal.SizeOf(typeof(IpcOAuth2CallbackInfo));
+            pfnGetToken = callback;
+            pvContext = context;
+        }
+    }
+
+    public class SafeIpcCredential : IDisposable
+    {
+        private GCHandle oAuth2CallbackInfo;
+        private IpcCredential ipcCredential;
+        //union of certificateContext | symmetricKey
+        private IntPtr credData;
+
+        public SafeIpcCredential() : this(IpcCredentialType.SymmetricKey, null) { }
+
+        public SafeIpcCredential(IpcCredentialType typeIn, object credDataIn)
+        {
+            ipcCredential = new IpcCredential();
+            ipcCredential.type = typeIn;
+            if (null != credDataIn)
+            {
+                switch (typeIn)
+                {
+                    case IpcCredentialType.SymmetricKey:
+                        SymmetricKeyCredential symmKey = (SymmetricKeyCredential)credDataIn;
+                        ipcCredential.credData = Marshal.AllocHGlobal(Marshal.SizeOf(symmKey));
+                        Marshal.StructureToPtr(symmKey, ipcCredential.credData, false);
+                        break;
+                    case IpcCredentialType.OAuth2:
+                        IpcOAuth2CallbackInfo oauth2Key = (IpcOAuth2CallbackInfo)credDataIn;
+                        oAuth2CallbackInfo = GCHandle.Alloc(oauth2Key);
+                        ipcCredential.credData = Marshal.AllocHGlobal(Marshal.SizeOf(oauth2Key));
+                        Marshal.StructureToPtr((IpcOAuth2CallbackInfo)oAuth2CallbackInfo.Target,
+                            ipcCredential.credData, false);
+                        break;
+                    case IpcCredentialType.X509Certificate:
+                        ipcCredential.credData = (IntPtr)credDataIn;
+                        break;
+                    default:
+                        credData = IntPtr.Zero;
+                        throw new NotImplementedException();
+                }
+            }
+        }
+
+        public static explicit operator IpcCredential(SafeIpcCredential obj)
+        {
+            return (obj != null && obj.ipcCredential != null) ? obj.ipcCredential : null;
+        }
+
+        ~SafeIpcCredential()
+        {
+            Dispose(false);
+        }
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected void Dispose(bool disposing)
+        {
+            if (ipcCredential != null)
+            {
+                if (ipcCredential.credData != IntPtr.Zero)
+                {
+                    if (ipcCredential.type != IpcCredentialType.X509Certificate)
+                    {
+                        Marshal.FreeHGlobal(ipcCredential.credData);
+                    }
+                    ipcCredential.credData = IntPtr.Zero;
+                }
+                ipcCredential = null;
+            }
+            if (oAuth2CallbackInfo != null && oAuth2CallbackInfo.IsAllocated)
+            {
+                oAuth2CallbackInfo.Free();
+            }
+        }
     }
 
     //IPC_CREDENTIAL http://msdn.microsoft.com/en-us/library/windows/desktop/hh535275(v=vs.85).aspx
     [StructLayout(LayoutKind.Sequential)]
     public class IpcCredential
     {
-        private IpcCredentialType type;
+        internal IpcCredentialType type;
 
         //union of certificateContext | symmetricKey
-        private IntPtr credData;
-
-        public IpcCredential() : this(IpcCredentialType.SymmetricKey, null) { }
-        public IpcCredential(IpcCredentialType typeIn, object credDataIn)
-        {
-            type = typeIn;
-            credData = IntPtr.Zero;
-            if (null != credDataIn)
-            {
-                switch (type)
-                {
-                    case IpcCredentialType.SymmetricKey:
-                        SymmetricKeyCredential symmKey = (SymmetricKeyCredential)credDataIn;
-                        credData = Marshal.AllocHGlobal(Marshal.SizeOf(symmKey));
-                        Marshal.StructureToPtr(symmKey, credData, false);
-                        break;
-                    default:
-                        credData = IntPtr.Zero;
-                        break;
-                }
-            }
-        }
-
-        internal void Dispose()
-        {
-            if (IntPtr.Zero != credData)
-            {
-                IntPtr credDataLocal = credData;
-                credData = IntPtr.Zero;
-                Marshal.FreeHGlobal(credDataLocal);
-            }
-        }
+        internal IntPtr credData;
     }
     
     //IPC_CREDENTIAL_SYMMETRIC_KEY http://msdn.microsoft.com/en-us/library/windows/desktop/dn133062(v=vs.85).aspx
@@ -133,13 +250,150 @@ namespace Microsoft.InformationProtectionAndControl
         public string BposTenantId;
     }
 
+    public delegate SafeInformationProtectionTokenHandle GetAuthenticationTokenDelegate(Object context,
+        NameValueCollection authenticationSettings);
+
+    public sealed class OAuth2CallbackContext : SafeHandle
+    {
+        private readonly GCHandle callbackContext;
+        private readonly GCHandle callback;
+        private readonly GCHandle thisObj;
+
+        public OAuth2CallbackContext(Object callbackContext, GetAuthenticationTokenDelegate callback) :
+            base(IntPtr.Zero, true)
+        {            
+            this.callbackContext = GCHandle.Alloc(callbackContext);
+            this.callback = GCHandle.Alloc(callback);
+            thisObj = GCHandle.Alloc(this);
+            SetHandle(GCHandle.ToIntPtr(thisObj));
+        }
+
+        internal IntPtr Context
+        {
+            get
+            {
+                return handle;
+            }
+        }
+
+        public Object CallbackContext
+        {
+            get
+            {
+                Object result = null;
+                if (callbackContext.IsAllocated)
+                {
+                    result = callbackContext.Target;
+                }
+                return result;
+            }
+        }
+
+        public GetAuthenticationTokenDelegate Callback
+        {
+            get
+            {
+                GetAuthenticationTokenDelegate result = null;
+                if (callback.IsAllocated)
+                {
+                    result = (GetAuthenticationTokenDelegate)callback.Target;
+                }
+                return result;
+            }
+        }
+
+        private class ExceptionTranslator : Exception
+        {
+            public ExceptionTranslator(Exception except)
+                : base(except.Message, except)
+            {
+            }
+
+            public int HR
+            {
+                get
+                {
+                    return HResult;
+                }
+            }
+        }
+
+        private static int GetAuthenticationTokenCallback(IntPtr context, IntPtr authenticationParameters, out IntPtr iph)
+        {
+            int result = 0;
+            OAuth2CallbackContext authCallbackContext = null;
+            iph = IntPtr.Zero;
+            try
+            {
+                GCHandle gch = GCHandle.FromIntPtr(context);
+                authCallbackContext = (OAuth2CallbackContext)gch.Target;
+
+                NameValueCollection authParamList = new NameValueCollection();
+                SafeNativeMethods.MarshalNameValueListToManaged(authenticationParameters, authParamList);
+
+                if (null != authCallbackContext.Callback)
+                {
+                    SafeInformationProtectionTokenHandle safeToken =
+                        authCallbackContext.Callback(authCallbackContext.CallbackContext, authParamList);
+                    IntPtr iphValue = safeToken.Value;
+                    safeToken.SetHandleAsInvalid();
+                    iph = iphValue;
+                }
+            }
+            catch (Exception except)
+            {
+                result = (new ExceptionTranslator(except)).HR;
+            }
+            return result;
+        }
+
+        internal IpcOAuth2CallbackInfo.IpcOAuth2Delegate MarshallingCallback
+        {
+            get
+            {
+                IpcOAuth2CallbackInfo.IpcOAuth2Delegate callback = null;
+                if (null != Callback)
+                {
+                    callback = OAuth2CallbackContext.GetAuthenticationTokenCallback;
+                }
+                return callback;
+            }
+        }
+
+        public override bool IsInvalid
+        {
+            get { return this.handle.Equals(IntPtr.Zero); }
+        }
+
+        protected override bool ReleaseHandle()
+        {
+            if (callback.IsAllocated)
+            {
+                callback.Free();
+            }
+            if (callbackContext.IsAllocated)
+            {
+                callbackContext.Free();
+            }
+            if (thisObj.IsAllocated)
+            {
+                thisObj.Free();
+            }
+            SetHandle(IntPtr.Zero);
+            return true;
+        }
+    }
+
     public class SafeIpcPromptContext : IDisposable
     {
-        private IpcPromptContext internalClass;
+        private IpcPromptContext ipcPromptContext;
+        private GCHandle ipcCredential;
 
-        public SafeIpcPromptContext(IntPtr wndParent, IpcCredential credential, IntPtr cancelEvent)
+        internal SafeIpcPromptContext(IntPtr wndParent, SafeIpcCredential credential, WaitHandle cancelEvent)
         {
-            internalClass = new IpcPromptContext(wndParent, credential, cancelEvent);
+            ipcCredential = GCHandle.Alloc(credential);
+            ipcPromptContext = new IpcPromptContext(wndParent, (IpcCredential)((SafeIpcCredential)ipcCredential.Target),
+                cancelEvent);
         }
 
         ~SafeIpcPromptContext()
@@ -155,17 +409,64 @@ namespace Microsoft.InformationProtectionAndControl
 
         public void Dispose()
         {
-            if (null != internalClass)
+            if (null != ipcPromptContext)
             {
-                internalClass.Dispose();
+                ipcPromptContext.Dispose();
+            }
+            if (null != ipcCredential && ipcCredential.IsAllocated)
+            {
+                ipcCredential.Free();
             }
         }
 
-        public static explicit operator IpcPromptContext(SafeIpcPromptContext obj)
+        public static SafeIpcPromptContextWrapper Wrap(SafeIpcPromptContext context)
         {
-            return obj.internalClass;
+            return new SafeIpcPromptContextWrapper(context);
+        }
+
+        public SafeIpcPromptContextWrapper Wrap()
+        {
+            return new SafeIpcPromptContextWrapper(this);
+        }
+
+        public class SafeIpcPromptContextWrapper : IDisposable
+        {
+            private GCHandle context;
+            public SafeIpcPromptContextWrapper(SafeIpcPromptContext context)
+            {
+                if (context != null)
+                {
+                    this.context = GCHandle.Alloc(context);
+                }
+            }
+
+            ~SafeIpcPromptContextWrapper()
+            {
+                Dispose(false);
+            }
+
+            public void Dispose()
+            {
+                Dispose(true);
+                GC.SuppressFinalize(this);
+            }
+
+            protected void Dispose(bool disposing)
+            {
+                if (context != null && context.IsAllocated)
+                {
+                    context.Free();
+                }
+            }
+
+            public static explicit operator IpcPromptContext(SafeIpcPromptContextWrapper obj)
+            {
+                return (obj != null && obj.context != null && obj.context.IsAllocated) ?
+                    ((SafeIpcPromptContext)obj.context.Target).ipcPromptContext : null;
+            }
         }
     }
+
 
     // IPC_PROMPT_CONTEXT - http://msdn.microsoft.com/en-us/library/windows/desktop/hh535278(v=vs.85).aspx
     [StructLayout(LayoutKind.Sequential)]
@@ -174,19 +475,20 @@ namespace Microsoft.InformationProtectionAndControl
         public uint cbSize;
         public readonly IntPtr hWndParent;
         public uint flags;
-        public readonly IntPtr hCancelEvent;
+        public readonly SafeWaitHandle hCancelEvent;
         private IntPtr pcCredential;
 
-        public IpcPromptContext()
+        internal IpcPromptContext()
         {
             this.cbSize = (uint)Marshal.SizeOf(typeof(IpcPromptContext));
+            flags = 0;
         }
 
-        public IpcPromptContext(IntPtr wndParent, IpcCredential credential, IntPtr cancelEvent)
+        internal IpcPromptContext(IntPtr wndParent, IpcCredential credential, WaitHandle cancelEvent)
             : this()
         {
             hWndParent = wndParent;
-            hCancelEvent = cancelEvent;
+            hCancelEvent = (cancelEvent != null) ? cancelEvent.SafeWaitHandle : new SafeWaitHandle(IntPtr.Zero, true);
             if (null != credential)
             {
                 pcCredential = Marshal.AllocHGlobal(Marshal.SizeOf(credential));
@@ -202,10 +504,8 @@ namespace Microsoft.InformationProtectionAndControl
         {
             if (IntPtr.Zero != pcCredential)
             {
-                IpcCredential cred = new IpcCredential();
-                Marshal.PtrToStructure(pcCredential, cred);
+                Marshal.FreeHGlobal(pcCredential);
                 pcCredential = IntPtr.Zero;
-                cred.Dispose();
             }
         }
     }
@@ -359,11 +659,11 @@ namespace Microsoft.InformationProtectionAndControl
 
     public class SafeIpcBuffer : IDisposable
     {
-        private IpcBuffer internalClass;
+        private IpcBuffer ipcBuffer;
 
         public SafeIpcBuffer(byte[] buffer)
         {
-            internalClass = new IpcBuffer(buffer);
+            ipcBuffer = new IpcBuffer(buffer);
         }
 
         ~SafeIpcBuffer()
@@ -379,15 +679,15 @@ namespace Microsoft.InformationProtectionAndControl
 
         public void Dispose()
         {
-            if (null != internalClass)
+            if (null != ipcBuffer)
             {
-                internalClass.Dispose();
+                ipcBuffer.Dispose();
             }
         }
 
         public static explicit operator IpcBuffer(SafeIpcBuffer obj)
         {
-            return obj.internalClass;
+            return obj.ipcBuffer;
         }
     }
 
@@ -484,4 +784,57 @@ namespace Microsoft.InformationProtectionAndControl
             return returnedLong;
         }
     }
+
+    public enum NotificationTypeEnabled
+    {
+        IPCD_CT_NOTIFICATION_TYPE_DISABLED = 0,
+        IPCD_CT_NOTIFICATION_TYPE_ENABLED = 1
+    }
+
+    // IPC_LICENSE_METADATA
+    [StructLayout(LayoutKind.Sequential, Pack = 4)]
+    public class IpcLicenseMetadata
+    {
+        [MarshalAs(UnmanagedType.U4)]
+        public uint cbSize;
+
+        [MarshalAs(UnmanagedType.U4)]
+        public uint dwNotificationType;
+
+        [MarshalAs(UnmanagedType.U4)]
+        public uint dwNotificationPreference;
+
+        [MarshalAs(UnmanagedType.U8)]
+        public long ftDateModified;
+
+        [MarshalAs(UnmanagedType.U8)]
+        public long ftDateCreated;
+
+        [MarshalAs(UnmanagedType.LPWStr)]
+        public readonly string wszContentName;
+
+        public IpcLicenseMetadata(string filePath, string contentName, bool notificationsEnabled, uint notificationPref = 0)
+        {
+            cbSize = (uint)Marshal.SizeOf(typeof(IpcLicenseMetadata));
+            dwNotificationType = (notificationsEnabled) ? (uint)NotificationTypeEnabled.IPCD_CT_NOTIFICATION_TYPE_ENABLED
+                                                        : (uint)NotificationTypeEnabled.IPCD_CT_NOTIFICATION_TYPE_DISABLED;
+            dwNotificationPreference = notificationPref;
+            ftDateModified = File.GetLastWriteTimeUtc(filePath).ToFileTimeUtc();
+            ftDateCreated = File.GetCreationTimeUtc(filePath).ToFileTimeUtc();
+            wszContentName = contentName;
+        }
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public class IpcfFileRange
+    {
+        internal readonly ulong qwOffset;
+        internal readonly ulong qwSize;
+
+        public IpcfFileRange(ulong wOffset, ulong wSize)
+        {
+            qwOffset = wOffset;
+            qwSize = wSize;
+        }
+    }    
 }

@@ -5,10 +5,17 @@ using System.Text;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.IO;
+using System.Windows.Forms;
 
 namespace Microsoft.InformationProtectionAndControl
 {
-    
+    /*
+    *   IMPORTANT - PLEASE READ
+    *  If this class is public IpHub will complain as it references this project and the names will clash. 
+    *  //TODO This needs to be made public after IPHub start using this functions instead of the privately 
+    *  defined wrappers. 
+    *  Also Note, The public interop sample shipped has this class as public
+    */
     public static class SafeFileApiNativeMethods
     {
 
@@ -19,9 +26,35 @@ namespace Microsoft.InformationProtectionAndControl
             bool suppressUI,
             bool offline,
             bool hasUserConsent,
-            System.Windows.Forms.Form parentForm,
+            Form parentWindow,
             SymmetricKeyCredential symmKey = null,
-            string outputDirectory = null)
+            string outputDirectory = null,
+            WaitHandle cancelCurrentOperation = null)
+        {
+            return IpcfEncryptFile(
+                inputFile,
+                templateId,
+                flags,
+                suppressUI,
+                offline,
+                hasUserConsent,
+                IpcWindow.Create(parentWindow).Handle,
+                symmKey,
+                outputDirectory,
+                cancelCurrentOperation);
+        }
+
+        public static string IpcfEncryptFile(
+            string inputFile,
+            string templateId,
+            EncryptFlags flags,
+            bool suppressUI,
+            bool offline,
+            bool hasUserConsent,
+            IntPtr parentWindow,
+            SymmetricKeyCredential symmKey = null,
+            string outputDirectory = null,
+            WaitHandle cancelCurrentOperation = null)
         {
             int hr = 0;
             IntPtr encryptedFileName = IntPtr.Zero;
@@ -31,22 +64,25 @@ namespace Microsoft.InformationProtectionAndControl
                 SafeNativeMethods.CreateIpcPromptContext(suppressUI,
                     offline,
                     hasUserConsent,
-                    parentForm,
-                    symmKey);
+                    parentWindow,
+                    symmKey,
+                    cancelCurrentOperation);
 
             IntPtr licenseInfoPtr = Marshal.StringToHGlobalUni(templateId);
 
             try
             {
-                hr = UnsafeFileApiMethods.IpcfEncryptFile(
-                    inputFile,
-                    licenseInfoPtr,
-                    (uint)EncryptLicenseInfoTypes.IPCF_EF_TEMPLATE_ID,
-                    (uint)flags,
-                    (IpcPromptContext)ipcContext,
-                    outputDirectory,
-                    out encryptedFileName);
-
+                using (var wrappedContext = ipcContext.Wrap())
+                {
+                    hr = UnsafeFileApiMethods.IpcfEncryptFile(
+                        inputFile,
+                        licenseInfoPtr,
+                        (uint)EncryptLicenseInfoTypes.IPCF_EF_TEMPLATE_ID,
+                        (uint)flags,
+                        (IpcPromptContext)wrappedContext,
+                        outputDirectory,
+                        out encryptedFileName);
+                }
                 SafeNativeMethods.ThrowOnErrorCode(hr);
 
                 outputFileName = Marshal.PtrToStringUni(encryptedFileName);
@@ -72,9 +108,35 @@ namespace Microsoft.InformationProtectionAndControl
             bool suppressUI,
             bool offline,
             bool hasUserConsent,
-            System.Windows.Forms.Form parentForm,
+            Form parentWindow,
             SymmetricKeyCredential symmKey,
-            string outputDirectory = null)
+            string outputDirectory = null,
+            WaitHandle cancelCurrentOperation = null)
+        {
+            return IpcfEncryptFile(
+                inputFile,
+                licenseHandle,
+                flags,
+                suppressUI,
+                offline,
+                hasUserConsent,
+                IpcWindow.Create(parentWindow).Handle,
+                symmKey,
+                outputDirectory,
+                cancelCurrentOperation);
+        }
+
+        public static string IpcfEncryptFile(
+            string inputFile,
+            SafeInformationProtectionLicenseHandle licenseHandle,
+            EncryptFlags flags,
+            bool suppressUI,
+            bool offline,
+            bool hasUserConsent,
+            IntPtr parentWindow,
+            SymmetricKeyCredential symmKey,
+            string outputDirectory = null,
+            WaitHandle cancelCurrentOperation = null)
         {
             int hr = 0;
             IntPtr encryptedFileName = IntPtr.Zero;
@@ -84,20 +146,23 @@ namespace Microsoft.InformationProtectionAndControl
                 SafeNativeMethods.CreateIpcPromptContext(suppressUI,
                     offline,
                     hasUserConsent,
-                    parentForm,
-                    symmKey);
+                    parentWindow,
+                    symmKey,
+                    cancelCurrentOperation);
 
             try
             {
-                hr = UnsafeFileApiMethods.IpcfEncryptFile(
-                    inputFile,
-                    licenseHandle.Value,
-                    (uint)EncryptLicenseInfoTypes.IPCF_EF_LICENSE_HANDLE,
-                    (uint)flags,
-                    (IpcPromptContext)ipcContext,
-                    outputDirectory,
-                    out encryptedFileName);
-
+                using (var wrappedContext = ipcContext.Wrap())
+                {
+                    hr = UnsafeFileApiMethods.IpcfEncryptFile(
+                        inputFile,
+                        licenseHandle.Value,
+                        (uint)EncryptLicenseInfoTypes.IPCF_EF_LICENSE_HANDLE,
+                        (uint)flags,
+                        (IpcPromptContext)wrappedContext,
+                        outputDirectory,
+                        out encryptedFileName);
+                }
                 SafeNativeMethods.ThrowOnErrorCode(hr);
 
                 outputFileName = Marshal.PtrToStringUni(encryptedFileName);
@@ -123,38 +188,94 @@ namespace Microsoft.InformationProtectionAndControl
            bool suppressUI,
            bool offline,
            bool hasUserConsent,
-           System.Windows.Forms.Form parentForm,
+           Form parentWindow,
            SymmetricKeyCredential symmKey,
-           ref Stream outputStream)
+           ref Stream outputStream,
+           WaitHandle cancelCurrentOperation = null)
+        {
+            SafeIpcPromptContext ipcContext =
+                SafeNativeMethods.CreateIpcPromptContext(
+                    suppressUI,
+                    offline,
+                    hasUserConsent,
+                    IpcWindow.Create(parentWindow).Handle,
+                    symmKey,
+                    cancelCurrentOperation);
+
+            return IpcfEncryptFileStream(
+                inputStream,
+                inputFilePath,
+                templateId,
+                flags,
+                ref outputStream,
+                ipcContext);
+        }
+
+        public static string IpcfEncryptFileStream(
+           Stream inputStream,
+           string inputFilePath,
+           string templateId,
+           EncryptFlags flags,
+           bool suppressUI,
+           bool offline,
+           bool hasUserConsent,
+           IntPtr parentWindow,
+           SymmetricKeyCredential symmKey,
+           ref Stream outputStream,
+           WaitHandle cancelCurrentOperation = null)
+        {
+            SafeIpcPromptContext ipcContext =
+                SafeNativeMethods.CreateIpcPromptContext(
+                    suppressUI,
+                    offline,
+                    hasUserConsent,
+                    parentWindow,
+                    symmKey,
+                    cancelCurrentOperation);
+
+            return IpcfEncryptFileStream(
+                inputStream,
+                inputFilePath,
+                templateId,
+                flags,
+                ref outputStream,
+                ipcContext);
+        }
+
+        public static string IpcfEncryptFileStream(
+            Stream inputStream,
+            string inputFilePath,
+            string templateId,
+            EncryptFlags flags,
+            ref Stream outputStream,
+            SafeIpcPromptContext ipcContext = null)
         {
             int hr = 0;
             IntPtr encryptedFileName = IntPtr.Zero;
             string outputFileName = null;
             ILockBytes ilInputStream = new ILockBytesOverStream(inputStream);
             ILockBytes ilOutputStream = new ILockBytesOverStream(outputStream);
-
-
-            SafeIpcPromptContext ipcContext =
-                SafeNativeMethods.CreateIpcPromptContext(suppressUI,
-                    offline,
-                    hasUserConsent,
-                    parentForm,
-                    symmKey);
-
+            
             IntPtr licenseInfoPtr = Marshal.StringToHGlobalUni(templateId);
 
+            if (null == ipcContext) //use the default
+            {
+                ipcContext = SafeNativeMethods.CreateIpcPromptContext(false, false, false, IntPtr.Zero);
+            }
             try
             {
-                hr = UnsafeFileApiMethods.IpcfEncryptFileStream(
-                    ilInputStream,
-                    inputFilePath,
-                    licenseInfoPtr,
-                    (uint)EncryptLicenseInfoTypes.IPCF_EF_TEMPLATE_ID,
-                    (uint)flags,
-                    (IpcPromptContext)ipcContext,
-                    ilOutputStream,
-                    out encryptedFileName);
-
+                using (var wrappedContext = ipcContext.Wrap())
+                {
+                    hr = UnsafeFileApiMethods.IpcfEncryptFileStream(
+                        ilInputStream,
+                        inputFilePath,
+                        licenseInfoPtr,
+                        (uint)EncryptLicenseInfoTypes.IPCF_EF_TEMPLATE_ID,
+                        (uint)flags,
+                        (IpcPromptContext)wrappedContext,
+                        ilOutputStream,
+                        out encryptedFileName);
+                }
                 SafeNativeMethods.ThrowOnErrorCode(hr);
 
                 outputFileName = Marshal.PtrToStringUni(encryptedFileName);
@@ -172,6 +293,36 @@ namespace Microsoft.InformationProtectionAndControl
             return outputFileName;
         }
 
+        public static string IpcfEncryptFileStream(
+            Stream inputStream,
+            string inputFilePath,
+            SafeInformationProtectionLicenseHandle licenseHandle,
+            EncryptFlags flags,
+            bool suppressUI,
+            bool offline,
+            bool hasUserConsent,
+            Form parentWindow,
+            SymmetricKeyCredential symmKey,
+            ref Stream outputStream,
+            WaitHandle cancelCurrentOperation = null)
+        {
+            SafeIpcPromptContext ipcContext =
+                SafeNativeMethods.CreateIpcPromptContext(
+                    suppressUI,
+                    offline,
+                    hasUserConsent,
+                    IpcWindow.Create(parentWindow).Handle,
+                    symmKey,
+                    cancelCurrentOperation);
+
+            return IpcfEncryptFileStream(
+                inputStream,
+                inputFilePath,
+                licenseHandle,
+                flags,
+                ref outputStream,
+                ipcContext);
+        }
 
         public static string IpcfEncryptFileStream(
             Stream inputStream,
@@ -181,9 +332,36 @@ namespace Microsoft.InformationProtectionAndControl
             bool suppressUI,
             bool offline,
             bool hasUserConsent,
-            System.Windows.Forms.Form parentForm,
+            IntPtr parentWindow,
             SymmetricKeyCredential symmKey,
-            ref Stream outputStream)
+            ref Stream outputStream,
+            WaitHandle cancelCurrentOperation = null)
+        {
+            SafeIpcPromptContext ipcContext =
+                SafeNativeMethods.CreateIpcPromptContext(
+                    suppressUI,
+                    offline,
+                    hasUserConsent,
+                    parentWindow,
+                    symmKey,
+                    cancelCurrentOperation);
+
+            return IpcfEncryptFileStream(
+                inputStream,
+                inputFilePath,
+                licenseHandle,
+                flags,
+                ref outputStream,
+                ipcContext);
+        }
+
+        public static string IpcfEncryptFileStream(
+            Stream inputStream,
+            string inputFilePath,
+            SafeInformationProtectionLicenseHandle licenseHandle,
+            EncryptFlags flags,
+            ref Stream outputStream,
+            SafeIpcPromptContext ipcContext = null)
         {
             int hr = 0;
             IntPtr encryptedFileName = IntPtr.Zero;
@@ -191,25 +369,24 @@ namespace Microsoft.InformationProtectionAndControl
             ILockBytes ilInputStream = new ILockBytesOverStream(inputStream);
             ILockBytes ilOutputStream = new ILockBytesOverStream(outputStream);
 
-            SafeIpcPromptContext ipcContext =
-                SafeNativeMethods.CreateIpcPromptContext(suppressUI,
-                    offline,
-                    hasUserConsent,
-                    parentForm,
-                    symmKey);
-
+            if (null == ipcContext) //use the default
+            {
+                ipcContext = SafeNativeMethods.CreateIpcPromptContext(false, false, false, IntPtr.Zero);
+            }
             try
             {
-                hr = UnsafeFileApiMethods.IpcfEncryptFileStream(
-                    ilInputStream,
-                    inputFilePath,
-                    licenseHandle.Value,
-                    (uint)EncryptLicenseInfoTypes.IPCF_EF_LICENSE_HANDLE,
-                    (uint)flags,
-                    (IpcPromptContext)ipcContext,
-                    ilOutputStream,
-                    out encryptedFileName);
-
+                using (var wrappedContext = ipcContext.Wrap())
+                {
+                    hr = UnsafeFileApiMethods.IpcfEncryptFileStream(
+                        ilInputStream,
+                        inputFilePath,
+                        licenseHandle.Value,
+                        (uint)EncryptLicenseInfoTypes.IPCF_EF_LICENSE_HANDLE,
+                        (uint)flags,
+                        (IpcPromptContext)wrappedContext,
+                        ilOutputStream,
+                        out encryptedFileName);
+                }
                 SafeNativeMethods.ThrowOnErrorCode(hr);
 
                 outputFileName = Marshal.PtrToStringUni(encryptedFileName);
@@ -233,9 +410,33 @@ namespace Microsoft.InformationProtectionAndControl
             bool suppressUI,
             bool offline,
             bool hasUserConsent,
-            System.Windows.Forms.Form parentForm,
+            Form parentWindow,
             SymmetricKeyCredential symmKey,
-            string outputDirectory = null)
+            string outputDirectory = null,
+            WaitHandle cancelCurrentOperation = null)
+        {
+            return IpcfDecryptFile(
+                inputFile,
+                flags,
+                suppressUI,
+                offline,
+                hasUserConsent,
+                IpcWindow.Create(parentWindow).Handle,
+                symmKey,
+                outputDirectory,
+                cancelCurrentOperation);
+        }
+
+        public static string IpcfDecryptFile(
+            string inputFile,
+            DecryptFlags flags,
+            bool suppressUI,
+            bool offline,
+            bool hasUserConsent,
+            IntPtr parentWindow,
+            SymmetricKeyCredential symmKey,
+            string outputDirectory = null,
+            WaitHandle cancelCurrentOperation = null)
         {
             int hr = 0;
             IntPtr decryptedFileNamePtr = IntPtr.Zero;
@@ -245,18 +446,21 @@ namespace Microsoft.InformationProtectionAndControl
                 SafeNativeMethods.CreateIpcPromptContext(suppressUI,
                     offline,
                     hasUserConsent,
-                    parentForm,
-                    symmKey);
+                    parentWindow,
+                    symmKey,
+                    cancelCurrentOperation);
 
             try
             {
-                hr = UnsafeFileApiMethods.IpcfDecryptFile(
-                    inputFile,
-                    (uint)flags,
-                    (IpcPromptContext)ipcContext,
-                    outputDirectory,
-                    out decryptedFileNamePtr);
-
+                using (var wrappedContext = ipcContext.Wrap())
+                {
+                    hr = UnsafeFileApiMethods.IpcfDecryptFile(
+                        inputFile,
+                        (uint)flags,
+                        (IpcPromptContext)wrappedContext,
+                        outputDirectory,
+                        out decryptedFileNamePtr);
+                }
                 SafeNativeMethods.ThrowOnErrorCode(hr);
 
                 decryptedFileName = Marshal.PtrToStringUni(decryptedFileNamePtr);
@@ -281,8 +485,57 @@ namespace Microsoft.InformationProtectionAndControl
             bool suppressUI,
             bool offline,
             bool hasUserConsent,
-            System.Windows.Forms.Form parentForm,
-            ref Stream outputStream)
+            Form parentWindow,
+            ref Stream outputStream,
+            WaitHandle cancelCurrentOperation = null)
+        {
+            SafeIpcPromptContext ipcContext =
+                SafeNativeMethods.CreateIpcPromptContext(suppressUI,
+                    offline,
+                    hasUserConsent,
+                    IpcWindow.Create(parentWindow).Handle,
+                    cancelCurrentOperation);
+
+            return IpcfDecryptFileStream(
+                inputStream,
+                inputFilePath,
+                flags,
+                ref outputStream,
+                ipcContext);
+        }
+
+        public static string IpcfDecryptFileStream(
+            Stream inputStream,
+            string inputFilePath,
+            DecryptFlags flags,
+            bool suppressUI,
+            bool offline,
+            bool hasUserConsent,
+            IntPtr parentWindow,
+            ref Stream outputStream,
+            WaitHandle cancelCurrentOperation = null)
+        {
+            SafeIpcPromptContext ipcContext =
+                SafeNativeMethods.CreateIpcPromptContext(suppressUI,
+                    offline,
+                    hasUserConsent,
+                    parentWindow,
+                    cancelCurrentOperation);
+
+            return IpcfDecryptFileStream(
+                inputStream,
+                inputFilePath,
+                flags,
+                ref outputStream,
+                ipcContext);
+        }
+
+        public static string IpcfDecryptFileStream(
+            Stream inputStream,
+            string inputFilePath,
+            DecryptFlags flags,
+            ref Stream outputStream,
+            SafeIpcPromptContext ipcContext = null)
         {
             int hr = 0;
             IntPtr decryptedFileNamePtr = IntPtr.Zero;
@@ -290,22 +543,22 @@ namespace Microsoft.InformationProtectionAndControl
             ILockBytes ilInputStream = new ILockBytesOverStream(inputStream);
             ILockBytes ilOutputStream = new ILockBytesOverStream(outputStream);
 
-            SafeIpcPromptContext ipcContext =
-                SafeNativeMethods.CreateIpcPromptContext(suppressUI,
-                    offline,
-                    hasUserConsent,
-                    parentForm);
-
+            if (null == ipcContext) //use the default
+            {
+                ipcContext = SafeNativeMethods.CreateIpcPromptContext(false, false, false, IntPtr.Zero);
+            }
             try
             {
-                hr = UnsafeFileApiMethods.IpcfDecryptFileStream(
-                    ilInputStream,
-                    inputFilePath,
-                    (uint)flags,
-                    (IpcPromptContext)ipcContext,
-                    ilOutputStream,
-                    out decryptedFileNamePtr);
-
+                using (var wrappedContext = ipcContext.Wrap())
+                {
+                    hr = UnsafeFileApiMethods.IpcfDecryptFileStream(
+                        ilInputStream,
+                        inputFilePath,
+                        (uint)flags,
+                        (IpcPromptContext)wrappedContext,
+                        ilOutputStream,
+                        out decryptedFileNamePtr);
+                }
                 SafeNativeMethods.ThrowOnErrorCode(hr);
 
                 decryptedFileName = Marshal.PtrToStringUni(decryptedFileNamePtr);
@@ -390,6 +643,37 @@ namespace Microsoft.InformationProtectionAndControl
             SafeNativeMethods.ThrowOnErrorCode(hr);
 
             return (FileEncryptedStatus)fileStatus != FileEncryptedStatus.IPCF_FILE_STATUS_DECRYPTED;
+        }
+		
+		public static SafeInformationProtectionFileHandle IpcfOpenFileOnStream(
+            Stream inputStream,
+            EncryptFlags flags,
+            SafeIpcPromptContext ipcContext)
+        {
+            int hr = 0;
+            ILockBytes ilInputStream = new ILockBytesOverStream(inputStream);
+            SafeInformationProtectionFileHandle fileHandle;
+            using (var wrappedContext = ipcContext.Wrap())
+            {
+                hr = UnsafeFileApiMethods.IpcfOpenFileOnILockBytes(ilInputStream, (IpcPromptContext)wrappedContext,
+                    (uint)flags, out fileHandle);
+                SafeNativeMethods.ThrowOnErrorCode(hr);
+                return fileHandle;
+            }
+        }
+       
+        public static byte[] IpcfReadFile(SafeInformationProtectionFileHandle handle, ulong offset, ulong bytesToRead)
+        {
+            IpcfFileRange fileRange = new IpcfFileRange(offset, bytesToRead);
+            byte[] buffer = new byte[bytesToRead];
+            ulong bufferSize = bytesToRead;
+            int hr = UnsafeFileApiMethods.IpcfReadFile(handle, fileRange, buffer, ref bufferSize);
+            SafeNativeMethods.ThrowOnErrorCode(hr);
+            if (bytesToRead != bufferSize)
+            {
+                Array.Resize(ref buffer, (int)bufferSize);
+            }
+             return buffer;
         }
 
         public enum FileEncryptedStatus

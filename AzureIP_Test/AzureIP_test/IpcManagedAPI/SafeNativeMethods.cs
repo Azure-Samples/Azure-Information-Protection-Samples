@@ -16,24 +16,80 @@ using System.Windows.Forms;
 using System.Runtime.InteropServices;
 using System.Globalization;
 using Microsoft.Win32;
+using System.Collections.Generic;
+using System.Threading;
 
 namespace Microsoft.InformationProtectionAndControl
 {
     public static class SafeNativeMethods
     {
+        // Version.TryParse is in .net 4.0+, it will be removed after we upgrade .net dependence
+        private static bool TryParse(string input, out Version result)
+        {
+            try
+            {
+                result = new Version(input);
+                return true;
+            }
+            catch (Exception)
+            {
+                result = new Version();
+                return false;
+            }
+        }
+
+        //returns true if any of the version string is not formed correctly
+        //returns true if v1 > v2
+        //returns false if v1 <= v2
+        private static bool IsVersionGreater(string v1, string v2)
+        {
+            Version v1Obj = null, v2Obj = null;
+            if (!TryParse(v1, out v1Obj) || !TryParse(v2, out v2Obj))
+            {
+                return true;
+            }
+
+            return v1Obj.CompareTo(v2Obj) > 0;
+        }
+
         // Configures the dll directory to include msipc.dll path. This function must be called before any other MSIPC function.
         public static void IpcInitialize()
         {
             const string MSIPC_CURRENT_VERSION_KEY = "SOFTWARE\\Microsoft\\MSIPC\\CurrentVersion";
             const string INSTALL_LOCATION_VALUE = "InstallLocation";
 
-            RegistryKey key = Registry.LocalMachine.OpenSubKey(MSIPC_CURRENT_VERSION_KEY);
-            if (null == key)
+            RegistryKey hklmKey = Registry.LocalMachine.OpenSubKey(MSIPC_CURRENT_VERSION_KEY);
+            RegistryKey hkcuKey = Registry.CurrentUser.OpenSubKey(MSIPC_CURRENT_VERSION_KEY);
+            if (null == hklmKey && null == hkcuKey)
             {
                 throw new Exception(MSIPC_CURRENT_VERSION_KEY + " not found");
             }
 
-            string installLocation = (string)key.GetValue(INSTALL_LOCATION_VALUE);
+            string installLocation = null;
+            if (null == hklmKey)
+            {
+                installLocation = (string)hkcuKey.GetValue(INSTALL_LOCATION_VALUE);
+            }
+            else if (null == hkcuKey)
+            {
+                installLocation = (string)hklmKey.GetValue(INSTALL_LOCATION_VALUE);
+            }
+            else
+            {
+                string hklmInstallVersion = null, hkcuInstallVersion = null;
+                hklmInstallVersion = (string)hklmKey.GetValue("");
+                hkcuInstallVersion = (string)hkcuKey.GetValue("");
+
+                if (IsVersionGreater(hkcuInstallVersion, hklmInstallVersion))
+                {
+                    installLocation = (string)hkcuKey.GetValue(INSTALL_LOCATION_VALUE);
+                }
+                else
+                {
+                    installLocation = (string)hklmKey.GetValue(INSTALL_LOCATION_VALUE);
+                }
+            }
+
             if (ReferenceEquals(installLocation, null) || 0 == installLocation.Trim().Length)
             {
                 throw new Exception(INSTALL_LOCATION_VALUE + " not found");
@@ -76,6 +132,77 @@ namespace Microsoft.InformationProtectionAndControl
             return securityMode;
         }
 
+        public static IpcAadApplicationId IpcGetApplicationId()
+        {
+            IntPtr propertyPtr = IntPtr.Zero;
+            try
+            {
+                int hr = UnsafeNativeMethods.IpcGetGlobalProperty(Convert.ToUInt32(EnvironmentInformationType.ApplicationId),
+                            out propertyPtr);
+                ThrowOnErrorCode(hr);
+
+                return (IpcAadApplicationId)Marshal.PtrToStructure(propertyPtr, typeof(IpcAadApplicationId));
+            }
+            finally
+            {
+                UnsafeNativeMethods.IpcFreeMemory(propertyPtr);
+            }
+        }
+
+        public static void IpcSetApplicationId(IpcAadApplicationId id)
+        {
+            IntPtr propertyPtr = IntPtr.Zero;
+            try
+            {
+                propertyPtr = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(IpcAadApplicationId)));
+                Marshal.StructureToPtr(id, propertyPtr, false);
+                int hr = UnsafeNativeMethods.IpcSetGlobalProperty(
+                    Convert.ToUInt32(EnvironmentInformationType.ApplicationId), propertyPtr);
+                ThrowOnErrorCode(hr);
+            }
+            finally
+            {
+                Marshal.FreeHGlobal(propertyPtr);
+            }
+        }        
+
+        // IpcSetGlobalProperty() - http://msdn.microsoft.com/en-us/library/windows/desktop/hh535270(v=vs.85).aspx
+        public static void IpcSetStoreName(string storeName)
+        {
+            IntPtr propertyPtr = IntPtr.Zero;
+            try
+            {
+                if (storeName != null)
+                {
+                    propertyPtr = Marshal.StringToHGlobalUni(storeName);
+                }
+                int hr = UnsafeNativeMethods.IpcSetGlobalProperty(
+                    Convert.ToUInt32(EnvironmentInformationType.StoreName), propertyPtr);
+                ThrowOnErrorCode(hr);
+            }
+            finally
+            {
+                Marshal.FreeHGlobal(propertyPtr);
+            }
+        }
+
+		// IpcGetGlobalProperty() - https://msdn.microsoft.com/en-us/library/windows/desktop/hh535262(v=vs.85).aspx
+        public static string IpcGetStoreName()
+        {
+            IntPtr propertyPtr = IntPtr.Zero;
+            try
+            {
+                int hr = UnsafeNativeMethods.IpcGetGlobalProperty(
+                    Convert.ToUInt32(EnvironmentInformationType.StoreName), out propertyPtr);
+                ThrowOnErrorCode(hr);
+                return Marshal.PtrToStringUni(propertyPtr);
+            }
+            finally
+            {
+                UnsafeNativeMethods.IpcFreeMemory(propertyPtr);
+            }
+        }
+        
         // IpcSetGlobalProperty() - http://msdn.microsoft.com/en-us/library/windows/desktop/hh535270(v=vs.85).aspx
         public static void IpcSetAPIMode(APIMode securityMode)
         {
@@ -102,9 +229,34 @@ namespace Microsoft.InformationProtectionAndControl
                             bool suppressUI,
                             bool offline,
                             bool hasUserConsent,
-                            System.Windows.Forms.Form parentForm,
+                            Form parentWindow,
                             CultureInfo cultureInfo,
-                            SymmetricKeyCredential symmKey = null)
+                            object credentialType = null,
+                            WaitHandle cancelCurrentOperation = null)
+        {
+            return IpcGetTemplateList(
+                            connectionInfo,
+                            forceDownload,
+                            suppressUI,
+                            offline,
+                            hasUserConsent,
+                            IpcWindow.Create(parentWindow).Handle,
+                            cultureInfo,
+                            credentialType,
+                            cancelCurrentOperation);
+        }
+
+        // IpcGetTemplateList() - http://msdn.microsoft.com/en-us/library/windows/desktop/hh535267(v=vs.85).aspx
+        public static Collection<TemplateInfo> IpcGetTemplateList(
+                            ConnectionInfo connectionInfo,
+                            bool forceDownload,
+                            bool suppressUI,
+                            bool offline,
+                            bool hasUserConsent,
+                            IntPtr parentWindow,
+                            CultureInfo cultureInfo,
+                            object credentialType = null,
+                            WaitHandle cancelCurrentOperation = null)
         {
             Collection<TemplateInfo> templateList = null;
             int hr = 0;
@@ -113,6 +265,10 @@ namespace Microsoft.InformationProtectionAndControl
             if (forceDownload)
             {
                 flags |= Convert.ToUInt32(GetTemplateListFlags.ForceDownload);
+            }
+            if (null != connectionInfo && connectionInfo.OverrideServiceDiscoveryForLicensing)
+            {
+                flags |= Convert.ToUInt32(GetTemplateListFlags.UseProvidedLicensingUrl);
             }
 
             uint lcid = 0;
@@ -123,18 +279,22 @@ namespace Microsoft.InformationProtectionAndControl
 
             IpcConnectionInfo ipcConnectionInfo = ConnectionInfoToIpcConnectionInfo(connectionInfo);
 
-            SafeIpcPromptContext ipcPromptContext = CreateIpcPromptContext(suppressUI, offline, hasUserConsent, parentForm, symmKey);
+            SafeIpcPromptContext ipcPromptContext = CreateIpcPromptContext(suppressUI, offline, hasUserConsent,
+                parentWindow, credentialType, cancelCurrentOperation);
 
             IntPtr ipcTilPtr = IntPtr.Zero;
             try
             {
-                hr = UnsafeNativeMethods.IpcGetTemplateList(
-                                ipcConnectionInfo,
-                                flags,
-                                lcid,
-                                (IpcPromptContext)ipcPromptContext,
-                                IntPtr.Zero,
-                                out ipcTilPtr);
+                using (var wrappedContext = ipcPromptContext.Wrap())
+                {
+                    hr = UnsafeNativeMethods.IpcGetTemplateList(
+                                    ipcConnectionInfo,
+                                    flags,
+                                    lcid,
+                                    (IpcPromptContext)wrappedContext,
+                                    IntPtr.Zero,
+                                    out ipcTilPtr);
+                }
                 ThrowOnErrorCode(hr);
 
                 templateList = new Collection<TemplateInfo>();
@@ -151,6 +311,28 @@ namespace Microsoft.InformationProtectionAndControl
 
         }
 
+       // IpcGetTemplateIssuerList() - http://msdn.microsoft.com/en-us/library/windows/desktop/hh535266(v=vs.85).aspx
+        public static Collection<TemplateIssuer> IpcGetTemplateIssuerList(
+                            ConnectionInfo connectionInfo,
+                            bool defaultServerOnly,
+                            bool suppressUI,
+                            bool offline,
+                            bool hasUserConsent,
+                            Form parentWindow,
+                            object credentialType = null,
+                            WaitHandle cancelCurrentOperation = null)
+        {
+            return IpcGetTemplateIssuerList(
+                            connectionInfo,
+                            defaultServerOnly,
+                            suppressUI,
+                            offline,
+                            hasUserConsent,
+                            IpcWindow.Create(parentWindow).Handle,
+                            credentialType,
+                            cancelCurrentOperation);
+        }
+
         // IpcGetTemplateIssuerList() - http://msdn.microsoft.com/en-us/library/windows/desktop/hh535266(v=vs.85).aspx
         public static Collection<TemplateIssuer> IpcGetTemplateIssuerList(
                             ConnectionInfo connectionInfo,
@@ -158,8 +340,9 @@ namespace Microsoft.InformationProtectionAndControl
                             bool suppressUI,
                             bool offline,
                             bool hasUserConsent,
-                            System.Windows.Forms.Form parentForm,
-                            SymmetricKeyCredential symmKey = null)
+                            IntPtr parentWindow,
+                            object credentialType = null,
+                            WaitHandle cancelCurrentOperation = null)
         {
             Collection<TemplateIssuer> templateIssuerList = null;
             int hr = 0;
@@ -169,20 +352,28 @@ namespace Microsoft.InformationProtectionAndControl
             {
                 flags |= Convert.ToUInt32(GetTemplateIssuerListFlags.DefaultServerOnly);
             }
+            if (null != connectionInfo && connectionInfo.OverrideServiceDiscoveryForLicensing)
+            {
+                flags |= Convert.ToUInt32(GetTemplateIssuerListFlags.UseProvidedLicensingUrl);
+            }
 
             IpcConnectionInfo ipcConnectionInfo = ConnectionInfoToIpcConnectionInfo(connectionInfo);
 
-            SafeIpcPromptContext ipcPromptContext = CreateIpcPromptContext(suppressUI, offline, hasUserConsent, parentForm, symmKey);
+            SafeIpcPromptContext ipcPromptContext = CreateIpcPromptContext(suppressUI, offline, hasUserConsent,
+                parentWindow, credentialType, cancelCurrentOperation);
             
             IntPtr ipcTemplateIssuerListPtr = IntPtr.Zero;
             try
             {
-                hr = UnsafeNativeMethods.IpcGetTemplateIssuerList(
+                using (var wrappedContext = ipcPromptContext.Wrap())
+                {
+                    hr = UnsafeNativeMethods.IpcGetTemplateIssuerList(
                                 ipcConnectionInfo,
                                 flags,
-                                (IpcPromptContext)ipcPromptContext,
+                                (IpcPromptContext)wrappedContext,
                                 IntPtr.Zero,
                                 out ipcTemplateIssuerListPtr);
+                }
                 ThrowOnErrorCode(hr);
 
                 templateIssuerList = new Collection<TemplateIssuer>();
@@ -212,7 +403,7 @@ namespace Microsoft.InformationProtectionAndControl
 
             return licenseHandle;
         }
-
+      
         // IpcCreateLicenseFromScratch() - http://msdn.microsoft.com/en-us/library/windows/desktop/hh535256(v=vs.85).aspx
         public static SafeInformationProtectionLicenseHandle IpcCreateLicenseFromScratch(TemplateIssuer templateIssuer)
         {
@@ -228,6 +419,30 @@ namespace Microsoft.InformationProtectionAndControl
             ThrowOnErrorCode(hr);
 
             return licenseHandle;
+        }        
+
+        // IpcSerializeLicense() using Template Id - http://msdn.microsoft.com/en-us/library/windows/desktop/hh535269(v=vs.85).aspx
+        public static byte[] IpcSerializeLicense(
+                                string templateId,
+                                SerializeLicenseFlags flags,
+                                bool suppressUI,
+                                bool offline,
+                                bool hasUserConsent,
+                                Form parentWindow,
+                                out SafeInformationProtectionKeyHandle keyHandle,
+                                object credentialType = null,
+                                WaitHandle cancelCurrentOperation = null)
+        {
+            return IpcSerializeLicense(
+                                templateId,
+                                flags,
+                                suppressUI,
+                                offline,
+                                hasUserConsent,
+                                IpcWindow.Create(parentWindow).Handle,
+                                out keyHandle,
+                                credentialType,
+                                cancelCurrentOperation);
         }
 
         // IpcSerializeLicense() using Template Id - http://msdn.microsoft.com/en-us/library/windows/desktop/hh535269(v=vs.85).aspx
@@ -237,26 +452,32 @@ namespace Microsoft.InformationProtectionAndControl
                                 bool suppressUI,
                                 bool offline,
                                 bool hasUserConsent,
-                                System.Windows.Forms.Form parentForm,
-                                out SafeInformationProtectionKeyHandle keyHandle)
+                                IntPtr parentWindow,
+                                out SafeInformationProtectionKeyHandle keyHandle,
+                                object credentialType = null,
+                                WaitHandle cancelCurrentOperation = null)
         {
             byte[] license = null;
             int hr = 0;
 
-            SafeIpcPromptContext ipcPromptContext = CreateIpcPromptContext(suppressUI, offline, hasUserConsent, parentForm);
+            SafeIpcPromptContext ipcPromptContext = CreateIpcPromptContext(suppressUI, offline, hasUserConsent,
+                parentWindow, credentialType, cancelCurrentOperation);
 
             IntPtr licenseInfoPtr = Marshal.StringToHGlobalUni(templateId);
 
             IntPtr licensePtr = IntPtr.Zero;
             try
             {
-                hr = UnsafeNativeMethods.IpcSerializeLicense(
+                using (var wrappedContext = ipcPromptContext.Wrap())
+                {
+                    hr = UnsafeNativeMethods.IpcSerializeLicense(
                                         licenseInfoPtr,
                                         SerializationInputType.TemplateId,
                                         (uint)flags,
-                                        (IpcPromptContext)ipcPromptContext,
+                                        (IpcPromptContext)wrappedContext,
                                         out keyHandle,
                                         out licensePtr);
+                }
 
                 ThrowOnErrorCode(hr);
 
@@ -278,24 +499,54 @@ namespace Microsoft.InformationProtectionAndControl
                                 bool suppressUI,
                                 bool offline,
                                 bool hasUserConsent,
-                                System.Windows.Forms.Form parentForm,
-                                out SafeInformationProtectionKeyHandle keyHandle)
+                                Form parentWindow,
+                                out SafeInformationProtectionKeyHandle keyHandle,
+                                object credentialType = null,
+                                WaitHandle cancelCurrentOperation = null)
+        {
+            return IpcSerializeLicense(
+                                licenseHandle,
+                                flags,
+                                suppressUI,
+                                offline,
+                                hasUserConsent,
+                                IpcWindow.Create(parentWindow).Handle,
+                                out keyHandle,
+                                credentialType,
+                                cancelCurrentOperation);
+        }
+
+        // IpcSerializeLicense() using License Handle - http://msdn.microsoft.com/en-us/library/windows/desktop/hh535269(v=vs.85).aspx
+        public static byte[] IpcSerializeLicense(
+                                SafeInformationProtectionLicenseHandle licenseHandle,
+                                SerializeLicenseFlags flags,
+                                bool suppressUI,
+                                bool offline,
+                                bool hasUserConsent,
+                                IntPtr parentWindow,
+                                out SafeInformationProtectionKeyHandle keyHandle,
+                                object credentialType = null,
+                                WaitHandle cancelCurrentOperation = null)
         {
             byte[] license = null;
             int hr = 0;
 
-            SafeIpcPromptContext ipcPromptContext = CreateIpcPromptContext(suppressUI, offline, hasUserConsent, parentForm);
+            SafeIpcPromptContext ipcPromptContext = CreateIpcPromptContext(suppressUI, offline, hasUserConsent,
+                parentWindow, credentialType, cancelCurrentOperation);
 
             IntPtr licensePtr = IntPtr.Zero;
             try
             {
-                hr = UnsafeNativeMethods.IpcSerializeLicense(
+                using (var wrappedContext = ipcPromptContext.Wrap())
+                {
+                    hr = UnsafeNativeMethods.IpcSerializeLicense(
                                         licenseHandle.Value,
                                         SerializationInputType.License,
                                         (uint)flags,
-                                        (IpcPromptContext)ipcPromptContext,
+                                        (IpcPromptContext)wrappedContext,
                                         out keyHandle,
                                         out licensePtr);
+                }
 
                 ThrowOnErrorCode(hr);
 
@@ -307,7 +558,7 @@ namespace Microsoft.InformationProtectionAndControl
             }
 
             return license;
-        }
+        }       
 
 
         // License Properties - http://msdn.microsoft.com/en-us/library/windows/desktop/hh535287(v=vs.85).aspx
@@ -461,19 +712,20 @@ namespace Microsoft.InformationProtectionAndControl
             }
         }
 
-        // IPC_LI_APP_SPECIFIC_DATA - http://msdn.microsoft.com/en-us/library/windows/desktop/hh535287(v=vs.85).aspx
-        public static void IpcSetLicenseAppSpecificData(SafeInformationProtectionLicenseHandle licenseHandle, NameValueCollection applicationSpecificData)
+        // IPC_LI_APP_SPECIFIC_DATA or IPC_LI_APP_SPECIFIC_DATA_NO_ENCRYPTION - http://msdn.microsoft.com/en-us/library/windows/desktop/hh535287(v=vs.85).aspx
+        public static void IpcSetLicenseAppSpecificData(SafeInformationProtectionLicenseHandle licenseHandle, NameValueCollection applicationSpecificData, bool encryptionRequired = true)
         {
             int hr = 0;
 
             IntPtr licenseInfoPtr = IntPtr.Zero;
+            uint propertyId = encryptionRequired ? (uint)LicensePropertyType.AppSpecificData : (uint)LicensePropertyType.AppSpecificDataNoEncryption;
 
             if (applicationSpecificData.Count == 0)
             {
                 hr = UnsafeNativeMethods.IpcSetLicenseProperty(
                                 licenseHandle,
                                 true,
-                                (uint)LicensePropertyType.AppSpecificData,
+                                propertyId,
                                 licenseInfoPtr);
                 ThrowOnErrorCode(hr);
             }
@@ -485,7 +737,7 @@ namespace Microsoft.InformationProtectionAndControl
                     hr = UnsafeNativeMethods.IpcSetLicenseProperty(
                                     licenseHandle,
                                     false,
-                                    (uint)LicensePropertyType.AppSpecificData,
+                                    propertyId,
                                     licenseInfoPtr);
                     ThrowOnErrorCode(hr);
                 }
@@ -527,6 +779,104 @@ namespace Microsoft.InformationProtectionAndControl
                             (uint)LicensePropertyType.ContentKey,
                             hKey.Value);
             ThrowOnErrorCode(hr);
+        }
+
+        // IPC_LI_CONTENT_ID - http://msdn.microsoft.com/en-us/library/windows/desktop/hh535287(v=vs.85).aspx
+        public static string IpcGetLicenseContentId(SafeInformationProtectionLicenseHandle licenseHandle)
+        {
+            string contentId = null;
+            int hr = 0;
+
+            IntPtr licenseInfoPtr = IntPtr.Zero;
+            try
+            {
+                hr = UnsafeNativeMethods.IpcGetLicenseProperty(
+                                licenseHandle,
+                                (uint)LicensePropertyType.ContentId,
+                                0,
+                                out licenseInfoPtr);
+                ThrowOnErrorCode(hr);
+
+                contentId = (string)Marshal.PtrToStringUni(licenseInfoPtr);
+            }
+            finally
+            {
+                UnsafeNativeMethods.IpcFreeMemory(licenseInfoPtr);
+            }
+
+            return contentId;
+        }
+
+        // IPC_LI_CONTENT_ID - http://msdn.microsoft.com/en-us/library/windows/desktop/hh535287(v=vs.85).aspx
+        public static string IpcGetSerializedLicenseContentId(byte[] license, SafeInformationProtectionKeyHandle keyHandle)
+        {
+            string contentId = null;
+            int hr = 0;
+
+            IntPtr licenseInfoPtr = IntPtr.Zero;
+            SafeIpcBuffer ipcBuffer = MarshalIpcBufferToNative(license);
+            try
+            {
+                hr = UnsafeNativeMethods.IpcGetSerializedLicenseProperty(
+                                (IpcBuffer)ipcBuffer,
+                                (uint)LicensePropertyType.ContentId,
+                                keyHandle,
+                                0,
+                                out licenseInfoPtr);
+                ThrowOnErrorCode(hr);
+
+                contentId = (string)Marshal.PtrToStringUni(licenseInfoPtr);
+            }
+            finally
+            {
+                UnsafeNativeMethods.IpcFreeMemory(licenseInfoPtr);
+                ipcBuffer.Dispose();
+            }
+
+            return contentId;
+        }
+
+        // IPC_LI_CONTENT_ID - http://msdn.microsoft.com/en-us/library/windows/desktop/hh535287(v=vs.85).aspx
+        public static void IpcSetLicenseContentId(SafeInformationProtectionLicenseHandle licenseHandle, string contentId)
+        {
+            int hr = 0;
+            IntPtr licenseInfoPtr = Marshal.StringToHGlobalUni(contentId);
+            try
+            {
+                hr = UnsafeNativeMethods.IpcSetLicenseProperty(
+                                licenseHandle,
+                                false,
+                                (uint)LicensePropertyType.ContentId,
+                                licenseInfoPtr);
+                ThrowOnErrorCode(hr);
+            }
+            finally
+            {
+                Marshal.FreeHGlobal(licenseInfoPtr);
+            }
+        }
+
+        // IPC_LI_DEPRECATED_ENCRYPTION_ALGORITHMS - http://msdn.microsoft.com/en-us/library/windows/desktop/hh535287(v=vs.85).aspx
+        public static void IpcSetLicenseDeprecatedEncryptionAlgorithms(SafeInformationProtectionLicenseHandle licenseHandle, bool bValue)
+        {
+            int hr = 0;
+            int size = Marshal.SizeOf(typeof(Int32));
+            IntPtr pBool = Marshal.AllocHGlobal(size);
+            
+            try
+            {
+                Marshal.WriteInt32(pBool, 0, (bValue ? 1 : 0));
+                hr = UnsafeNativeMethods.IpcSetLicenseProperty(
+                            licenseHandle,
+                            false,
+                            (uint)LicensePropertyType.DeprecatedEncryptionAlgorithms,
+                            pBool);
+                ThrowOnErrorCode(hr);
+            }
+            finally
+            {
+                Marshal.FreeHGlobal(pBool);
+            }
         }
 
 
@@ -773,6 +1123,30 @@ namespace Microsoft.InformationProtectionAndControl
             return keyHandle;
         }
 
+        // IPC_LI_DEPRECATED_ENCRYPTION_ALGORITHMS - http://msdn.microsoft.com/en-us/library/windows/desktop/hh535287(v=vs.85).aspx
+        public static bool IpcGetLicenseDeprecatedEncryptionAlgorithms(SafeInformationProtectionLicenseHandle licenseHandle)
+        {
+            bool usesDeprecatedEncryptionAlgorithms = false;
+
+            IntPtr usesDeprecatedEncryptionAlgorithmsPtr = IntPtr.Zero;
+            try
+            {
+                int hr = UnsafeNativeMethods.IpcGetLicenseProperty(
+                                licenseHandle,
+                                (uint)LicensePropertyType.DeprecatedEncryptionAlgorithms,
+                                0,
+                                out usesDeprecatedEncryptionAlgorithmsPtr);
+                ThrowOnErrorCode(hr);
+
+                usesDeprecatedEncryptionAlgorithms = Marshal.ReadInt32(usesDeprecatedEncryptionAlgorithmsPtr) != 0;
+            }
+            finally
+            {
+                UnsafeNativeMethods.IpcFreeMemory(usesDeprecatedEncryptionAlgorithmsPtr);
+            }
+            return usesDeprecatedEncryptionAlgorithms;
+        }
+
         // IpcGetSerializedLicenseProperty - http://msdn.microsoft.com/en-us/library/windows/desktop/hh995038(v=vs.85).aspx
 
         // IPC_LI_VALIDITY_TIME - http://msdn.microsoft.com/en-us/library/windows/desktop/hh535287(v=vs.85).aspx
@@ -833,8 +1207,16 @@ namespace Microsoft.InformationProtectionAndControl
             return intervalTime;
         }
 
+        private static int IpcGetSerializedLicenseProperty(IpcBuffer ipcbuffer, uint id,
+            SafeInformationProtectionKeyHandle key, uint lcid, out IntPtr value)
+        {
+            return key == null ?
+                UnsafeNativeMethods.IpcGetSerializedLicensePropertyWithoutKey(ipcbuffer, id, IntPtr.Zero, lcid, out value) :
+                UnsafeNativeMethods.IpcGetSerializedLicenseProperty(ipcbuffer, id, key, lcid, out value);
+        }
+
         // IPC_LI_OWNER - http://msdn.microsoft.com/en-us/library/windows/desktop/hh535287(v=vs.85).aspx
-        public static string IpcGetSerializedLicenseOwner(byte[] license)
+        public static string IpcGetSerializedLicenseOwner(byte[] license, SafeInformationProtectionKeyHandle keyHandle = null)
         {
             string owner = null;
             int hr = 0;
@@ -843,10 +1225,10 @@ namespace Microsoft.InformationProtectionAndControl
             SafeIpcBuffer ipcBuffer = MarshalIpcBufferToNative(license);
             try
             {
-                hr = UnsafeNativeMethods.IpcGetSerializedLicensePropertyWithoutKey(
+                hr = IpcGetSerializedLicenseProperty(
                                 (IpcBuffer)ipcBuffer,
                                 (uint)LicensePropertyType.Owner,
-                                IntPtr.Zero,
+                                keyHandle,
                                 0,
                                 out licenseInfoPtr);
                 ThrowOnErrorCode(hr);
@@ -898,7 +1280,7 @@ namespace Microsoft.InformationProtectionAndControl
             return IpcGetSerializedLicenseAppSpecificData(license, keyHandle, LicensePropertyType.AppSpecificData);
         }
 
-        public static NameValueCollection IpcGetSerializedLicenseAppSpecificDataNoEncryption(byte[] license, SafeInformationProtectionKeyHandle keyHandle)
+        public static NameValueCollection IpcGetSerializedLicenseAppSpecificDataNoEncryption(byte[] license, SafeInformationProtectionKeyHandle keyHandle = null)
         {
             return IpcGetSerializedLicenseAppSpecificData(license, keyHandle, LicensePropertyType.AppSpecificDataNoEncryption);
         }
@@ -912,7 +1294,7 @@ namespace Microsoft.InformationProtectionAndControl
             SafeIpcBuffer ipcBuffer = MarshalIpcBufferToNative(license);
             try
             {
-                hr = UnsafeNativeMethods.IpcGetSerializedLicenseProperty(
+                hr = IpcGetSerializedLicenseProperty(
                                 (IpcBuffer)ipcBuffer,
                                 (uint)type,
                                 keyHandle,
@@ -932,7 +1314,7 @@ namespace Microsoft.InformationProtectionAndControl
         }
 
         // IPC_LI_CONNECTION_INFO - http://msdn.microsoft.com/en-us/library/windows/desktop/hh535287(v=vs.85).aspx
-        public static ConnectionInfo IpcGetSerializedLicenseConnectionInfo(byte[] license)
+        public static ConnectionInfo IpcGetSerializedLicenseConnectionInfo(byte[] license, SafeInformationProtectionKeyHandle keyHandle = null)
         {
             IpcConnectionInfo ipcConnectionInfo = null;
             int hr = 0;
@@ -941,10 +1323,10 @@ namespace Microsoft.InformationProtectionAndControl
             SafeIpcBuffer ipcBuffer = MarshalIpcBufferToNative(license);
             try
             {
-                hr = UnsafeNativeMethods.IpcGetSerializedLicensePropertyWithoutKey(
+                hr = IpcGetSerializedLicenseProperty(
                                 (IpcBuffer)ipcBuffer,
                                 (uint)LicensePropertyType.ConnectionInfo,
-                                IntPtr.Zero,
+                                keyHandle,
                                 0,
                                 out licenseInfoPtr);
                 ThrowOnErrorCode(hr);
@@ -998,7 +1380,7 @@ namespace Microsoft.InformationProtectionAndControl
         }
 
         // IPC_LI_REFERRAL_INFO_URL - http://msdn.microsoft.com/en-us/library/windows/desktop/hh535287(v=vs.85).aspx
-        public static string IpcGetSerializedLicenseReferralInfoUrl(byte[] license)
+        public static string IpcGetSerializedLicenseReferralInfoUrl(byte[] license, SafeInformationProtectionKeyHandle keyHandle = null)
         {
             string referralInfoUrl = null;
             int hr = 0;
@@ -1007,10 +1389,10 @@ namespace Microsoft.InformationProtectionAndControl
             SafeIpcBuffer ipcBuffer = MarshalIpcBufferToNative(license);
             try
             {
-                hr = UnsafeNativeMethods.IpcGetSerializedLicensePropertyWithoutKey(
+                hr = IpcGetSerializedLicenseProperty(
                                 (IpcBuffer)ipcBuffer,
                                 (uint)LicensePropertyType.ReferralInfoUrl,
-                                IntPtr.Zero,
+                                keyHandle,
                                 0,
                                 out licenseInfoPtr);
                 ThrowOnErrorCode(hr);
@@ -1026,27 +1408,81 @@ namespace Microsoft.InformationProtectionAndControl
             return referralInfoUrl;
         }
 
+        // IPC_LI_DEPRECATED_ENCRYPTION_ALGORITHMS - http://msdn.microsoft.com/en-us/library/windows/desktop/hh535287(v=vs.85).aspx
+        public static bool IpcGetSerializedLicenseDeprecatedEncryptionAlgorithms(byte[] license,
+                                                                                 SafeInformationProtectionKeyHandle keyHandle)
+        {
+            bool usesDeprecatedEncryptionAlgorithms = false;
+
+            IntPtr licenseInfoPtr = IntPtr.Zero;
+            SafeIpcBuffer ipcBuffer = MarshalIpcBufferToNative(license);
+            IntPtr usesDeprecatedEncryptionAlgorithmsPtr = IntPtr.Zero;
+            try
+            {
+                int hr = UnsafeNativeMethods.IpcGetSerializedLicenseProperty(
+                                (IpcBuffer)ipcBuffer,
+                                (uint)LicensePropertyType.DeprecatedEncryptionAlgorithms,
+                                keyHandle,
+                                0,
+                                out usesDeprecatedEncryptionAlgorithmsPtr);
+                ThrowOnErrorCode(hr);
+
+                usesDeprecatedEncryptionAlgorithms = Marshal.ReadInt32(usesDeprecatedEncryptionAlgorithmsPtr) != 0;
+            }
+            finally
+            {
+                UnsafeNativeMethods.IpcFreeMemory(usesDeprecatedEncryptionAlgorithmsPtr);
+                ipcBuffer.Dispose();
+            }
+            return usesDeprecatedEncryptionAlgorithms;
+        }
+        
+        // IpcGetKey() - http://msdn.microsoft.com/en-us/library/windows/desktop/hh535263(v=vs.85).aspx
+        public static SafeInformationProtectionKeyHandle IpcGetKey(
+                                        byte[] license,
+                                        bool suppressUI,
+                                        bool offline,
+                                        bool hasUserConsent,
+                                        Form parentWindow,
+                                        object credentialType = null,
+                                        WaitHandle cancelCurrentOperation = null)
+        {
+            return IpcGetKey(license,
+                suppressUI,
+                offline,
+                hasUserConsent,
+                IpcWindow.Create(parentWindow).Handle,
+                credentialType,
+                cancelCurrentOperation);
+        }
+
         // IpcGetKey() - http://msdn.microsoft.com/en-us/library/windows/desktop/hh535263(v=vs.85).aspx
         public static SafeInformationProtectionKeyHandle IpcGetKey(
                                         byte[] license,
                                         bool suppressUI, 
                                         bool offline,
                                         bool hasUserConsent,
-                                        System.Windows.Forms.Form parentForm)
+                                        IntPtr parentWindow,
+                                        object credentialType = null,
+                                        WaitHandle cancelCurrentOperation = null)
         {
             SafeInformationProtectionKeyHandle keyHandle = null;
             int hr = 0;
 
-            SafeIpcPromptContext ipcPromptContext = CreateIpcPromptContext(suppressUI, offline, hasUserConsent, parentForm);
+            SafeIpcPromptContext ipcPromptContext = CreateIpcPromptContext(suppressUI, offline, hasUserConsent,
+                parentWindow, credentialType, cancelCurrentOperation);
             SafeIpcBuffer ipcBuffer = MarshalIpcBufferToNative(license);
             try
             {
-                hr = UnsafeNativeMethods.IpcGetKey(
+                using (var wrappedContext = ipcPromptContext.Wrap())
+                {
+                    hr = UnsafeNativeMethods.IpcGetKey(
                             (IpcBuffer)ipcBuffer,
                             0,
-                            (IpcPromptContext)ipcPromptContext,
+                            (IpcPromptContext)wrappedContext,
                             IntPtr.Zero,
                             out keyHandle);
+                }
                 ThrowOnErrorCode(hr);
             }
             finally
@@ -1056,6 +1492,15 @@ namespace Microsoft.InformationProtectionAndControl
             }
 
             return keyHandle;
+        }
+
+        public static SafeInformationProtectionTokenHandle IpcCreateOAuth2Token(string accessTokenValue)
+        {
+            SafeInformationProtectionTokenHandle tokenHandle = null;
+            int hr = UnsafeNativeMethods.IpcCreateOAuth2Token(accessTokenValue, out tokenHandle);
+            ThrowOnErrorCode(hr);
+
+            return tokenHandle;
         }
 
         // IpcAccessCheck() - http://msdn.microsoft.com/en-us/library/windows/desktop/hh535253(v=vs.85).aspx
@@ -1275,6 +1720,38 @@ namespace Microsoft.InformationProtectionAndControl
             return userDisplayName;
         }
 
+        // IpcRegisterLicense() - 
+        public static void IpcRegisterLicense(byte[] license,
+                                        string contentName,
+                                        bool sendRegistrationMail,
+                                        WaitHandle cancelCurrentOperation = null)
+        {
+            int hr = 0;
+
+            bool suppressUI = true;
+            SafeIpcPromptContext ipcPromptContext = CreateIpcPromptContext(suppressUI, false, false, null,
+                cancelCurrentOperation);
+            SafeIpcBuffer ipcBuffer = MarshalIpcBufferToNative(license);
+            try
+            {
+                using (var wrappedContext = ipcPromptContext.Wrap())
+                {
+                    hr = UnsafeNativeMethods.IpcRegisterLicense(
+                            (IpcBuffer)ipcBuffer,
+                            IntPtr.Zero,
+                            (IpcPromptContext)wrappedContext,
+                            contentName,
+                            sendRegistrationMail);
+                }
+                ThrowOnErrorCode(hr);
+            }
+            finally
+            {
+                ipcBuffer.Dispose();
+                ReleaseIpcPromptContext(ipcPromptContext);
+            }
+        }
+
         // IpcProtectWindow() - http://msdn.microsoft.com/en-us/library/windows/desktop/hh535268(v=vs.85).aspx
         public static void IpcProtectWindow(IntPtr hwnd)
         {
@@ -1284,13 +1761,11 @@ namespace Microsoft.InformationProtectionAndControl
         }
 
         // IpcProtectWindow() - http://msdn.microsoft.com/en-us/library/windows/desktop/hh535268(v=vs.85).aspx
-        public static void IpcProtectWindow(System.Windows.Forms.Form window)
+        public static void IpcProtectWindow(Form window)
         {
-            int hr = UnsafeNativeMethods.IpcProtectWindow(window.Handle);
-
-            ThrowOnErrorCode(hr);
+            IpcProtectWindow(IpcWindow.Create(window).Handle);
         }
-        
+
         // IpcUnprotectWindow() - http://msdn.microsoft.com/en-us/library/windows/desktop/hh535272(v=vs.85).aspx
         public static void IpcUnprotectWindow(IntPtr hwnd)
         {
@@ -1300,13 +1775,11 @@ namespace Microsoft.InformationProtectionAndControl
         }
 
         // IpcUnprotectWindow() - http://msdn.microsoft.com/en-us/library/windows/desktop/hh535272(v=vs.85).aspx
-        public static void IpcUnprotectWindow(System.Windows.Forms.Form window)
+        public static void IpcUnprotectWindow(Form parentWindow)
         {
-            int hr = UnsafeNativeMethods.IpcUnprotectWindow(window.Handle);
-
-            ThrowOnErrorCode(hr);
-        }
-
+            IpcUnprotectWindow(IpcWindow.Create(parentWindow).Handle);
+        }        
+        
         // IpcCloseHandle() - http://msdn.microsoft.com/en-us/library/windows/desktop/hh535254(v=vs.85).aspx
         public static int IpcCloseHandle(IntPtr handle)
         {
@@ -1314,29 +1787,81 @@ namespace Microsoft.InformationProtectionAndControl
         }
 
         // Private Helpers
-        public static SafeIpcPromptContext CreateIpcPromptContext(bool suppressUI, bool offline, bool hasUserConsent, System.Windows.Forms.Form parentForm, SymmetricKeyCredential symmKey = null)
+
+        public static SafeIpcPromptContext CreateIpcPromptContext(bool suppressUI, bool offline, bool hasUserConsent,
+            Form parentWindow, object credentialType = null, WaitHandle cancelCurrentOperation = null)
         {
+            return CreateIpcPromptContext(suppressUI, offline, hasUserConsent, IpcWindow.Create(parentWindow).Handle,
+                credentialType);
+        }
+
+        public static SafeIpcPromptContext CreateIpcPromptContext(bool suppressUI, bool offline, bool hasUserConsent,
+            Form parentWindow, WaitHandle cancelCurrentOperation)
+        {
+            return CreateIpcPromptContext(suppressUI, offline, hasUserConsent, IpcWindow.Create(parentWindow).Handle, 
+                null, cancelCurrentOperation);
+        }
+
+        public static SafeIpcPromptContext CreateIpcPromptContext(bool suppressUI, bool offline, bool hasUserConsent,
+            IntPtr parentWindow, WaitHandle cancelCurrentOperation)
+        {
+            return CreateIpcPromptContext(suppressUI, offline, hasUserConsent, parentWindow, null,
+                cancelCurrentOperation);
+        }
+
+        public static SafeIpcPromptContext CreateIpcPromptContext(bool suppressUI, bool offline, bool hasUserConsent,
+            IntPtr parentWindow, object credentialType = null, WaitHandle cancelCurrentOperation = null)
+        {
+            SymmetricKeyCredential symmKey = credentialType as SymmetricKeyCredential;
+            OAuth2CallbackContext oauth2Key = credentialType as OAuth2CallbackContext;
+
+            SafeIpcCredential credentials = null;
+            IpcOAuth2CallbackInfo oAuthCallbackInfo = null;
+            if (null != credentialType)
+            {
+                if (null != symmKey)
+                {
+                    credentials = new SafeIpcCredential(IpcCredentialType.SymmetricKey, symmKey);
+                }
+                else if (null != oauth2Key)
+                {
+                    oAuthCallbackInfo = new IpcOAuth2CallbackInfo(oauth2Key.MarshallingCallback,
+                            oauth2Key.Context);
+                    credentials = new SafeIpcCredential(IpcCredentialType.OAuth2, oAuthCallbackInfo);
+                }
+                else if (credentialType is IntPtr)
+                {
+                    credentials = new SafeIpcCredential(IpcCredentialType.X509Certificate, credentialType);
+                }
+                else
+                {
+                    const int ERROR_NOT_SUPPORTED_HR = unchecked((int)80070032);
+                    ThrowOnErrorCode(ERROR_NOT_SUPPORTED_HR);
+                }
+            }
+
             SafeIpcPromptContext ipcPromptContext = new SafeIpcPromptContext(
-                ((null != parentForm) ? parentForm.Handle : IntPtr.Zero),
-                ((null != symmKey) ? new IpcCredential(IpcCredentialType.SymmetricKey, symmKey) : null),
-                //We don't support the cancel event
-                IntPtr.Zero);
+                parentWindow,
+                credentials,
+                cancelCurrentOperation);
 
-            IpcPromptContext context = (IpcPromptContext)ipcPromptContext;
-            context.flags = 0;
-            if (suppressUI)
+            using (var wrappedContext = ipcPromptContext.Wrap())
             {
-                context.flags |= (uint)PromptContextFlag.Slient;
-            }
+                IpcPromptContext context = (IpcPromptContext)wrappedContext;
+                if (suppressUI)
+                {
+                    context.flags |= (uint)PromptContextFlag.Slient;
+                }
 
-            if (offline)
-            {
-                context.flags |= (uint)PromptContextFlag.Offline;
-            }
+                if (offline)
+                {
+                    context.flags |= (uint)PromptContextFlag.Offline;
+                }
 
-            if (hasUserConsent)
-            {
-                context.flags |= (uint)PromptContextFlag.HasUserConsent;
+                if (hasUserConsent)
+                {
+                    context.flags |= (uint)PromptContextFlag.HasUserConsent;
+                }
             }
             return ipcPromptContext;
         }
@@ -1408,14 +1933,36 @@ namespace Microsoft.InformationProtectionAndControl
             return ipcTemplateInfo;
         }
 
+        private static CultureInfo GetCultureInfo(int lcid)
+        {
+            CultureInfo cultureInfoToReturn = null;
+            if (0 != lcid)
+            {
+                try
+                {
+                    cultureInfoToReturn = CultureInfo.GetCultureInfo(lcid);
+                }
+                catch (Exception e)
+                {
+                    System.Diagnostics.Debug.WriteLine(String.Format("GetCultureInfo: Failed to get culture info for locale id {0}, reason: {1}. Defaulting to using 'null'",
+                        lcid, e.Message));
+                    cultureInfoToReturn = null;
+                }
+            }
+            else
+            {
+                cultureInfoToReturn = CultureInfo.CurrentCulture;
+            }
+
+            return cultureInfoToReturn;
+        }
+
         private static TemplateInfo IpcTemplateInfoToTemplateInfo(IpcTemplateInfo ipcTemplateInfo)
         {
             
             return new TemplateInfo(
                             ipcTemplateInfo.templateID,
-                            (0 != ipcTemplateInfo.lcid) ?
-                                CultureInfo.GetCultureInfo((int)ipcTemplateInfo.lcid) :
-                                CultureInfo.CurrentCulture,
+                            GetCultureInfo((int)ipcTemplateInfo.lcid),
                             ipcTemplateInfo.templateName,
                             ipcTemplateInfo.templateDescription,
                             ipcTemplateInfo.issuerDisplayName,
@@ -1620,9 +2167,9 @@ namespace Microsoft.InformationProtectionAndControl
                 {
                     IpcNameValue ipcNameValue = new IpcNameValue();
                     ipcNameValue.Name = nameValueList.GetKey(i);
-                    // We assume that the Value field is always in en-us (1033 is the locale id of the en-us locale).
-                    // See http://msdn.microsoft.com/en-us/library/windows/desktop/hh535276(v=vs.85).aspx
-                    ipcNameValue.lcid = (uint)1033; 
+                    // Setting lcid to 0 will force the MSIPC to use the default lcid on the machine. 
+                    // See remarks about locale id at  http://msdn.microsoft.com/en-us/library/windows/desktop/dn133063(v=vs.85).aspx
+                    ipcNameValue.lcid = (uint)0;
                     ipcNameValue.Value = nameValueList.Get(i);
 
                     Marshal.StructureToPtr(ipcNameValue, currentPtr, false);
@@ -1642,7 +2189,7 @@ namespace Microsoft.InformationProtectionAndControl
 
         // Manually marshals a IPC_NAME_VALUE_LIST structure in unmanaged memory into a NameValueCollection.
         // See http://msdn.microsoft.com/en-us/library/windows/desktop/hh535277(v=vs.85).aspx
-        private static void MarshalNameValueListToManaged(IntPtr nameValueListPtr, NameValueCollection nameValueList)
+        internal static void MarshalNameValueListToManaged(IntPtr nameValueListPtr, NameValueCollection nameValueList)
         {
             // the number of (name, value) pairs is the first in the IPC_NAME_VALUE_LIST struct
             int nameValuePairCount = Marshal.ReadInt32(nameValueListPtr);
