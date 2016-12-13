@@ -1,0 +1,4 @@
+d:\RMS\main1\private\client\src\shared\external\IpcManagedAPI\objd\amd64\IpcManagedAPI.csprojResolveAssemblyReference.cache
+d:\RMS\main1\private\client\src\shared\external\IpcManagedAPI\objd\amd64\_generated.cs
+d:\RMS\main1\private\client\src\shared\external\IpcManagedAPI\objd\amd64\IpcManagedAPI.dll
+d:\RMS\main1\private\client\src\shared\external\IpcManagedAPI\objd\amd64\IpcManagedAPI.pdb
