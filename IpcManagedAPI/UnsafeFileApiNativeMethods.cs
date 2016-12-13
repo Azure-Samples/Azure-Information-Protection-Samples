@@ -1,26 +1,4 @@
-﻿//
-// Copyright © Microsoft Corporation, All Rights Reserved
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-// http://www.apache.org/licenses/LICENSE-2.0
-//
-// THIS CODE IS PROVIDED *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS
-// OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION
-// ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A
-// PARTICULAR PURPOSE, MERCHANTABILITY OR NON-INFRINGEMENT.
-//
-// See the Apache License, Version 2.0 for the specific language
-// governing permissions and limitations under the License.
-//-----------------------------------------------------------------------------
-//
-// Description:  PInvoke declarations of MSIPC native File API functions
-//
-//-----------------------------------------------------------------------------
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -119,13 +97,13 @@ namespace Microsoft.InformationProtectionAndControl
                 UInt64 offset,
                 [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 2), Out] Byte[] buffer,
                 int count,
-                out int read);
+                IntPtr pBytesRead);
 
         void WriteAt(
             UInt64 offset,
             [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 2)] Byte[] buffer,
             int count,
-            out int written);
+            IntPtr pBytesWritten);
 
         void Flush();
 
@@ -217,5 +195,22 @@ namespace Microsoft.InformationProtectionAndControl
         [DllImport(fileAPIDLLName, SetLastError = false, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.StdCall)]
         internal static extern int IpcFreeMemory(
             [In] IntPtr handle);
+
+        [DllImport(fileAPIDLLName, SetLastError = false, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.StdCall)]
+        internal static extern int IpcfReadFile(
+            [In] SafeInformationProtectionFileHandle handle,
+            [In, MarshalAs(UnmanagedType.LPStruct)] IpcfFileRange pDataRange,
+            [In, MarshalAs(UnmanagedType.LPArray)] byte[] pvBuffer,
+            ref ulong cbBufferSize);
+
+        [DllImport(fileAPIDLLName, SetLastError = false, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.StdCall)]
+        internal static extern int IpcfOpenFileOnILockBytes(
+            [In, MarshalAs(UnmanagedType.Interface)] ILockBytes pFileStream,
+            [In, MarshalAs(UnmanagedType.LPStruct)] IpcPromptContext pContext,
+            [In, MarshalAs(UnmanagedType.U4)] uint dwFlags,
+            [Out] out SafeInformationProtectionFileHandle fileHandle);
+
+
+
     }
 }
