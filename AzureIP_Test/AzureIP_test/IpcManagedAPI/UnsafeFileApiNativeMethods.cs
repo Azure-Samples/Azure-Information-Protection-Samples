@@ -195,5 +195,22 @@ namespace Microsoft.InformationProtectionAndControl
         [DllImport(fileAPIDLLName, SetLastError = false, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.StdCall)]
         internal static extern int IpcFreeMemory(
             [In] IntPtr handle);
+
+        [DllImport(fileAPIDLLName, SetLastError = false, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.StdCall)]
+        internal static extern int IpcfReadFile(
+            [In] SafeInformationProtectionFileHandle handle,
+            [In, MarshalAs(UnmanagedType.LPStruct)] IpcfFileRange pDataRange,
+            [In, MarshalAs(UnmanagedType.LPArray)] byte[] pvBuffer,
+            ref ulong cbBufferSize);
+
+        [DllImport(fileAPIDLLName, SetLastError = false, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.StdCall)]
+        internal static extern int IpcfOpenFileOnILockBytes(
+            [In, MarshalAs(UnmanagedType.Interface)] ILockBytes pFileStream,
+            [In, MarshalAs(UnmanagedType.LPStruct)] IpcPromptContext pContext,
+            [In, MarshalAs(UnmanagedType.U4)] uint dwFlags,
+            [Out] out SafeInformationProtectionFileHandle fileHandle);
+
+
+
     }
 }

@@ -16,7 +16,7 @@ namespace Microsoft.InformationProtectionAndControl
 {
     internal static class UnsafeNativeMethods
     {
-        const string g_MSIPCDllName = "msipc.dll";
+        internal const string g_MSIPCDllName = "msipc.dll";
 
         [DllImport(g_MSIPCDllName, SetLastError = false, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.StdCall)]
         internal static extern int IpcGetGlobalProperty(
@@ -107,6 +107,11 @@ namespace Microsoft.InformationProtectionAndControl
                                 [Out] out SafeInformationProtectionKeyHandle phKey);
 
         [DllImport(g_MSIPCDllName, SetLastError = false, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.StdCall)]
+        internal static extern int IpcCreateOAuth2Token(
+                                string wszAccessToken,
+                                [Out] out SafeInformationProtectionTokenHandle ppv);
+
+        [DllImport(g_MSIPCDllName, SetLastError = false, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.StdCall)]
         internal static extern int IpcEncrypt(
                                 [In] SafeInformationProtectionKeyHandle hKey,
                                 [In] uint dwBlockNumber,
@@ -171,6 +176,14 @@ namespace Microsoft.InformationProtectionAndControl
                                 string wszOrgUrl,
                                 string wszRedirectUrl,
                                 [In, MarshalAs(UnmanagedType.Bool)] bool fDelete);
+
+        [DllImport(g_MSIPCDllName, SetLastError = false, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.StdCall)]
+        internal static extern int IpcRegisterLicense(
+                                [In, MarshalAs(UnmanagedType.LPStruct)] IpcBuffer pvLicense,
+                                [In] IntPtr pvReserved,
+                                [In, MarshalAs(UnmanagedType.LPStruct)] IpcPromptContext pContext,
+                                string wszContentName,
+                                [In, MarshalAs(UnmanagedType.Bool)] bool fSendRegistrationMail);
 
         [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.StdCall)]
         [return: MarshalAs(UnmanagedType.Bool)]
