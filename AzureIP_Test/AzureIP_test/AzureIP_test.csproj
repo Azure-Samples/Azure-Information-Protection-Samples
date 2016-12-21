@@ -35,6 +35,7 @@
   <ItemGroup>
     <Reference Include="Microsoft.RightsManagement">
       <HintPath>..\..\..\..\Documents\Visual Studio 2015\Projects\AzureADRMS_SDK\sdk\amd64\Microsoft.RightsManagement.winmd</HintPath>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
