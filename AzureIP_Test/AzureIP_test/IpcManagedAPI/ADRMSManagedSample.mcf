@@ -1,0 +1,12 @@
+AUTO-GUID
+%MsipcSdkDir%\\bin\\ISVTier5AppSigningPrivKey.dat
+
+modulelist
+    req     .\\<ADRMSManagedSample>.exe
+
+
+POLICYLIST
+INCLUSION
+    PUBLICKEY %MsipcSdkDir%\\bin\\ISVTier5AppSigningPubKey.dat
+
+EXCLUSION

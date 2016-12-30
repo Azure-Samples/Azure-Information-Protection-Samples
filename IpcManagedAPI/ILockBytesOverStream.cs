@@ -1,24 +1,3 @@
-//
-// Copyright © Microsoft Corporation, All Rights Reserved
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-// http://www.apache.org/licenses/LICENSE-2.0
-//
-// THIS CODE IS PROVIDED *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS
-// OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION
-// ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A
-// PARTICULAR PURPOSE, MERCHANTABILITY OR NON-INFRINGEMENT.
-//
-// See the Apache License, Version 2.0 for the specific language
-// governing permissions and limitations under the License.
-//-----------------------------------------------------------------------------
-//
-// Description:  ILockBytes implementation over a Stream
-//
-//-----------------------------------------------------------------------------
 
 using System;
 using System.IO;
@@ -46,8 +25,9 @@ namespace Microsoft.InformationProtectionAndControl
             this.stream = stream;
         }
 
-        public void ReadAt(ulong offset, byte[] buffer, int count, out int bytesRead)
+        public void ReadAt(ulong offset, byte[] buffer, int count, IntPtr pBytesRead)
         {
+            int bytesRead = 0;
             if (buffer.Length < count)
             {
                 throw new ArgumentException("Requesting more bytes from the stream than will fit in the supplied buffer", "count");
@@ -72,13 +52,22 @@ namespace Microsoft.InformationProtectionAndControl
                 bytesToRead -= currentRead;
                 bytesRead += currentRead;
             }
+
+            if (IntPtr.Zero != pBytesRead)
+            {
+                Marshal.WriteInt32(pBytesRead, bytesRead);
+            }
         }
 
-        public void WriteAt(ulong offset, byte[] buffer, int count, out int written)
+        public void WriteAt(ulong offset, byte[] buffer, int count, IntPtr pBytesWritten)
         {
             this.stream.Seek((long)offset, SeekOrigin.Begin);
             this.stream.Write(buffer, 0, count);
-            written = count;
+
+            if (IntPtr.Zero != pBytesWritten)
+            {
+                Marshal.WriteInt32(pBytesWritten, count);
+            }
         }
 
         public void Flush()
