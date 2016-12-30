@@ -50,7 +50,7 @@ namespace EncryptFilesinDir
             Console.WriteLine("1. Protect via Azure Template \n2. Protect via Ad Hoc Policy");
             string choiceEncrypt = Console.ReadLine();
 
-            string method = Console.ReadLine();
+            //string method = Console.ReadLine();
             if (string.IsNullOrWhiteSpace(path))
                 throw new ArgumentNullException(nameof(path));
 
