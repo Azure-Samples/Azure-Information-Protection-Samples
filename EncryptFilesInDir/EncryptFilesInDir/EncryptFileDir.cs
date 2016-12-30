@@ -1,9 +1,12 @@
 ﻿using Microsoft.InformationProtectionAndControl;
 using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel.DataAnnotations;
+using System.Globalization;
 using System.Configuration;
 using System.IO;
 using System.Linq;
+
 
 
 namespace EncryptFilesinDir
@@ -15,9 +18,7 @@ namespace EncryptFilesinDir
         {
             try
             {
-                //Loads MSIPC.dll
-                SafeNativeMethods.IpcInitialize();
-                SafeNativeMethods.IpcSetAPIMode(APIMode.Server);
+                
                 //Enter the name of the directory with files
                 Console.WriteLine("Enter a pathname of a directory:");
                 string pathname = Console.ReadLine();
@@ -36,6 +37,9 @@ namespace EncryptFilesinDir
         /// <param name="path"></param>
         public static void EncryptFilesInDirectory(string path)
         {
+            //Loads MSIPC.dll
+            SafeNativeMethods.IpcInitialize();
+            SafeNativeMethods.IpcSetAPIMode(APIMode.Server);
             //Loads credentials for the service principal from App.Config 
             SymmetricKeyCredential symmetricKeyCred = new SymmetricKeyCredential();
             symmetricKeyCred.AppPrincipalId = System.Configuration.ConfigurationManager.AppSettings["AppPrincipalId"];
