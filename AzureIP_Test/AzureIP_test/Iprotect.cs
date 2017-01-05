@@ -87,10 +87,10 @@ namespace AzureIP_test
                     Console.WriteLine("Invalid Input. Please enter 1 or 2.");
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
 
-                Console.WriteLine("An unexpected error occurred.");
+                Console.WriteLine("An unexpected error occurred : {0}",ex);
             }
 
         }
