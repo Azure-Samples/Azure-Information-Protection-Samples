@@ -46,7 +46,7 @@ namespace EncryptFilesinDir
             symmetricKeyCred.Base64Key = ConfigurationManager.AppSettings["Base64Key"];
             symmetricKeyCred.BposTenantId = ConfigurationManager.AppSettings["BposTenantId"];
 
-            Console.WriteLine("App Prinicipal id : {0} \n Symmetric Key: {1} \n Tenant id {2}", symmetricKeyCred.AppPrincipalId, symmetricKeyCred.Base64Key, symmetricKeyCred.BposTenantId);
+           // Console.WriteLine("App Prinicipal id : {0} \n Symmetric Key: {1} \n Tenant id {2}", symmetricKeyCred.AppPrincipalId, symmetricKeyCred.Base64Key, symmetricKeyCred.BposTenantId);
             //Select Encryption Method 
             Console.WriteLine("Please select the desired encryption method (Enter 1 or 2)");
             Console.WriteLine("1. Protect via Azure Template \n2. Protect via Ad Hoc Policy");
