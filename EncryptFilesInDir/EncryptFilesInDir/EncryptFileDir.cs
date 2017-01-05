@@ -27,7 +27,7 @@ namespace EncryptFilesinDir
             }
             catch (Exception ex)
             {
-                Console.WriteLine("The specified directory does not exist");
+                Console.WriteLine("The specified directory does not exist : {0}", ex);
             }
 
         }
@@ -45,6 +45,8 @@ namespace EncryptFilesinDir
             symmetricKeyCred.AppPrincipalId = System.Configuration.ConfigurationManager.AppSettings["AppPrincipalId"];
             symmetricKeyCred.Base64Key = ConfigurationManager.AppSettings["Base64Key"];
             symmetricKeyCred.BposTenantId = ConfigurationManager.AppSettings["BposTenantId"];
+
+            Console.WriteLine("App Prinicipal id : {0} \n Symmetric Key: {1} \n Tenant id {2}", symmetricKeyCred.AppPrincipalId, symmetricKeyCred.Base64Key, symmetricKeyCred.BposTenantId);
             //Select Encryption Method 
             Console.WriteLine("Please select the desired encryption method (Enter 1 or 2)");
             Console.WriteLine("1. Protect via Azure Template \n2. Protect via Ad Hoc Policy");
@@ -59,22 +61,22 @@ namespace EncryptFilesinDir
             foreach (string item in items)
             {
                 Console.WriteLine("Checking file: {0}", item);
-                var checkEncryptionStatus = SafeFileApiNativeMethods.IpcfIsFileEncrypted(path);
+                var checkEncryptionStatus = SafeFileApiNativeMethods.IpcfIsFileEncrypted(item);
                 if (checkEncryptionStatus.ToString().ToLower().Contains(alreadyEncrypted))
                 {
-                    Console.WriteLine("File {0} is already encrypted", path);
+                    Console.WriteLine("File {0} is already encrypted", item);
                     continue;
                 }
                  else
                 {
                     if (choiceEncrypt == "1")
                     {
-                        ProtectWithTemplate(symmetricKeyCred, path);
+                        ProtectWithTemplate(symmetricKeyCred, item);
                     } 
                     else if (choiceEncrypt== "2")
                     {
                         //Protect with AdHocPolicy
-                        //ProtectWithAdHocPolicy(symmetricKeyCred, Path);
+                        ProtectWithAdHocPolicy(symmetricKeyCred, item);
                     }
                 }
             }
