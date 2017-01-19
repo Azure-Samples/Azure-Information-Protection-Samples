@@ -38,4 +38,6 @@ This Windows application tool can give information about any Azure Information P
 
 This sample demonstrates how to build a Windows application that watches directories in the file system and applies Azure Infomration Protection protection policies on every change (e.g. file added, file modified, etc).
 
+### ProtectFilesInDir
 
+This sample demonstrates a bulk operation of file protection at the directory level. 
