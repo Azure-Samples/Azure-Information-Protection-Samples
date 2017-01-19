@@ -9,9 +9,9 @@ using System.Linq;
 
 
 
-namespace EncryptFilesinDir
+namespace ProtectFilesInDir
 {
-    class EncryptFileDir
+    class ProtectFilesInDir
     {
         const string alreadyEncrypted = "encrypted";
         static void Main(string[] args)
@@ -22,7 +22,7 @@ namespace EncryptFilesinDir
                 //Enter the name of the directory with files
                 Console.WriteLine("Enter a pathname of a directory:");
                 string pathname = Console.ReadLine();
-                EncryptFilesInDirectory(pathname);
+                ProtectFilesInDirectory(pathname);
 
             }
             catch (Exception ex)
@@ -32,10 +32,10 @@ namespace EncryptFilesinDir
 
         }
         /// <summary>
-        /// 
+        /// ProtectFilesInDirectory protects files in a directory location
         /// </summary>
         /// <param name="path"></param>
-        public static void EncryptFilesInDirectory(string path)
+        public static void ProtectFilesInDirectory(string path)
         {
             //Loads MSIPC.dll
             SafeNativeMethods.IpcInitialize();
