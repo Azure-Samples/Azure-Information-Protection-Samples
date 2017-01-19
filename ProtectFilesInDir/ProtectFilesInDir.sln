@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProtectFilesInDir", "EncryptFilesInDir\ProtectFilesInDir.csproj", "{7AE31F0C-A115-48AC-8258-0E46B825BCCB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProtectFilesInDir", "ProtectFilesInDir\ProtectFilesInDir.csproj", "{7AE31F0C-A115-48AC-8258-0E46B825BCCB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IpcManagedAPI", "..\IpcManagedAPI\IpcManagedAPI.csproj", "{F62216AB-28D4-4033-932C-E5A94E38C3B3}"
 EndProject

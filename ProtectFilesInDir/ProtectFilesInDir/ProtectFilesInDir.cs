@@ -27,7 +27,8 @@ namespace ProtectFilesInDir
             }
             catch (Exception ex)
             {
-                Console.WriteLine("The specified directory does not exist");
+                Console.WriteLine("Error encountered");
+                Console.WriteLine(ex);
             }
 
         }
@@ -59,17 +60,17 @@ namespace ProtectFilesInDir
             foreach (string item in items)
             {
                 Console.WriteLine("Checking file: {0}", item);
-                var checkEncryptionStatus = SafeFileApiNativeMethods.IpcfIsFileEncrypted(path);
+                var checkEncryptionStatus = SafeFileApiNativeMethods.IpcfIsFileEncrypted(item);
                 if (checkEncryptionStatus.ToString().ToLower().Contains(alreadyEncrypted))
                 {
-                    Console.WriteLine("File {0} is already encrypted", path);
+                    Console.WriteLine("File {0} is already encrypted", item);
                     continue;
                 }
                  else
                 {
                     if (choiceEncrypt == "1")
                     {
-                        ProtectWithTemplate(symmetricKeyCred, path);
+                        ProtectWithTemplate(symmetricKeyCred, item);
                     } 
                     else if (choiceEncrypt== "2")
                     {
