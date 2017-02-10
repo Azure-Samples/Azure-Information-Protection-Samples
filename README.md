@@ -42,7 +42,4 @@ This sample demonstrates how to build a Windows application that watches directo
 
 This sample demonstrates a bulk operation of file protection at the directory level. 
 
-### AipClpTest
 
-This is a sample Application that shows how you can wrap the PowerShell Cmdlets of AIP in C# code. This is usually not a recommended way to integrate AIP but just to show what is possible
-The code just does a GetFilestatus on a given set of documents and lets the user know if the  document is labelled and/or protected
