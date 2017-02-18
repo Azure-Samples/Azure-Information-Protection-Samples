@@ -46,6 +46,12 @@ namespace ProtectFilesInDir
             symmetricKeyCred.AppPrincipalId = System.Configuration.ConfigurationManager.AppSettings["AppPrincipalId"];
             symmetricKeyCred.Base64Key = ConfigurationManager.AppSettings["Base64Key"];
             symmetricKeyCred.BposTenantId = ConfigurationManager.AppSettings["BposTenantId"];
+            
+            // if you are outside North America please uncomment this section as it is needed 
+            /* Uri IntranetURL = new Uri(ConfigurationManager.AppSettings["LicensingIntranetDistributionPointUrl"]);
+            Uri ExtranetURL = new Uri(ConfigurationManager.AppSettings["LicensingExtranetDistributionPointUrl"]);
+            ConnectionInfo connectionInfo = new ConnectionInfo(ExtranetURL, IntranetURL); */
+
             //Select Encryption Method 
             Console.WriteLine("Please select the desired encryption method (Enter 1 or 2)");
             Console.WriteLine("1. Protect via Azure Template \n2. Protect via Ad Hoc Policy");
@@ -85,10 +91,12 @@ namespace ProtectFilesInDir
 
         public static void ProtectWithTemplate(SymmetricKeyCredential symmetricKeyCredential, string filePath)
         {
-            // Gets the available templates for this tenant             
+            // Gets the available templates for this tenant outside north america please comment this section            
             Collection<TemplateInfo> templates = SafeNativeMethods.IpcGetTemplateList(null, false, true,
                 false, true, null, null, symmetricKeyCredential);
-
+            //Outside North America please uncomment this section to get templates 
+            /* Collection<TemplateInfo> templates = SafeNativeMethods.IpcGetTemplateList(connectionInfo, false, true,
+                false, true, null, null, symmetricKeyCredential); */
             //Requests tenant template to use for encryption
             Console.WriteLine("Please select the template you would like to use to encrypt the file.");
 
@@ -225,13 +233,16 @@ namespace ProtectFilesInDir
                                             // The available issuers is a list of RMS servers that this user has already contacted.
                                             try
                                             {
+                                                // comment this section if outside of north america
                                                 Collection<TemplateIssuer> templateIssuers = SafeNativeMethods
                                                     .IpcGetTemplateIssuerList(
                                                         null,
                                                         true,
                                                         false,
                                                         false, true, null, symmetricKeyCredential);
-
+                                                // Uncomment this section if outside of north america
+                                               /* Collection<TemplateInfo> templates = SafeNativeMethods.IpcGetTemplateList(connectionInfo, false, true,
+                false, true, null, null, symmetricKeyCredential); */
                                                 // Creates the policy and associates the chosen user rights with it             
                                                 SafeInformationProtectionLicenseHandle handle =
                                                     SafeNativeMethods.IpcCreateLicenseFromScratch(
@@ -308,3 +319,5 @@ namespace ProtectFilesInDir
 
     }
 }
+ 
+ 
