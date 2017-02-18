@@ -103,7 +103,17 @@ namespace AzureIP_test
 
         public static void ProtectWithTemplate(SymmetricKeyCredential symmetricKeyCredential, string filePath)
         {
-            // Gets the available templates for this tenant             
+
+            // If you are based outside of the North American geo you need to provide the connection info
+
+           /* Uri IntranetURL = new Uri(ConfigurationManager.AppSettings["LicensingIntranetDistributionPointUrl"]);
+            Uri ExtranetURL = new Uri(ConfigurationManager.AppSettings["LicensingExtranetDistributionPointUrl"]);
+            ConnectionInfo connectionInfo = new ConnectionInfo(ExtranetURL, IntranetURL);
+            Collection<TemplateInfo> templates = SafeNativeMethods.IpcGetTemplateList(connectionInfo, false, true,
+                false, true, null, null, symmetricKeyCredential); */
+
+            // Gets the available templates for this tenant  
+            // if you uncomment the prior GetTemplateList call comment this call before you build           
             Collection<TemplateInfo> templates = SafeNativeMethods.IpcGetTemplateList(null, false, true, 
                 false, true, null, null, symmetricKeyCredential);
                 
