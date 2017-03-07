@@ -18,4 +18,4 @@ Once you have compiled the sample after populating the client ID and Redirect UR
 - After selecting the file select encrypt and you should see an encrypted file
 - To make sure that the file is encrypted with the right template open the document in relevant application
 - The application has been tested with Office Documents, Portable document format (PDF), and Text files
-![File Form Encypt] (https://github.com/Azure-Samples/Azure-information-Protection-Samples/tree/master/FormFileEncrypt/images/FileFormEncrypt.png)
+![File Form Encypt] (https://github.com/Azure-Samples/Azure-information-Protection-Samples/tree/master/FormFileEncrypt/images/FileFormEncrypt.PNG)
