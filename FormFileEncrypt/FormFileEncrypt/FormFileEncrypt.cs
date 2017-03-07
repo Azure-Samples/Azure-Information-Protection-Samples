@@ -20,7 +20,7 @@ namespace FormFileEncrypt
          * for your application */
         private static string adalAppID = ""; //change this 
         private static string adalRedirectURI = ""; //change this
-        //private static string storeName = @"%LOCALAPPDATA%\Microsoft\MSIPC\mytestapp";
+       
 
         IpcAadApplicationId currAppId = new IpcAadApplicationId(adalAppID, adalRedirectURI);
         private static Collection<TemplateInfo> templates = null;
@@ -43,7 +43,7 @@ namespace FormFileEncrypt
 
             }
 
-         // SafeNativeMethods.IpcSetStoreName(storeName);
+            SafeNativeMethods.IpcSetStoreName("FFE");
 
 
         }
