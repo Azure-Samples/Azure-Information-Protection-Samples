@@ -42,4 +42,8 @@ This sample demonstrates how to build a Windows application that watches directo
 
 This sample demonstrates a bulk operation of file protection at the directory level. 
 
+### FormFileEncrypt
+
+This is a Client form based application that uses ADAL to encrypt a file
+
 
