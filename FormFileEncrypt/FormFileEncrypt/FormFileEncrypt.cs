@@ -20,7 +20,7 @@ namespace FormFileEncrypt
          * for your application */
         private static string adalAppID = ""; //change this 
         private static string adalRedirectURI = ""; //change this
-        
+       
 
         IpcAadApplicationId currAppId = new IpcAadApplicationId(adalAppID, adalRedirectURI);
         private static Collection<TemplateInfo> templates = null;
