@@ -131,7 +131,7 @@ namespace RmsDocumentInspector
                 switch(propertyType)
                 {
                     case LicensePropertyType.ContentId:
-                        returnValue = SafeNativeMethods.IpcGetSerializedLicenseContentId(FileLicense);
+                        returnValue = SafeNativeMethods.IpcGetSerializedLicenseContentId(FileLicense,KeyHandle);
 
                         break;
 
