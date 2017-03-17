@@ -1,15 +1,16 @@
 Description
 =======================
-IpcDlp is a rich rights-enabled sample application that runs on Windows desktop. IpcDlp demonstrates how a solution provider may associate IPC templates with certain file types. Further it demonstrates use of File APIs to encrypt and decrypt files using the selected templates.
+IpcDlp is a rich protection-enabled sample application that runs on Windows desktop. IpcDlp demonstrates how a solution provider may associate IPC templates with certain file types. Further it demonstrates use of File APIs to encrypt and decrypt files using the selected templates.
 IpcDlp requires:
     · RMS Client 2.1 is installed on the machine.
     · There’s an RMS server available for IpcDlp.
 
 Introduction
 =======================
-IpcDlp is a sample rights-enabled Data Leak Protection (DLP) application utilizing  RMS SDK 2.1.
+IpcDlp is a C++ sample protection-enabled Data Leak Protection (DLP) application utilizing  Azure Information Protection SDK 2.1.
  This sample code takes the user through the basic steps that a DLP rights-enabled application should perform by using RMS File API for 
- protecting and consuming restricted content.
+ protecting and consuming restricted content. In this sample the application scans an already protected content to read the classification
+ in the document and based on the classification the sample then applies the appropriate protection. 
 
 
 Building the Sample
