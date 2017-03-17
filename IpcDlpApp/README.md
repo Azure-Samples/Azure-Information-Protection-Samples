@@ -8,7 +8,7 @@ IpcDlp requires:
 Introduction
 =======================
 IpcDlp is a C++ sample protection-enabled Data Leak Protection (DLP) application utilizing  Azure Information Protection SDK 2.1.
- This sample code takes the user through the basic steps that a DLP rights-enabled application should perform by using RMS File API for 
+ This sample code takes the user through the basic steps that a DLP protection-enabled application should perform by using AIP File API for 
  protecting and consuming restricted content. In this sample the application scans an already protected content to read the classification
  in the document and based on the classification the sample then applies the appropriate protection. 
 
@@ -23,7 +23,7 @@ Building this sample assumes that you already have  RMS server. You will need to
    
 Running this sample 
 =======================
-Before running your first application, you need to generate the application manifest.
+Before running your first application
 
     1.  Open the Visual Studio solution file
     2.  Compile the project 
