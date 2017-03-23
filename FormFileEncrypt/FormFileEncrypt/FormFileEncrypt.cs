@@ -19,8 +19,8 @@ namespace FormFileEncrypt
          * application ID after registering the app in AAD <which is Client ID> and the redirectURI
          * for your application */
         private static string adalAppID = ""; //change this 
-        private static string adalRedirectURI = ""; //change this
-       
+        private static string adalRedirectURI = "";  //change this
+        private static SafeFileApiNativeMethods.DecryptFlags IPCF_DF_FLAG_DEFAULT = 0;
 
         IpcAadApplicationId currAppId = new IpcAadApplicationId(adalAppID, adalRedirectURI);
         private static Collection<TemplateInfo> templates = null;
@@ -113,7 +113,12 @@ namespace FormFileEncrypt
             {
                 DialogResult isEncrypted = MessageBox.Show("Selected file is already encrypted");
                 if (isEncrypted == DialogResult.OK)
+                {
+                    // if you want to decrypt the file before exit then uncomment the following line 
+                    //SafeFileApiNativeMethods.IpcfDecryptFile(filepathBox.Text.Trim(), IPCF_DF_FLAG_DEFAULT, false, false, false, IntPtr.Zero, null, null, null);
                     Application.Exit();
+                }
+                      
             }
             else
             {

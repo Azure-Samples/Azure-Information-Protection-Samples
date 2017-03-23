@@ -129,214 +129,226 @@ namespace IpcNotepad
         /// </summary>
         void InitializeComponent(void)
         {
-            this->menuStripMain = (gcnew System::Windows::Forms::MenuStrip());
-            this->fileToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
-            this->newToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
-            this->openToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
-            this->saveToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
-            this->saveasToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
-            this->toolStripSeparator1 = (gcnew System::Windows::Forms::ToolStripSeparator());
-            this->printToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
-            this->toolStripSeparator2 = (gcnew System::Windows::Forms::ToolStripSeparator());
-            this->exitToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
-            this->optionsToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
-            this->wordwrapToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
-            this->policyToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
-            this->loadingToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
-            this->helpToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
-            this->aboutIpcNotepadToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
-            this->textBoxNotepad = (gcnew System::Windows::Forms::TextBox());
-            this->statusStrip1 = (gcnew System::Windows::Forms::StatusStrip());
-            this->toolStripStatusLabel = (gcnew System::Windows::Forms::ToolStripStatusLabel());
-            this->textBoxPolicy = (gcnew System::Windows::Forms::TextBox());
-            this->menuStripMain->SuspendLayout();
-            this->statusStrip1->SuspendLayout();
-            this->SuspendLayout();
-            // 
-            // menuStripMain
-            // 
-            this->menuStripMain->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(4) {this->fileToolStripMenuItem, 
-                this->optionsToolStripMenuItem, this->policyToolStripMenuItem, this->helpToolStripMenuItem});
-            this->menuStripMain->Location = System::Drawing::Point(0, 0);
-            this->menuStripMain->Name = L"menuStripMain";
-            this->menuStripMain->Size = System::Drawing::Size(654, 24);
-            this->menuStripMain->TabIndex = 0;
-            this->menuStripMain->Text = L"menuStrip1";
-            // 
-            // fileToolStripMenuItem
-            // 
-            this->fileToolStripMenuItem->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(8) {this->newToolStripMenuItem, 
-                this->openToolStripMenuItem, this->saveToolStripMenuItem, this->saveasToolStripMenuItem, this->toolStripSeparator1, this->printToolStripMenuItem, 
-                this->toolStripSeparator2, this->exitToolStripMenuItem});
-            this->fileToolStripMenuItem->Name = L"fileToolStripMenuItem";
-            this->fileToolStripMenuItem->Size = System::Drawing::Size(35, 20);
-            this->fileToolStripMenuItem->Text = L"&File";
-            // 
-            // newToolStripMenuItem
-            // 
-            this->newToolStripMenuItem->Name = L"newToolStripMenuItem";
-            this->newToolStripMenuItem->Size = System::Drawing::Size(124, 22);
-            this->newToolStripMenuItem->Text = L"&New";
-            this->newToolStripMenuItem->Click += gcnew System::EventHandler(this, &IpcNotepadForm::newToolStripMenuItem_Click);
-            // 
-            // openToolStripMenuItem
-            // 
-            this->openToolStripMenuItem->Name = L"openToolStripMenuItem";
-            this->openToolStripMenuItem->Size = System::Drawing::Size(124, 22);
-            this->openToolStripMenuItem->Text = L"&Open...";
-            this->openToolStripMenuItem->Click += gcnew System::EventHandler(this, &IpcNotepadForm::openToolStripMenuItem_Click);
-            // 
-            // saveToolStripMenuItem
-            // 
-            this->saveToolStripMenuItem->Name = L"saveToolStripMenuItem";
-            this->saveToolStripMenuItem->Size = System::Drawing::Size(124, 22);
-            this->saveToolStripMenuItem->Text = L"&Save";
-            this->saveToolStripMenuItem->Click += gcnew System::EventHandler(this, &IpcNotepadForm::saveToolStripMenuItem_Click);
-            // 
-            // saveasToolStripMenuItem
-            // 
-            this->saveasToolStripMenuItem->Name = L"saveasToolStripMenuItem";
-            this->saveasToolStripMenuItem->Size = System::Drawing::Size(124, 22);
-            this->saveasToolStripMenuItem->Text = L"Save &as...";
-            this->saveasToolStripMenuItem->Click += gcnew System::EventHandler(this, &IpcNotepadForm::saveasToolStripMenuItem_Click);
-            // 
-            // toolStripSeparator1
-            // 
-            this->toolStripSeparator1->Name = L"toolStripSeparator1";
-            this->toolStripSeparator1->Size = System::Drawing::Size(121, 6);
-            // 
-            // printToolStripMenuItem
-            // 
-            this->printToolStripMenuItem->Name = L"printToolStripMenuItem";
-            this->printToolStripMenuItem->Size = System::Drawing::Size(124, 22);
-            this->printToolStripMenuItem->Text = L"&Print...";
-            this->printToolStripMenuItem->Click += gcnew System::EventHandler(this, &IpcNotepadForm::printToolStripMenuItem_Click);
-            // 
-            // toolStripSeparator2
-            // 
-            this->toolStripSeparator2->Name = L"toolStripSeparator2";
-            this->toolStripSeparator2->Size = System::Drawing::Size(121, 6);
-            // 
-            // exitToolStripMenuItem
-            // 
-            this->exitToolStripMenuItem->Name = L"exitToolStripMenuItem";
-            this->exitToolStripMenuItem->Size = System::Drawing::Size(124, 22);
-            this->exitToolStripMenuItem->Text = L"E&xit";
-            this->exitToolStripMenuItem->Click += gcnew System::EventHandler(this, &IpcNotepadForm::exitToolStripMenuItem_Click);
-            // 
-            // optionsToolStripMenuItem
-            // 
-            this->optionsToolStripMenuItem->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(1) {this->wordwrapToolStripMenuItem});
-            this->optionsToolStripMenuItem->Name = L"optionsToolStripMenuItem";
-            this->optionsToolStripMenuItem->Size = System::Drawing::Size(53, 20);
-            this->optionsToolStripMenuItem->Text = L"F&ormat";
-            // 
-            // wordwrapToolStripMenuItem
-            // 
-            this->wordwrapToolStripMenuItem->Name = L"wordwrapToolStripMenuItem";
-            this->wordwrapToolStripMenuItem->Size = System::Drawing::Size(129, 22);
-            this->wordwrapToolStripMenuItem->Text = L"&Word Wrap";
-            this->wordwrapToolStripMenuItem->Click += gcnew System::EventHandler(this, &IpcNotepadForm::wordwrapToolStripMenuItem_Click);
-            // 
-            // policyToolStripMenuItem
-            // 
-            this->policyToolStripMenuItem->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(1) {this->loadingToolStripMenuItem});
-            this->policyToolStripMenuItem->Name = L"policyToolStripMenuItem";
-            this->policyToolStripMenuItem->Size = System::Drawing::Size(68, 20);
-            this->policyToolStripMenuItem->Text = L"&Protection";
-            this->policyToolStripMenuItem->Click += gcnew System::EventHandler(this, &IpcNotepadForm::policyToolStripMenuItem_Click);
-            // 
-            // loadingToolStripMenuItem
-            // 
-            this->loadingToolStripMenuItem->Font = (gcnew System::Drawing::Font(L"Tahoma", 8.25F, System::Drawing::FontStyle::Bold));
-            this->loadingToolStripMenuItem->ForeColor = System::Drawing::Color::Red;
-            this->loadingToolStripMenuItem->Name = L"loadingToolStripMenuItem";
-            this->loadingToolStripMenuItem->Size = System::Drawing::Size(152, 22);
-            this->loadingToolStripMenuItem->Text = L"Loading...";
-            // 
-            // helpToolStripMenuItem
-            // 
-            this->helpToolStripMenuItem->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(1) {this->aboutIpcNotepadToolStripMenuItem});
-            this->helpToolStripMenuItem->Name = L"helpToolStripMenuItem";
-            this->helpToolStripMenuItem->Size = System::Drawing::Size(40, 20);
-            this->helpToolStripMenuItem->Text = L"&Help";
-            // 
-            // aboutIpcNotepadToolStripMenuItem
-            // 
-            this->aboutIpcNotepadToolStripMenuItem->Name = L"aboutIpcNotepadToolStripMenuItem";
-            this->aboutIpcNotepadToolStripMenuItem->Size = System::Drawing::Size(162, 22);
-            this->aboutIpcNotepadToolStripMenuItem->Text = L"&About IpcNotepad";
-            this->aboutIpcNotepadToolStripMenuItem->Click += gcnew System::EventHandler(this, &IpcNotepadForm::aboutIpcNotepadToolStripMenuItem_Click);
-            // 
-            // textBoxNotepad
-            // 
-            this->textBoxNotepad->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((((System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Bottom) 
-                | System::Windows::Forms::AnchorStyles::Left) 
-                | System::Windows::Forms::AnchorStyles::Right));
-            this->textBoxNotepad->Font = (gcnew System::Drawing::Font(L"Lucida Console", 10, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point, 
-                static_cast<System::Byte>(0)));
-            this->textBoxNotepad->Location = System::Drawing::Point(0, 69);
-            this->textBoxNotepad->Multiline = true;
-            this->textBoxNotepad->Name = L"textBoxNotepad";
-            this->textBoxNotepad->ScrollBars = System::Windows::Forms::ScrollBars::Vertical;
-            this->textBoxNotepad->ShortcutsEnabled = false;
-            this->textBoxNotepad->Size = System::Drawing::Size(654, 553);
-            this->textBoxNotepad->TabIndex = 1;
-            this->textBoxNotepad->WordWrap = false;
-            this->textBoxNotepad->KeyPress += gcnew System::Windows::Forms::KeyPressEventHandler(this, &IpcNotepadForm::textBoxNotepad_KeyPress);
-            // 
-            // statusStrip1
-            // 
-            this->statusStrip1->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(1) {this->toolStripStatusLabel});
-            this->statusStrip1->Location = System::Drawing::Point(0, 625);
-            this->statusStrip1->Name = L"statusStrip1";
-            this->statusStrip1->Size = System::Drawing::Size(654, 22);
-            this->statusStrip1->TabIndex = 3;
-            this->statusStrip1->Text = L"statusStrip1";
-            // 
-            // toolStripStatusLabel
-            // 
-            this->toolStripStatusLabel->Name = L"toolStripStatusLabel";
-            this->toolStripStatusLabel->Size = System::Drawing::Size(0, 17);
-            // 
-            // textBoxPolicy
-            // 
-            this->textBoxPolicy->Anchor = static_cast<System::Windows::Forms::AnchorStyles>(((System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Left) 
-                | System::Windows::Forms::AnchorStyles::Right));
-            this->textBoxPolicy->BackColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(255)), static_cast<System::Int32>(static_cast<System::Byte>(255)), 
-                static_cast<System::Int32>(static_cast<System::Byte>(228)));
-            this->textBoxPolicy->BorderStyle = System::Windows::Forms::BorderStyle::None;
-            this->textBoxPolicy->Enabled = false;
-            this->textBoxPolicy->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 8, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point, 
-                static_cast<System::Byte>(0)));
-            this->textBoxPolicy->Location = System::Drawing::Point(0, 27);
-            this->textBoxPolicy->Multiline = true;
-            this->textBoxPolicy->Name = L"textBoxPolicy";
-            this->textBoxPolicy->Size = System::Drawing::Size(654, 42);
-            this->textBoxPolicy->TabIndex = 4;
-            // 
-            // IpcNotepadForm
-            // 
-            this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
-            this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-            this->AutoSize = true;
-            this->ClientSize = System::Drawing::Size(654, 647);
-            this->Controls->Add(this->textBoxPolicy);
-            this->Controls->Add(this->statusStrip1);
-            this->Controls->Add(this->textBoxNotepad);
-            this->Controls->Add(this->menuStripMain);
-            this->MainMenuStrip = this->menuStripMain;
-            this->Name = L"IpcNotepadForm";
-            this->Text = L"IpcNotepad";
-            this->FormClosing += gcnew System::Windows::Forms::FormClosingEventHandler(this, &IpcNotepadForm::IpcNotepadForm_FormClosing);
-            this->menuStripMain->ResumeLayout(false);
-            this->menuStripMain->PerformLayout();
-            this->statusStrip1->ResumeLayout(false);
-            this->statusStrip1->PerformLayout();
-            this->ResumeLayout(false);
-            this->PerformLayout();
+			this->menuStripMain = (gcnew System::Windows::Forms::MenuStrip());
+			this->fileToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->newToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->openToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->saveToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->saveasToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->toolStripSeparator1 = (gcnew System::Windows::Forms::ToolStripSeparator());
+			this->printToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->toolStripSeparator2 = (gcnew System::Windows::Forms::ToolStripSeparator());
+			this->exitToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->optionsToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->wordwrapToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->policyToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->loadingToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->helpToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->aboutIpcNotepadToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->textBoxNotepad = (gcnew System::Windows::Forms::TextBox());
+			this->statusStrip1 = (gcnew System::Windows::Forms::StatusStrip());
+			this->toolStripStatusLabel = (gcnew System::Windows::Forms::ToolStripStatusLabel());
+			this->textBoxPolicy = (gcnew System::Windows::Forms::TextBox());
+			this->menuStripMain->SuspendLayout();
+			this->statusStrip1->SuspendLayout();
+			this->SuspendLayout();
+			// 
+			// menuStripMain
+			// 
+			this->menuStripMain->ImageScalingSize = System::Drawing::Size(28, 28);
+			this->menuStripMain->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(4) {
+				this->fileToolStripMenuItem,
+					this->optionsToolStripMenuItem, this->policyToolStripMenuItem, this->helpToolStripMenuItem
+			});
+			this->menuStripMain->Location = System::Drawing::Point(0, 0);
+			this->menuStripMain->Name = L"menuStripMain";
+			this->menuStripMain->Padding = System::Windows::Forms::Padding(11, 4, 0, 4);
+			this->menuStripMain->Size = System::Drawing::Size(1199, 42);
+			this->menuStripMain->TabIndex = 0;
+			this->menuStripMain->Text = L"menuStrip1";
+			// 
+			// fileToolStripMenuItem
+			// 
+			this->fileToolStripMenuItem->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(8) {
+				this->newToolStripMenuItem,
+					this->openToolStripMenuItem, this->saveToolStripMenuItem, this->saveasToolStripMenuItem, this->toolStripSeparator1, this->printToolStripMenuItem,
+					this->toolStripSeparator2, this->exitToolStripMenuItem
+			});
+			this->fileToolStripMenuItem->Name = L"fileToolStripMenuItem";
+			this->fileToolStripMenuItem->Size = System::Drawing::Size(56, 34);
+			this->fileToolStripMenuItem->Text = L"&File";
+			this->fileToolStripMenuItem->Click += gcnew System::EventHandler(this, &IpcNotepadForm::fileToolStripMenuItem_Click);
+			// 
+			// newToolStripMenuItem
+			// 
+			this->newToolStripMenuItem->Name = L"newToolStripMenuItem";
+			this->newToolStripMenuItem->Size = System::Drawing::Size(240, 34);
+			this->newToolStripMenuItem->Text = L"&New";
+			this->newToolStripMenuItem->Click += gcnew System::EventHandler(this, &IpcNotepadForm::newToolStripMenuItem_Click);
+			// 
+			// openToolStripMenuItem
+			// 
+			this->openToolStripMenuItem->Name = L"openToolStripMenuItem";
+			this->openToolStripMenuItem->Size = System::Drawing::Size(240, 34);
+			this->openToolStripMenuItem->Text = L"&Open...";
+			this->openToolStripMenuItem->Click += gcnew System::EventHandler(this, &IpcNotepadForm::openToolStripMenuItem_Click);
+			// 
+			// saveToolStripMenuItem
+			// 
+			this->saveToolStripMenuItem->Name = L"saveToolStripMenuItem";
+			this->saveToolStripMenuItem->Size = System::Drawing::Size(240, 34);
+			this->saveToolStripMenuItem->Text = L"&Save";
+			this->saveToolStripMenuItem->Click += gcnew System::EventHandler(this, &IpcNotepadForm::saveToolStripMenuItem_Click);
+			// 
+			// saveasToolStripMenuItem
+			// 
+			this->saveasToolStripMenuItem->Name = L"saveasToolStripMenuItem";
+			this->saveasToolStripMenuItem->Size = System::Drawing::Size(240, 34);
+			this->saveasToolStripMenuItem->Text = L"Save &as...";
+			this->saveasToolStripMenuItem->Click += gcnew System::EventHandler(this, &IpcNotepadForm::saveasToolStripMenuItem_Click);
+			// 
+			// toolStripSeparator1
+			// 
+			this->toolStripSeparator1->Name = L"toolStripSeparator1";
+			this->toolStripSeparator1->Size = System::Drawing::Size(237, 6);
+			// 
+			// printToolStripMenuItem
+			// 
+			this->printToolStripMenuItem->Name = L"printToolStripMenuItem";
+			this->printToolStripMenuItem->Size = System::Drawing::Size(240, 34);
+			this->printToolStripMenuItem->Text = L"&Print...";
+			this->printToolStripMenuItem->Click += gcnew System::EventHandler(this, &IpcNotepadForm::printToolStripMenuItem_Click);
+			// 
+			// toolStripSeparator2
+			// 
+			this->toolStripSeparator2->Name = L"toolStripSeparator2";
+			this->toolStripSeparator2->Size = System::Drawing::Size(237, 6);
+			// 
+			// exitToolStripMenuItem
+			// 
+			this->exitToolStripMenuItem->Name = L"exitToolStripMenuItem";
+			this->exitToolStripMenuItem->Size = System::Drawing::Size(240, 34);
+			this->exitToolStripMenuItem->Text = L"E&xit";
+			this->exitToolStripMenuItem->Click += gcnew System::EventHandler(this, &IpcNotepadForm::exitToolStripMenuItem_Click);
+			// 
+			// optionsToolStripMenuItem
+			// 
+			this->optionsToolStripMenuItem->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(1) { this->wordwrapToolStripMenuItem });
+			this->optionsToolStripMenuItem->Name = L"optionsToolStripMenuItem";
+			this->optionsToolStripMenuItem->Size = System::Drawing::Size(90, 34);
+			this->optionsToolStripMenuItem->Text = L"F&ormat";
+			// 
+			// wordwrapToolStripMenuItem
+			// 
+			this->wordwrapToolStripMenuItem->Name = L"wordwrapToolStripMenuItem";
+			this->wordwrapToolStripMenuItem->Size = System::Drawing::Size(211, 34);
+			this->wordwrapToolStripMenuItem->Text = L"&Word Wrap";
+			this->wordwrapToolStripMenuItem->Click += gcnew System::EventHandler(this, &IpcNotepadForm::wordwrapToolStripMenuItem_Click);
+			// 
+			// policyToolStripMenuItem
+			// 
+			this->policyToolStripMenuItem->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(1) { this->loadingToolStripMenuItem });
+			this->policyToolStripMenuItem->Name = L"policyToolStripMenuItem";
+			this->policyToolStripMenuItem->Size = System::Drawing::Size(120, 34);
+			this->policyToolStripMenuItem->Text = L"&Protection";
+			this->policyToolStripMenuItem->Click += gcnew System::EventHandler(this, &IpcNotepadForm::policyToolStripMenuItem_Click);
+			// 
+			// loadingToolStripMenuItem
+			// 
+			this->loadingToolStripMenuItem->Font = (gcnew System::Drawing::Font(L"Tahoma", 8.25F, System::Drawing::FontStyle::Bold));
+			this->loadingToolStripMenuItem->ForeColor = System::Drawing::Color::Red;
+			this->loadingToolStripMenuItem->Name = L"loadingToolStripMenuItem";
+			this->loadingToolStripMenuItem->Size = System::Drawing::Size(240, 34);
+			this->loadingToolStripMenuItem->Text = L"Loading...";
+			// 
+			// helpToolStripMenuItem
+			// 
+			this->helpToolStripMenuItem->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(1) { this->aboutIpcNotepadToolStripMenuItem });
+			this->helpToolStripMenuItem->Name = L"helpToolStripMenuItem";
+			this->helpToolStripMenuItem->Size = System::Drawing::Size(68, 34);
+			this->helpToolStripMenuItem->Text = L"&Help";
+			// 
+			// aboutIpcNotepadToolStripMenuItem
+			// 
+			this->aboutIpcNotepadToolStripMenuItem->Name = L"aboutIpcNotepadToolStripMenuItem";
+			this->aboutIpcNotepadToolStripMenuItem->Size = System::Drawing::Size(277, 34);
+			this->aboutIpcNotepadToolStripMenuItem->Text = L"&About IpcNotepad";
+			this->aboutIpcNotepadToolStripMenuItem->Click += gcnew System::EventHandler(this, &IpcNotepadForm::aboutIpcNotepadToolStripMenuItem_Click);
+			// 
+			// textBoxNotepad
+			// 
+			this->textBoxNotepad->Anchor = static_cast<System::Windows::Forms::AnchorStyles>((((System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Bottom)
+				| System::Windows::Forms::AnchorStyles::Left)
+				| System::Windows::Forms::AnchorStyles::Right));
+			this->textBoxNotepad->Font = (gcnew System::Drawing::Font(L"Lucida Console", 10, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(0)));
+			this->textBoxNotepad->Location = System::Drawing::Point(0, 127);
+			this->textBoxNotepad->Margin = System::Windows::Forms::Padding(6, 6, 6, 6);
+			this->textBoxNotepad->Multiline = true;
+			this->textBoxNotepad->Name = L"textBoxNotepad";
+			this->textBoxNotepad->ScrollBars = System::Windows::Forms::ScrollBars::Vertical;
+			this->textBoxNotepad->ShortcutsEnabled = false;
+			this->textBoxNotepad->Size = System::Drawing::Size(1196, 1018);
+			this->textBoxNotepad->TabIndex = 1;
+			this->textBoxNotepad->WordWrap = false;
+			this->textBoxNotepad->KeyPress += gcnew System::Windows::Forms::KeyPressEventHandler(this, &IpcNotepadForm::textBoxNotepad_KeyPress);
+			// 
+			// statusStrip1
+			// 
+			this->statusStrip1->ImageScalingSize = System::Drawing::Size(28, 28);
+			this->statusStrip1->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(1) { this->toolStripStatusLabel });
+			this->statusStrip1->Location = System::Drawing::Point(0, 1172);
+			this->statusStrip1->Name = L"statusStrip1";
+			this->statusStrip1->Padding = System::Windows::Forms::Padding(2, 0, 26, 0);
+			this->statusStrip1->Size = System::Drawing::Size(1199, 22);
+			this->statusStrip1->TabIndex = 3;
+			this->statusStrip1->Text = L"statusStrip1";
+			// 
+			// toolStripStatusLabel
+			// 
+			this->toolStripStatusLabel->Name = L"toolStripStatusLabel";
+			this->toolStripStatusLabel->Size = System::Drawing::Size(0, 17);
+			// 
+			// textBoxPolicy
+			// 
+			this->textBoxPolicy->Anchor = static_cast<System::Windows::Forms::AnchorStyles>(((System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Left)
+				| System::Windows::Forms::AnchorStyles::Right));
+			this->textBoxPolicy->BackColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(255)), static_cast<System::Int32>(static_cast<System::Byte>(255)),
+				static_cast<System::Int32>(static_cast<System::Byte>(228)));
+			this->textBoxPolicy->BorderStyle = System::Windows::Forms::BorderStyle::None;
+			this->textBoxPolicy->Enabled = false;
+			this->textBoxPolicy->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 8, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(0)));
+			this->textBoxPolicy->Location = System::Drawing::Point(0, 50);
+			this->textBoxPolicy->Margin = System::Windows::Forms::Padding(6, 6, 6, 6);
+			this->textBoxPolicy->Multiline = true;
+			this->textBoxPolicy->Name = L"textBoxPolicy";
+			this->textBoxPolicy->Size = System::Drawing::Size(1199, 78);
+			this->textBoxPolicy->TabIndex = 4;
+			// 
+			// IpcNotepadForm
+			// 
+			this->AutoScaleDimensions = System::Drawing::SizeF(11, 24);
+			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
+			this->AutoSize = true;
+			this->ClientSize = System::Drawing::Size(1199, 1194);
+			this->Controls->Add(this->textBoxPolicy);
+			this->Controls->Add(this->statusStrip1);
+			this->Controls->Add(this->textBoxNotepad);
+			this->Controls->Add(this->menuStripMain);
+			this->MainMenuStrip = this->menuStripMain;
+			this->Margin = System::Windows::Forms::Padding(6, 6, 6, 6);
+			this->Name = L"IpcNotepadForm";
+			this->Text = L"IpcNotepad";
+			this->FormClosing += gcnew System::Windows::Forms::FormClosingEventHandler(this, &IpcNotepadForm::IpcNotepadForm_FormClosing);
+			this->menuStripMain->ResumeLayout(false);
+			this->menuStripMain->PerformLayout();
+			this->statusStrip1->ResumeLayout(false);
+			this->statusStrip1->PerformLayout();
+			this->ResumeLayout(false);
+			this->PerformLayout();
 
-        }
+		}
 #pragma endregion
 
         private:
@@ -1162,5 +1174,7 @@ namespace IpcNotepad
             {
                 handleUnsavedWork();
             }
-    };
+	private: System::Void fileToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e) {
+	}
+};
 }
