@@ -35,6 +35,7 @@ namespace AzureIP_test
                 //Loads MSIPC.dll
                 SafeNativeMethods.IpcInitialize();
                 SafeNativeMethods.IpcSetAPIMode(APIMode.Server);
+                SafeNativeMethods.IpcSetStoreName("AzureIpTest");
 
                 //Loads credentials for the service principal from App.Config 
                 SymmetricKeyCredential symmetricKeyCred = new SymmetricKeyCredential();
