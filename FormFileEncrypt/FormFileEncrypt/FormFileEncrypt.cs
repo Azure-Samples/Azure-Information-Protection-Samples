@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Collections.ObjectModel;
+using System.IO;
 
 namespace FormFileEncrypt
 {
@@ -80,13 +81,15 @@ namespace FormFileEncrypt
         {
             using (OpenFileDialog openFileDialog1 = new OpenFileDialog())
             {
+                openFileDialog1.Multiselect = false;
                 openFileDialog1.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
                 openFileDialog1.Filter = "Office Files (*.docx,*.xlsx,*.pptx)|*.docx;*.xlsx;*.pptx|Text Files (*.txt)|*.txt|pdf files (*.pdf)|*.pdf|All Files (*.*)|*.*";
                 openFileDialog1.FilterIndex = 1;
                 openFileDialog1.RestoreDirectory = true;
+                openFileDialog1.ShowDialog();
                 try
                 {
-                    if (openFileDialog1.ShowDialog() == DialogResult.OK)
+                    if (File.Exists(openFileDialog1.FileName))
                     {
 
                         filepathBox.Text = openFileDialog1.FileName;
