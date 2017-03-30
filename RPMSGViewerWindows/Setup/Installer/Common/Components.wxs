@@ -1,0 +1,343 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+
+  <Fragment>
+    <DirectoryRef Id="INSTALLFOLDER">
+      <Component Id="cmpEBD62182149B8CD85EC2EA70B71B6785" Guid="{E2976858-2321-48B1-A8F0-2A25456485E7}">
+        <File Id="MainExe" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\com.microsoft.rightsmanagement.windows.viewer.exe" />
+        <File Id="fil5B0C940B28641422FA77DFAFFF63D4AD" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\com.microsoft.rightsmanagement.mobile.viewer.pcl.dll" />
+        <File Id="fil759834972F71B6230A410E39DCC3F7A2" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\com.microsoft.rightsmanagement.windows.viewer.exe.config" />
+        <File Id="fil3DE1161F6DAED10D51911E5944A22C83" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\Microsoft.Applications.Telemetry.Windows.dll" />
+        <File Id="filB114EEEA2C28238FC9FA1C18ACBDCB59" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\Microsoft.Applications.Telemetry.Windows.pdb" />
+        <File Id="fil9F3F37569D69B09CF42F267EFE4E5F1C" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\Microsoft.IdentityModel.Clients.ActiveDirectory.dll" />
+        <File Id="fil033EBDD587F157744A4BC1272523EEAC" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\Microsoft.IdentityModel.Clients.ActiveDirectory.Platform.dll" />
+        <File Id="filB027BDF91119D9157B610EB01EB3BAA5" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\Microsoft.IdentityModel.Clients.ActiveDirectory.Platform.xml" />
+        <File Id="fil12FB27927CBEE8A99810AA3968E7674D" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\Microsoft.IdentityModel.Clients.ActiveDirectory.xml" />
+        <File Id="fil7D7EC27E83BACA6119EC1D96ABA55FE6" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\MSIP.Lib.dll" />
+        <File Id="fil563C0A7F76507D01A64687D8ABF92593" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\MSIP.Lib.pdb" />
+        <File Id="filF13A909A3E7873A8C93EC5B7781F7489" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\MSIP.RMS.dll" />
+        <File Id="filFA49FF240C35273CAF58FBA92BEDE870" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\MSIP.RMS.pdb" />
+        <File Id="filBD7AB1637BA0F12ADD7E4F080A970B7D" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\MSIP.Win32.dll" />
+        <File Id="fil07F4733C8C2DED08A97C4C4B88479DDE" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\MSIP.Win32.pdb" />
+        <File Id="fil05FF769999D602AD4FA6A489C44ED290" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\Newtonsoft.Json.dll" />
+        <File Id="filB9D0C89E2BE03F54B6210850B37C7B82" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\NLog.dll" />
+        <File Id="filF19DC965E3FA43684E7940E1FB862E5D" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\OpenMcdf.dll" />
+        <File Id="filF5A9B04DF555329B9AFD018573182C32" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\OpenMcdf.xml" />
+        <File Id="filFD9A1E54D95A7BD695F86689807C80F9" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\Zlib.Portable.dll" />
+        <File Id="fil39B88F9EDC502CEE947D343F2E5DDAA3" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\Zlib.Portable.xml" />
+        <File Id="fil39B88F1EDC502CEE947D343F2E5DDAA3" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\widevinecdmadapter.dll" />
+        <File Id="fil39B88F2EDC502CEE947D343F2E5DDAA3" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\Ude.dll" />
+        <File Id="fil39B88F3EDC502CEE947D343F2E5DDAA3" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\snapshot_blob.bin" />
+        <File Id="fil39B88F4EDC502CEE947D343F2E5DDAA3" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\natives_blob.bin" />
+        <File Id="fil39B88F5EDC502CEE947D343F2E5DDAA3" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\Microsoft.Practices.Unity.dll" />
+        <File Id="fil39B88F6EDC502CEE947D343F2E5DDAA3" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\Microsoft.Practices.ServiceLocation.pdb" />
+        <File Id="fil39B88F7EDC502CEE947D343F2E5DDAA3" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\Microsoft.Practices.ServiceLocation.dll" />
+        <File Id="fil39B88F8EDC502CEE947D343F2E5DDAA3" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\libGLESv2.dll" />
+        <File Id="fil39B88F9EDC502CEE047D343F2E5DDAA3" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\libEGL.dll" />
+        <File Id="fil39B88F9EDC502CEE147D343F2E5DDAA3" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\libcef.dll" />
+        <File Id="fil39B88F9EDC502CEE247D343F2E5DDAA3" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\icudtl.dat" />
+        <File Id="fil39B88F9EDC502CEE347D343F2E5DDAA3" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\devtools_resources.pak" />
+        <File Id="fil39B88F9EDC502CEE447D343F2E5DDAA3" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\d3dcompiler_47.dll" />
+        <File Id="fil39B88F9EDC502CEE547D343F2E5DDAA3" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\d3dcompiler_43.dll" />
+        <File Id="fil39B88F9EDC502CEE647D343F2E5DDAA3" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\com.microsoft.rightsmanagement.windows.viewer.pdb" />
+        <File Id="fil39B88F9EDC502CEE747D343F2E5DDAA3" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\com.microsoft.rightsmanagement.windows.viewer.exe.config" />
+        <File Id="fil39B88F9EDC502CEE847D343F2E5DDAA3" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\CefSharp.xml" />
+        <File Id="fil39B88F9EDC502CEE947D343F2E0DDAA3" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\CefSharp.Wpf.xml" />
+        <File Id="fil39B88F9EDC502CEE947D343F2E1DDAA3" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\CefSharp.Wpf.dll" />
+        <File Id="fil39B88F9EDC502CEE947D343F2E2DDAA3" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\CefSharp.dll" />
+        <File Id="fil39B88F9EDC502CEE947D343F2E3DDAA3" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\CefSharp.Core.xml" />
+        <File Id="fil39B88F9EDC502CEE947D343F2E4DDAA3" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\CefSharp.Core.dll" />
+        <File Id="fil39B88F9EDC502CEE947D343F2E6DDAA3" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\CefSharp.BrowserSubprocess.exe" />
+        <File Id="fil39B88F9EDC502CEE947D343F2E7DDAA3" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\CefSharp.BrowserSubprocess.Core.dll" />
+        <File Id="fil39B88F9EDC502CEE947D343F2E8DDAA3" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\cef_extensions.pak" />
+        <File Id="fil39B88F9EDC502CEE947D343F2E9DDAA3" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\cef_200_percent.pak" />
+        <File Id="fil39B88F9EDC502CEE947D340F2E5DDAA3" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\cef_100_percent.pak" />
+        <File Id="fil39B88F9EDC502CEE947D349F2E5DDAA3" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\cef.pak" />
+      </Component>
+
+      <!-- Localization folders -->
+      <Directory Id="dirBE132B7BAD188FE48DEA658A8A1A277A" Name="bg">
+        <Component Id="cmpDDD4B8478290AA533E034734D1B09FC7" Guid="{03671026-14D7-44D0-A2A6-4E984F49F66E}">
+          <File Id="fil5749E724419E9B79B5B08F164F4EEEA9" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\bg\com.microsoft.rightsmanagement.mobile.viewer.pcl.resources.dll" />
+        </Component>
+      </Directory>
+      <Directory Id="dirBE132B8BAD188FE48DEA668A8A1A277A" Name="cs">
+        <Component Id="cmpDED4B8478290AA533E034734E1B09FC7" Guid="{03670026-04D7-44D0-A2A6-4E983F49F66E}">
+          <File Id="fil5749E724419F9B79B5B08F064F4EDEA9" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\cs\com.microsoft.rightsmanagement.mobile.viewer.pcl.resources.dll" />
+        </Component>
+      </Directory>
+      <Directory Id="dir43A0033346A51A6633F88C79EA143D36" Name="da">
+        <Component Id="cmp4D3505C905584FCBB4B39DB575EA28A3" Guid="{6B5F27DC-1B09-493F-B831-AD72D0718E06}">
+          <File Id="fil98E165D94155C276E754425B5B313664" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\da\com.microsoft.rightsmanagement.mobile.viewer.pcl.resources.dll" />
+        </Component>
+      </Directory>
+      <Directory Id="dirF7A62AAB979B938D6BCEC1392A589DA5" Name="de">
+        <Component Id="cmp09915EB1C1978F84C46A661EF3B22025" Guid="{A6879966-9363-4D25-BF0C-7491D553DED5}">
+          <File Id="filDFCB5D08C57501678262DF00200D6EBD" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\de\com.microsoft.rightsmanagement.mobile.viewer.pcl.resources.dll" />
+        </Component>
+      </Directory>
+      <Directory Id="dir62078C356EA332979A99724C7722A56A" Name="el">
+        <Component Id="cmpD7AAA950D1B6E2D516E8F5019BF9EFF9" Guid="{A9BDB0EB-FCBC-4B3B-80A4-FAAE69510A3A}">
+          <File Id="filFEBE0894FDA444A6EAA4CB541B48BBBE" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\el\com.microsoft.rightsmanagement.mobile.viewer.pcl.resources.dll" />
+        </Component>
+      </Directory>
+      <Directory Id="dir577231E2EF642DDF4B09B65F4BEE3BE2" Name="es">
+        <Component Id="cmp9262A1201275A6CFC41DFF3462AB7967" Guid="{78BE94E4-0F8F-41A0-AB59-3711A498B666}">
+          <File Id="fil6F951687E5743F51A9EDB66CADE3DC6C" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\es\com.microsoft.rightsmanagement.mobile.viewer.pcl.resources.dll" />
+        </Component>
+      </Directory>
+      <Directory Id="dir6AC74709D56EB0340005CD5DB5B9FFA3" Name="et">
+        <Component Id="cmp818CA76AE99054CA428AC2B06110B940" Guid="{D0C9D7CF-1C73-49B2-909F-7272FF4983CF}">
+          <File Id="fil6FF096CB981CE7278DC96F1D2CF9C218" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\et\com.microsoft.rightsmanagement.mobile.viewer.pcl.resources.dll" />
+        </Component>
+      </Directory>
+      <Directory Id="dir18128266E236927E38F06F26F3CAEC8B" Name="fi">
+        <Component Id="cmp99EAEE1E10E3FD7BBEA2D60DD8525D10" Guid="{AA1440A8-506B-47B1-A17B-C25E7E867B90}">
+          <File Id="fil19F7BCF8DCADC7E4059379573FDC67B0" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\fi\com.microsoft.rightsmanagement.mobile.viewer.pcl.resources.dll" />
+        </Component>
+      </Directory>
+      <Directory Id="dir0B7D401DE3233449E75F31A823BF5B99" Name="fr">
+        <Component Id="cmp03201F606AE55F8DD82D44B5930A25E5" Guid="{9149A728-F8F1-41D7-88E8-9072F9007213}">
+          <File Id="filF39DF8EB2F162505CE25529B24E37DE4" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\fr\com.microsoft.rightsmanagement.mobile.viewer.pcl.resources.dll" />
+        </Component>
+      </Directory>
+      <Directory Id="dirD0E4547ED8F276C01C6343EFE932B0ED" Name="hi">
+        <Component Id="cmp7D12E9151A877E1A858C7227638C638D" Guid="{03CA3FA3-E84D-4A93-8EE4-8E090969C9B6}">
+          <File Id="fil7FA910A0B7D1D337C584DC0C17585244" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\hi\com.microsoft.rightsmanagement.mobile.viewer.pcl.resources.dll" />
+        </Component>
+      </Directory>
+      <Directory Id="dir32DD64B18B5742938FA6DD358ED7A9AE" Name="hr">
+        <Component Id="cmpAFE1011BFFD0682EF34868E34B799690" Guid="{6A96DE79-12B7-400E-8CA6-5AC90CA77E96}">
+          <File Id="fil95BCC6938DB73A811A818CF56B97E5A5" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\hr\com.microsoft.rightsmanagement.mobile.viewer.pcl.resources.dll" />
+        </Component>
+      </Directory>
+      <Directory Id="dir09632C6D20BFA94E2A24ED0E6D9B2C41" Name="hu">
+        <Component Id="cmp2ADA24BE71C6BEA7D1D0D94F3522F119" Guid="{A14D74A3-3FA2-478B-84EC-DC290EFA568F}">
+          <File Id="fil5BC19EDDBD1BEA3CB4B5517C44AF7865" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\hu\com.microsoft.rightsmanagement.mobile.viewer.pcl.resources.dll" />
+        </Component>
+      </Directory>
+      <Directory Id="dir7A6931B6BEC7EAF0792B6DD67E6ABCB9" Name="id">
+        <Component Id="cmpAF5FBCB6031F1BD926481C499A36D625" Guid="{CB34D09E-E7D2-4D4C-96D3-5ABE45CBA7E6}">
+          <File Id="fil0C41F8B885DD509A48B1D2825616B028" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\id\com.microsoft.rightsmanagement.mobile.viewer.pcl.resources.dll" />
+        </Component>
+      </Directory>
+      <Directory Id="dirB5B71807E9474A6ED7A421DAF6D9317F" Name="it">
+        <Component Id="cmp72C4CC988763ABE80C93A4FD1EBD0D6F" Guid="{866665FB-1A8E-492E-A55D-180D2E9D05F2}">
+          <File Id="filD92FE121E99E85FC53F0FA89553D4D1F" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\it\com.microsoft.rightsmanagement.mobile.viewer.pcl.resources.dll" />
+        </Component>
+      </Directory>
+      <Directory Id="dir5315138C69BA7E69268AF83BB8AE9018" Name="ja">
+        <Component Id="cmp49FA75A74C743DDE7A1F47AA0F8EA250" Guid="{CC1CB9AF-1582-4386-A3AF-6AA012084056}">
+          <File Id="fil5B537B100A3ABFA5DB7FEBB24F513E26" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\ja\com.microsoft.rightsmanagement.mobile.viewer.pcl.resources.dll" />
+        </Component>
+      </Directory>
+      <Directory Id="dir52A20F23632FF93F4D987C438642ECCA" Name="kk">
+        <Component Id="cmp5AEED16C304A56324FCF5646BFE007C9" Guid="{2FDDC760-8623-468A-9DFE-508B8D6FF0AD}">
+          <File Id="filAC9619A53B2A49FE26BE5DC265D045BA" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\kk\com.microsoft.rightsmanagement.mobile.viewer.pcl.resources.dll" />
+        </Component>
+      </Directory>
+      <Directory Id="dir6C3FEF1D6BC03982CA1FBA00284BF75D" Name="ko">
+        <Component Id="cmp48B4E9516430EB034B543C6582504A8C" Guid="{31363DD1-EAAB-450E-8E5E-C6F59A20EE6F}">
+          <File Id="filC99BB354BCFA96C4A1C9BCD7EE370E7F" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\ko\com.microsoft.rightsmanagement.mobile.viewer.pcl.resources.dll" />
+        </Component>
+      </Directory>
+      <Directory Id="dir5D4FF3A14A3EA47FCD6D9414E469A244" Name="lt">
+        <Component Id="cmpADB8EAF76E3A1AA2B5A8AD6D39C93A1B" Guid="{DDA81228-2085-4F7B-8062-D3110EDC07C0}">
+          <File Id="filAF7BE5756F4987AA043C0C0AE1460842" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\lt\com.microsoft.rightsmanagement.mobile.viewer.pcl.resources.dll" />
+        </Component>
+      </Directory>
+      <Directory Id="dirE61E3735C1B754EAA49B6E67568AE153" Name="lv">
+        <Component Id="cmpF1DA1233B62716E40C5F37764853F283" Guid="{FAE49C12-CBC2-41AA-A26D-4BDA5110B05E}">
+          <File Id="fil1BA9FE7238CB2313920D6A6B61EB49C3" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\lv\com.microsoft.rightsmanagement.mobile.viewer.pcl.resources.dll" />
+        </Component>
+      </Directory>
+      <Directory Id="dirE18C3945126C26314145D3B0794EBC9B" Name="ms">
+        <Component Id="cmpB8655C46AB13428DAF7DF0E1F93ECE7A" Guid="{B1647F4A-F4CE-4FA9-9751-6C17F874F7BF}">
+          <File Id="filBE5E7170A4EFB1B6B49E3B66EEAC3ECE" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\ms\com.microsoft.rightsmanagement.mobile.viewer.pcl.resources.dll" />
+        </Component>
+      </Directory>
+      <Directory Id="dirAD9F3749BDE51B9EA3E808CC39488A46" Name="nl">
+        <Component Id="cmp99EFB90FC543E6C1DC9CFC55016C8B9A" Guid="{D05E1678-8CB0-4265-B6E2-C972B3ADF378}">
+          <File Id="filA9B938C0C84CCC69C76AE370F2DB796D" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\nl\com.microsoft.rightsmanagement.mobile.viewer.pcl.resources.dll" />
+        </Component>
+      </Directory>
+      <Directory Id="dir4CCA070E4BB8DD1A6AE4FEF6686638C4" Name="no">
+        <Component Id="cmp9674DF71B28DDA522402C60661B3F32E" Guid="{3AEBCA2D-B981-4A1D-97B4-F46D10173067}">
+          <File Id="fil9115CDCA1AAF880EBD4E0D693A08ED08" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\no\com.microsoft.rightsmanagement.mobile.viewer.pcl.resources.dll" />
+        </Component>
+      </Directory>
+      <Directory Id="dir42A5D57151A6A3E9D965C69C82893176" Name="pl">
+        <Component Id="cmp7D6E6540AA1B99D9F79B632D57F574FB" Guid="{4A1F2024-AD37-4D91-9DCD-578EEF150CC4}">
+          <File Id="filCF5332D300F8CBCD4768D3C6E7205AC6" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\pl\com.microsoft.rightsmanagement.mobile.viewer.pcl.resources.dll" />
+        </Component>
+      </Directory>
+      <Directory Id="dir3CF6B6BC48181D29C167EF5DB7F05816" Name="pt-BR">
+        <Component Id="cmp6E09050817214DE439712DFAA4B66951" Guid="{00D8AC2D-990E-4C7F-A45D-1C08A4DE937C}">
+          <File Id="fil847CBE87642175EF6D9936A7C8482018" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\pt-BR\com.microsoft.rightsmanagement.mobile.viewer.pcl.resources.dll" />
+        </Component>
+      </Directory>
+      <Directory Id="dirB95B51383F4388217DEF18E11D76A7CE" Name="pt-PT">
+        <Component Id="cmpEF1AFFE1CF65A1F89317D7B1420B0F7E" Guid="{3847F08D-EC8F-4BD4-A49D-37B0ABB001D8}">
+          <File Id="filA7FD6796457CD4FEA0174C27FFCF8104" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\pt-PT\com.microsoft.rightsmanagement.mobile.viewer.pcl.resources.dll" />
+        </Component>
+      </Directory>
+      <Directory Id="dirE46F01F498F9406B4F44136993088698" Name="ro">
+        <Component Id="cmp479B5358524F1A7BB67E3910940513F7" Guid="{6638CA02-0CB1-4F22-A70A-47C29CE53713}">
+          <File Id="fil03AF6897C1641C4298B7FDE5454ADFA7" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\ro\com.microsoft.rightsmanagement.mobile.viewer.pcl.resources.dll" />
+        </Component>
+      </Directory>
+      <Directory Id="dirF7C0BEA86C276F53E8C9E8E6B2629A9B" Name="ru">
+        <Component Id="cmp36169C02217F8B082FD627218A1D9F34" Guid="{9DF722EB-4C6D-4C35-B753-A71D72F5A059}">
+          <File Id="filBB02AEBAE4F84454D0EAF0B5E3416D63" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\ru\com.microsoft.rightsmanagement.mobile.viewer.pcl.resources.dll" />
+        </Component>
+      </Directory>
+      <Directory Id="dirF6E405E2616F660D4FCDAA39FC1ED8D8" Name="sk">
+        <Component Id="cmp88EF3715AC071ECAFF86EEA4578826FF" Guid="{5BE5C6B2-40E5-433A-817B-DB7EC0833754}">
+          <File Id="fil50049CBFEC5E583F3DBD7E7FB9C91E00" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\sk\com.microsoft.rightsmanagement.mobile.viewer.pcl.resources.dll" />
+        </Component>
+      </Directory>
+      <Directory Id="dirB69E18EFA6A5834838422B42BCE6BBFA" Name="sl">
+        <Component Id="cmp14888375751B5654356DEB2D29DB82EA" Guid="{EA6F7B10-085C-40CB-B68F-4173AB6386FF}">
+          <File Id="fil7ECB3F1107F4FA5E4720FBCDB7818824" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\sl\com.microsoft.rightsmanagement.mobile.viewer.pcl.resources.dll" />
+        </Component>
+      </Directory>
+      <Directory Id="dir9E3C384CF512A10216EFD01F9D77AA26" Name="sv">
+        <Component Id="cmp47D6E3E6A46B9CCDDCFC54F9F6468846" Guid="{0CF96996-DE41-43F3-BFBF-875525EED73A}">
+          <File Id="fil26C123E62D04A3DC9FEFE71162C0B9E0" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\sv\com.microsoft.rightsmanagement.mobile.viewer.pcl.resources.dll" />
+        </Component>
+      </Directory>
+      <Directory Id="dirA4DA9A5598C3662ED6E4801F0FF2EAC8" Name="th">
+        <Component Id="cmpFBDC9C6B009205FA20BAEC8AF1B95A67" Guid="{B0B7D6EB-C447-4B1D-9220-629B00B47DDA}">
+          <File Id="filC7DF5E758032637C899E69825D8FC700" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\th\com.microsoft.rightsmanagement.mobile.viewer.pcl.resources.dll" />
+        </Component>
+      </Directory>
+      <Directory Id="dirABDF097918DC4D178C28DD77E3766325" Name="tr">
+        <Component Id="cmpDA3404E471991F782FD776C10CC3B805" Guid="{15A9CC0F-4D64-4688-A633-F710039F4119}">
+          <File Id="fil2225C4CBE20BECCA40D6635363906DF5" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\tr\com.microsoft.rightsmanagement.mobile.viewer.pcl.resources.dll" />
+        </Component>
+      </Directory>
+      <Directory Id="dir09CC4E618379FE7D9EB8E064B61C997C" Name="uk">
+        <Component Id="cmp976D2096E580F6EB204F3B02567DB4BF" Guid="{6A96B1C4-EAB8-436E-86D3-46939642CDBC}">
+          <File Id="fil1C359411CB9DFB26AEB98FE9C0B26127" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\uk\com.microsoft.rightsmanagement.mobile.viewer.pcl.resources.dll" />
+        </Component>
+      </Directory>
+      <Directory Id="dir2806A8CF8C7D52D28130A81B6AA21655" Name="vi">
+        <Component Id="cmp662557C19FAAC96979ABFBFE1BE7BC17" Guid="{BD19BD59-109C-474A-B545-BB7E3A6958C1}">
+          <File Id="fil63C5BAC93CDED1C71620273571999696" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\vi\com.microsoft.rightsmanagement.mobile.viewer.pcl.resources.dll" />
+        </Component>
+      </Directory>
+      <Directory Id="dirD5682402C737D6B46ADCA4F0C55141DF" Name="zh-Hans">
+        <Component Id="cmpCF07058EC16BFE1580479FD04DCB84A0" Guid="{D96C5586-2CA5-458C-AB52-E41E924650C1}">
+          <File Id="filD97486FD20F6CCA53C651BCAA9B76D85" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\zh-Hans\com.microsoft.rightsmanagement.mobile.viewer.pcl.resources.dll" />
+        </Component>
+      </Directory>
+      <Directory Id="dir161743E4D186A5C18DD78D84F6714734" Name="zh-Hant">
+        <Component Id="cmpF5D155086DFC800C6B69588CD78C37DC" Guid="{9E44D457-0164-4503-8025-B564AAC5FE76}">
+          <File Id="filA765539AEE5D5641FB42A033D302BE72" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\zh-Hant\com.microsoft.rightsmanagement.mobile.viewer.pcl.resources.dll" />
+        </Component>
+      </Directory>
+
+      <!-- Cefsharp Localization -->
+      <Directory Id="dirBE132B7BAD188FE48DEA658A8A1A277B" Name="locales">
+        <Component Id="cmpDDD4B8478290AA533E034734D1B09FAA" Guid="{03621026-14D7-44D0-A2B6-4E984F40F66E}">
+          <File Id="fil5749E724419E9B79B5B08F164F4ECAA9" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\locales\mr.pak" />
+          <File Id="fil5749E724419E9B79B5B08F164F4EACA9" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\locales\ms.pak" />
+          <File Id="fil5749E724419E9B79B5B08F164F4ACCA9" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\locales\nb.pak" />
+          <File Id="fil5749E724419E9B79B5B08F164FAECCA9" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\locales\nl.pak" />
+          <File Id="fil5749E724419E9B79B5B08F164A4ECCA9" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\locales\pl.pak" />
+          <File Id="fil5749E724419E9B79B5B08F16AF4ECCA9" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\locales\pt-BR.pak" />
+          <File Id="fil5749E724419E9B79B5B08F1A4F4ECCA9" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\locales\pt-PT.pak" />
+          <File Id="fil5749E724419E9B79B5B08FA64F4ECCA9" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\locales\ro.pak" />
+          <File Id="fil5749E724419E9B79B5B08A164F4ECCA9" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\locales\ru.pak" />
+          <File Id="fil5749E724419E9B79B5B0AF164F4ECCA9" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\locales\sk.pak" />
+          <File Id="fil5749E724419E9B79B5BA8F164F4ECCA9" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\locales\sl.pak" />
+          <File Id="fil5749E724419E9B79B5A08F164F4ECCA9" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\locales\sr.pak" />
+          <File Id="fil5749E724419E9B79BAB08F164F4ECCA9" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\locales\sv.pak" />
+          <File Id="fil5749E724419E9B79A5B08F164F4ECCA9" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\locales\sw.pak" />
+          <File Id="fil5749E724419E9B7AB5B08F164F4ECCA9" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\locales\ta.pak" />
+          <File Id="fil5749E724419E9BA9B5B08F164F4ECCA9" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\locales\te.pak" />
+          <File Id="fil5749E724419E9A79B5B08F164F4ECCA9" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\locales\th.pak" />
+          <File Id="fil5749E724419EAB79B5B08F164F4ECCA9" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\locales\tr.pak" />
+          <File Id="fil5749E724419A9B79B5B08F164F4ECCA9" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\locales\uk.pak" />
+          <File Id="fil5749E72441AE9B79B5B08F164F4ECCA9" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\locales\vi.pak" />
+          <File Id="fil5749E7244A9E9B79B5B08F164F4ECCA9" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\locales\zh-CN.pak" />
+          <File Id="fil5749E724A19E9B79B5B08F164F4ECCA9" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\locales\zh-TW.pak" />
+          <File Id="fil5749E72A419E9B79B5B08F164F4ECCA9" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\locales\am.pak" />
+          <File Id="fil5749E7A4419E9B79B5B08F164F4ECCA9" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\locales\ar.pak" />
+          <File Id="fil5749EA24419E9B79B5B08F164F4ECCA9" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\locales\bg.pak" />
+          <File Id="fil5749A724419E9B79B5B08F164F4ECCA9" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\locales\bn.pak" />
+          <File Id="fil574AE724419E9B79B5B08F164F4ECCA9" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\locales\ca.pak" />
+          <File Id="fil57A9E724419E9B79B5B08F164F4ECCA9" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\locales\cs.pak" />
+          <File Id="fil5A49E724419E9B79B5B08F164F4ECCA9" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\locales\da.pak" />
+          <File Id="filA749E724419E9B79B5B08F164F4ECCA9" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\locales\de.pak" />
+          <File Id="filC749E724419E9B79B5B08F164F4ECCA9" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\locales\el.pak" />
+          <File Id="fil5C49E724419E9B79B5B08F164F4ECCA9" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\locales\en-GB.pak" />
+          <File Id="fil57C9E724419E9B79B5B08F164F4ECCA9" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\locales\en-US.pak" />
+          <File Id="fil574CE724419E9B79B5B08F164F4ECCA9" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\locales\es.pak" />
+          <File Id="fil5749C724419E9B79B5B08F164F4ECCA9" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\locales\es-419.pak" />
+          <File Id="fil5749EC24419E9B79B5B08F164F4ECCA9" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\locales\et.pak" />
+          <File Id="fil5749E7C4419E9B79B5B08F164F4ECCA9" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\locales\fa.pak" />
+          <File Id="fil5749E72C419E9B79B5B08F164F4ECCA9" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\locales\fi.pak" />
+          <File Id="fil5749E724C19E9B79B5B08F164F4ECCA9" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\locales\fil.pak" />
+          <File Id="fil5749E7244C9E9B79B5B08F164F4ECCA9" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\locales\fr.pak" />
+          <File Id="fil5749E72441CE9B79B5B08F164F4ECCA9" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\locales\gu.pak" />
+          <File Id="fil5749E724419C9B79B5B08F164F4ECCA9" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\locales\he.pak" />
+          <File Id="fil5749E724419ECB79B5B08F164F4ECCA9" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\locales\hi.pak" />
+          <File Id="fil5749E724419E9C79B5B08F164F4ECCA9" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\locales\hr.pak" />
+          <File Id="fil5749E724419E9BC9B5B08F164F4ECCA9" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\locales\hu.pak" />
+          <File Id="fil5749E724419E9B7CB5B08F164F4ECCA9" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\locales\id.pak" />
+          <File Id="fil5749E724419E9B79C5B08F164F4ECCA9" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\locales\it.pak" />
+          <File Id="fil5749E724419E9B79BCB08F164F4ECCA9" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\locales\ja.pak" />
+          <File Id="fil5749E724419E9B79B5C08F164F4ECCA9" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\locales\kn.pak" />
+          <File Id="fil5749E724419E9B79B5BC8F164F4ECCA9" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\locales\ko.pak" />
+          <File Id="fil5749E724419E9B79B5B0CF164F4ECCA9" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\locales\lt.pak" />
+          <File Id="fil5749E724419E9B79B5B08C164F4ECCA9" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\locales\lv.pak" />
+          <File Id="fil5749E724419E9B79B5B08FC64F4ECCA9" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\locales\ml.pak" />
+        </Component>
+      </Directory>
+    </DirectoryRef>
+  </Fragment>
+
+  <Fragment>
+    <ComponentGroup Id="RootComponentGroup">
+      <ComponentRef Id="cmpEBD62182149B8CD85EC2EA70B71B6785" />
+      <ComponentRef Id="cmpDDD4B8478290AA533E034734D1B09FAA" />
+      <ComponentRef Id="cmpDDD4B8478290AA533E034734D1B09FC7" />
+      <ComponentRef Id="cmpDED4B8478290AA533E034734E1B09FC7" />
+      <ComponentRef Id="cmp4D3505C905584FCBB4B39DB575EA28A3" />
+      <ComponentRef Id="cmp09915EB1C1978F84C46A661EF3B22025" />
+      <ComponentRef Id="cmpD7AAA950D1B6E2D516E8F5019BF9EFF9" />
+      <ComponentRef Id="cmp9262A1201275A6CFC41DFF3462AB7967" />
+      <ComponentRef Id="cmp818CA76AE99054CA428AC2B06110B940" />
+      <ComponentRef Id="cmp99EAEE1E10E3FD7BBEA2D60DD8525D10" />
+      <ComponentRef Id="cmp03201F606AE55F8DD82D44B5930A25E5" />
+      <ComponentRef Id="cmp7D12E9151A877E1A858C7227638C638D" />
+      <ComponentRef Id="cmpAFE1011BFFD0682EF34868E34B799690" />
+      <ComponentRef Id="cmp2ADA24BE71C6BEA7D1D0D94F3522F119" />
+      <ComponentRef Id="cmpAF5FBCB6031F1BD926481C499A36D625" />
+      <ComponentRef Id="cmp72C4CC988763ABE80C93A4FD1EBD0D6F" />
+      <ComponentRef Id="cmp49FA75A74C743DDE7A1F47AA0F8EA250" />
+      <ComponentRef Id="cmp5AEED16C304A56324FCF5646BFE007C9" />
+      <ComponentRef Id="cmp48B4E9516430EB034B543C6582504A8C" />
+      <ComponentRef Id="cmpADB8EAF76E3A1AA2B5A8AD6D39C93A1B" />
+      <ComponentRef Id="cmpF1DA1233B62716E40C5F37764853F283" />
+      <ComponentRef Id="cmpB8655C46AB13428DAF7DF0E1F93ECE7A" />
+      <ComponentRef Id="cmp99EFB90FC543E6C1DC9CFC55016C8B9A" />
+      <ComponentRef Id="cmp9674DF71B28DDA522402C60661B3F32E" />
+      <ComponentRef Id="cmp7D6E6540AA1B99D9F79B632D57F574FB" />
+      <ComponentRef Id="cmp6E09050817214DE439712DFAA4B66951" />
+      <ComponentRef Id="cmpEF1AFFE1CF65A1F89317D7B1420B0F7E" />
+      <ComponentRef Id="cmp479B5358524F1A7BB67E3910940513F7" />
+      <ComponentRef Id="cmp36169C02217F8B082FD627218A1D9F34" />
+      <ComponentRef Id="cmp88EF3715AC071ECAFF86EEA4578826FF" />
+      <ComponentRef Id="cmp14888375751B5654356DEB2D29DB82EA" />
+      <ComponentRef Id="cmp47D6E3E6A46B9CCDDCFC54F9F6468846" />
+      <ComponentRef Id="cmpFBDC9C6B009205FA20BAEC8AF1B95A67" />
+      <ComponentRef Id="cmpDA3404E471991F782FD776C10CC3B805" />
+      <ComponentRef Id="cmp976D2096E580F6EB204F3B02567DB4BF" />
+      <ComponentRef Id="cmp662557C19FAAC96979ABFBFE1BE7BC17" />
+      <ComponentRef Id="cmpCF07058EC16BFE1580479FD04DCB84A0" />
+      <ComponentRef Id="cmpF5D155086DFC800C6B69588CD78C37DC" />
+    </ComponentGroup>
+  </Fragment>
+</Wix>

@@ -1,0 +1,464 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\..\..\packages\CefSharp.Wpf.47.0.3\build\CefSharp.Wpf.props" Condition="Exists('..\..\..\packages\CefSharp.Wpf.47.0.3\build\CefSharp.Wpf.props')" />
+  <Import Project="..\..\..\packages\CefSharp.Common.47.0.3\build\CefSharp.Common.props" Condition="Exists('..\..\..\packages\CefSharp.Common.47.0.3\build\CefSharp.Common.props')" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{ED0F5682-9F18-46DB-8329-00A741EA873F}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>com.microsoft.rightsmanagement.windows.viewer</RootNamespace>
+    <AssemblyName>com.microsoft.rightsmanagement.windows.viewer</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <WarningLevel>4</WarningLevel>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Resources\Images\AIP_WinIco.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Develop|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Develop\</OutputPath>
+    <DefineConstants>__WINDOWS__</DefineConstants>
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Dogfood|AnyCPU'">
+    <OutputPath>bin\Dogfood\</OutputPath>
+    <DefineConstants>__WINDOWS__</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>__WINDOWS__</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Develop|x64'">
+    <OutputPath>bin\x64\Develop\</OutputPath>
+    <PlatformTarget>x86</PlatformTarget>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+    <DefineConstants>__WINDOWS__</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Dogfood|x86'">
+    <OutputPath>bin\x86\Dogfood\</OutputPath>
+    <PlatformTarget>x86</PlatformTarget>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+    <DefineConstants>__WINDOWS__</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <PlatformTarget>x86</PlatformTarget>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+    <DefineConstants>__WINDOWS__</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Develop|AnyCPU'">
+    <DefineConstants>__WINDOWS__</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Dogfood|x64'">
+    <DefineConstants>__WINDOWS__</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <DefineConstants>__WINDOWS__</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.Applications.Telemetry.Windows, Version=1.3.211.1, Culture=neutral, processorArchitecture=x86">
+      <HintPath>..\..\..\packages\AriaTelemetryCLI.1.3.211.1\lib\x86\Release\Microsoft.Applications.Telemetry.Windows.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.IdentityModel.Clients.ActiveDirectory, Version=3.10.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Microsoft.IdentityModel.Clients.ActiveDirectory.3.10.305231913\lib\net45\Microsoft.IdentityModel.Clients.ActiveDirectory.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.IdentityModel.Clients.ActiveDirectory.Platform, Version=3.10.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Microsoft.IdentityModel.Clients.ActiveDirectory.3.10.305231913\lib\net45\Microsoft.IdentityModel.Clients.ActiveDirectory.Platform.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Practices.ServiceLocation, Version=1.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Microsoft.InformationProtection.RMS.1.3.13\lib\net45\Microsoft.Practices.ServiceLocation.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Unity, Version=4.0.0.0, Culture=neutral, PublicKeyToken=6d32ff45e0ccc69f, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Microsoft.InformationProtection.RMS.1.3.13\lib\net45\Microsoft.Practices.Unity.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="MSIP.Lib, Version=1.3.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Microsoft.InformationProtection.RMS.1.3.13\lib\net45\MSIP.Lib.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="MSIP.RMS, Version=1.3.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Microsoft.InformationProtection.RMS.1.3.13\lib\net45\MSIP.RMS.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="MSIP.Win32, Version=1.3.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Microsoft.InformationProtection.RMS.1.3.13\lib\net45\MSIP.Win32.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="NetOffice, Version=1.7.3.0, Culture=neutral, PublicKeyToken=acf636d62c39f8f5, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Microsoft.InformationProtection.RMS.1.3.13\lib\net45\NetOffice.dll</HintPath>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Microsoft.InformationProtection.RMS.1.3.13\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Microsoft.InformationProtection.RMS.1.3.13\lib\net45\NLog.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="OfficeApi, Version=1.7.3.0, Culture=neutral, PublicKeyToken=7c1c3e9d16cace88, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Microsoft.InformationProtection.RMS.1.3.13\lib\net45\OfficeApi.dll</HintPath>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
+    <Reference Include="OpenMcdf, Version=1.5.4.22637, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\OpenMcdf.1.5.4.22637\lib\OpenMcdf.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="OutlookApi, Version=1.7.3.0, Culture=neutral, PublicKeyToken=865d86a9c321c488, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Microsoft.InformationProtection.RMS.1.3.13\lib\net45\OutlookApi.dll</HintPath>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
+    <Reference Include="ReachFramework" />
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="Ude, Version=0.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\UDE.CSharp.1.1.0\lib\Ude.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="WindowsBase" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="Zlib.Portable, Version=1.11.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Zlib.Portable.1.11.0\lib\portable-net4+sl5+wp8+win8+wpa81+MonoTouch+MonoAndroid\Zlib.Portable.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Manager.cs" />
+    <Compile Include="Menu\PrintMenuItem.cs" />
+    <Compile Include="Menu\ProtectionMenuItem.cs" />
+    <Compile Include="Models\NoPermissionModel.cs" />
+    <Compile Include="Models\PFileModel.cs" />
+    <Compile Include="Models\SettingsModel.cs" />
+    <Compile Include="Models\SignInModel.cs" />
+    <Compile Include="Presenters\PresenterWindows.cs" />
+    <Compile Include="Presenters\PresenterWindowsPfile.cs" />
+    <Compile Include="RMS\DocumentPFile.cs" />
+    <Compile Include="RMS\PackagePfileWindows.cs" />
+    <Compile Include="RMS\RMSHandlerPfileWindows.cs" />
+    <Compile Include="SimpleHelpers\FileEncoding.cs" />
+    <Compile Include="Telemetry\TelemetryWindows.cs" />
+    <Compile Include="DelegateCommand.cs" />
+    <Compile Include="Icons\IconServiceWindows.cs" />
+    <Compile Include="ViewModels\NoPermissionVM.cs" />
+    <Compile Include="ViewModels\PersmissionsVM.cs" />
+    <Compile Include="ViewModels\PFileControlVM.cs" />
+    <Compile Include="ViewModels\SettingsVM.cs" />
+    <Compile Include="ViewModels\SidebarVM.cs" />
+    <Compile Include="ViewModels\PFileVM.cs" />
+    <Compile Include="ViewModels\TitlebarVM.cs" />
+    <Compile Include="ViewModels\SignInVM.cs" />
+    <Compile Include="Views\IconControl.xaml.cs">
+      <DependentUpon>IconControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Menu\PermissionsMenuItem.cs" />
+    <Compile Include="ViewModels\BaseVM.cs" />
+    <Compile Include="Menu\IMenuItem.cs" />
+    <Compile Include="Models\MainWindowModel.cs" />
+    <Compile Include="Models\SidebarModel.cs" />
+    <Compile Include="Models\ToolbarModel.cs" />
+    <Compile Include="ViewModels\IconVM.cs" />
+    <Compile Include="ViewModels\ToolbarVM.cs" />
+    <Compile Include="Views\NoPermission.xaml.cs">
+      <DependentUpon>NoPermission.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\PFileControl.xaml.cs">
+      <DependentUpon>PFileControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\PFileWindow.xaml.cs">
+      <DependentUpon>PFileWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\MainWindow.xaml.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ViewModels\MainVM.cs" />
+    <Compile Include="Views\PermissionsWindow.xaml.cs">
+      <DependentUpon>PermissionsWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Settings.xaml.cs">
+      <DependentUpon>Settings.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Sidebar.xaml.cs">
+      <DependentUpon>Sidebar.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\SpinningDots.xaml.cs">
+      <DependentUpon>SpinningDots.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\TitleBar.xaml.cs">
+      <DependentUpon>TitleBar.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Toolbar.xaml.cs">
+      <DependentUpon>Toolbar.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\SignInWindow.xaml.cs">
+      <DependentUpon>SignInWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="WindowUtils.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <Resource Include="..\..\Resources\Icons\offsym.ttf">
+      <Link>Resources\Icons\offsym.ttf</Link>
+    </Resource>
+    <Resource Include="..\..\Resources\Icons\offsymb.ttf">
+      <Link>Resources\Icons\offsymb.ttf</Link>
+    </Resource>
+    <Resource Include="..\..\Resources\Icons\offsymsb.ttf">
+      <Link>Resources\Icons\offsymsb.ttf</Link>
+    </Resource>
+    <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <AppDesigner Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Common\PCL\com.microsoft.rightsmanagement.mobile.viewer.pcl.csproj">
+      <Project>{bb3dde02-c418-49c6-b633-2d48538fa121}</Project>
+      <Name>com.microsoft.rightsmanagement.mobile.viewer.pcl</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="Views\Dictionary.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\IconControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\NoPermission.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\PFileControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\PFileWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\MainWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\PermissionsWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Settings.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Sidebar.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\SpinningDots.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\TitleBar.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Toolbar.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\SignInWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\packages\MSIPC.1.0.2217.0\i386\**\*">
+      <Visible>false</Visible>
+      <Link>MSIPC\i386\%(RecursiveDir)%(FileName)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\..\packages\MSIPC.1.0.2217.0\amd64\**\*">
+      <Visible>false</Visible>
+      <Link>MSIPC\amd64\%(RecursiveDir)%(FileName)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\AIP_WinIco.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="..\..\Resources\Images\SplashLogo%403x.png">
+      <Link>Resources\Images\SplashLogo%403x.png</Link>
+    </Resource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\Resources\HTML\about.css">
+      <Link>Resources\HTML\about.css</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\Resources\HTML\about.html">
+      <Link>Resources\HTML\about.html</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\Resources\HTML\default-Android.css">
+      <Link>Resources\HTML\default-Android.css</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\Resources\HTML\default-ios.css">
+      <Link>Resources\HTML\default-ios.css</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\Resources\HTML\default.css">
+      <Link>Resources\HTML\default.css</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\Resources\HTML\default.html">
+      <Link>Resources\HTML\default.html</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\Resources\HTML\error.html">
+      <Link>Resources\HTML\error.html</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\Resources\HTML\flipswitch-Android.css">
+      <Link>Resources\HTML\flipswitch-Android.css</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\Resources\HTML\flipswitch-ios.css">
+      <Link>Resources\HTML\flipswitch-ios.css</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\Resources\HTML\loading.html">
+      <Link>Resources\HTML\loading.html</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\Resources\HTML\nopermissions.html">
+      <Link>Resources\HTML\nopermissions.html</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\Resources\HTML\permissions-Android.css">
+      <Link>Resources\HTML\permissions-Android.css</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\Resources\HTML\permissions-ios.css">
+      <Link>Resources\HTML\permissions-ios.css</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\Resources\HTML\permissions.css">
+      <Link>Resources\HTML\permissions.css</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\Resources\HTML\permissions.html">
+      <Link>Resources\HTML\permissions.html</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\Resources\HTML\settings-Android.css">
+      <Link>Resources\HTML\settings-Android.css</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\Resources\HTML\settings-ios.css">
+      <Link>Resources\HTML\settings-ios.css</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\Resources\HTML\settings.css">
+      <Link>Resources\HTML\settings.css</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\Resources\HTML\settings.html">
+      <Link>Resources\HTML\settings.html</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\Resources\HTML\table-Android.css">
+      <Link>Resources\HTML\table-Android.css</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\Resources\HTML\table-ios.css">
+      <Link>Resources\HTML\table-ios.css</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\Resources\HTML\table.css">
+      <Link>Resources\HTML\table.css</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\Application.ico" />
+  </ItemGroup>
+  <Import Project="..\..\Common\Lib\SI.Mobile.RPMSGViewer.Shared.projitems" Label="Shared" />
+  <Import Project="..\Lib\com.microsoft.rightsmanagement.windows.viewer.lib.projitems" Label="Shared" />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="..\..\..\packages\cef.redist.x64.3.2526.1362\build\cef.redist.x64.targets" Condition="Exists('..\..\..\packages\cef.redist.x64.3.2526.1362\build\cef.redist.x64.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\..\..\packages\cef.redist.x64.3.2526.1362\build\cef.redist.x64.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\packages\cef.redist.x64.3.2526.1362\build\cef.redist.x64.targets'))" />
+    <Error Condition="!Exists('..\..\..\packages\cef.redist.x86.3.2526.1362\build\cef.redist.x86.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\packages\cef.redist.x86.3.2526.1362\build\cef.redist.x86.targets'))" />
+    <Error Condition="!Exists('..\..\..\packages\CefSharp.Common.47.0.3\build\CefSharp.Common.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\packages\CefSharp.Common.47.0.3\build\CefSharp.Common.props'))" />
+    <Error Condition="!Exists('..\..\..\packages\CefSharp.Common.47.0.3\build\CefSharp.Common.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\packages\CefSharp.Common.47.0.3\build\CefSharp.Common.targets'))" />
+    <Error Condition="!Exists('..\..\..\packages\CefSharp.Wpf.47.0.3\build\CefSharp.Wpf.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\packages\CefSharp.Wpf.47.0.3\build\CefSharp.Wpf.props'))" />
+  </Target>
+  <Import Project="..\..\..\packages\cef.redist.x86.3.2526.1362\build\cef.redist.x86.targets" Condition="Exists('..\..\..\packages\cef.redist.x86.3.2526.1362\build\cef.redist.x86.targets')" />
+  <Import Project="..\..\..\packages\CefSharp.Common.47.0.3\build\CefSharp.Common.targets" Condition="Exists('..\..\..\packages\CefSharp.Common.47.0.3\build\CefSharp.Common.targets')" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

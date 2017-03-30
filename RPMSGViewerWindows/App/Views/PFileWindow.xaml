@@ -1,0 +1,90 @@
+﻿<Window x:Class="com.microsoft.rightsmanagement.windows.viewer.Views.PFileWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:views="clr-namespace:com.microsoft.rightsmanagement.windows.viewer.Views"
+        mc:Ignorable="d" 
+        MinWidth="150" 
+		MinHeight="200" 
+        BorderThickness="1" 
+        Opacity="{Binding Opacity}" Height="580" Width="580"
+		WindowStartupLocation="CenterScreen"
+		MouseLeftButtonDown="PFileWindow_OnMouseLeftButtonDown"
+		ContentRendered="PFileWindow_OnContentRendered">
+	<Window.Resources>
+		<ResourceDictionary Source="Dictionary.xaml"></ResourceDictionary>
+	</Window.Resources>
+	<Window.BorderBrush >
+		<StaticResource ResourceKey="BorderColor" />
+	</Window.BorderBrush>
+	<WindowChrome.WindowChrome>
+		<WindowChrome CaptionHeight="30" ResizeBorderThickness="6" GlassFrameThickness="0" CornerRadius="0"  />
+	</WindowChrome.WindowChrome>
+	<Grid Height="600">
+		<Button WindowChrome.IsHitTestVisibleInChrome="True" Width="40" Click="OnCloseClick" HorizontalAlignment="Right" VerticalAlignment="Top" Height="30">
+			<Button.Style >
+				<Style BasedOn="{StaticResource CommandButton}" TargetType="Button">
+					<Style.Triggers>
+						<Trigger Property="Button.IsMouseOver" Value="True">
+							<Setter Property="Background" Value="#EB1227"></Setter>
+						</Trigger>
+						<Trigger Property="Button.IsPressed" Value="True">
+							<Setter Property="Background" Value="#f1707a"></Setter>
+						</Trigger>
+					</Style.Triggers>
+				</Style>
+			</Button.Style>
+			<Canvas>
+				<Path Data="m 17,10 l 10,10" Stroke="Gray" StrokeThickness="1" />
+				<Path Data="m 27,10 l -10,10" Stroke="Gray" StrokeThickness="1" />
+			</Canvas>
+		</Button>
+		<Image x:Name="icon" HorizontalAlignment="Left" Height="100" Margin="75,49,0,0" VerticalAlignment="Top" Width="100" Source="/com.microsoft.rightsmanagement.windows.viewer;component/Resources/Images/Application.ico" />
+		<Label x:Name="azure" HorizontalAlignment="Left" Margin="175,85,0,0" VerticalAlignment="Top" Content="Azure" Foreground="{StaticResource AzIPThemeColor}" FontSize="18" FontWeight="Bold"/>
+		<Label x:Name="informationProtection" HorizontalAlignment="Left" Margin="175,103,0,0" VerticalAlignment="Top" Content="Information Protection" Foreground="{StaticResource AzIPThemeColor}" FontSize="18" />
+		<views:PFileControl Margin="70,175,0,0" Visibility="{Binding PFileControlVisibility}" DataContext="{Binding PFileControlViewModel}"></views:PFileControl>
+		<views:NoPermission Margin="70,175,0,0" Visibility="{Binding NoPermissionVisibility}" DataContext="{Binding NoPermissionViewModel}"></views:NoPermission>
+		<!--<Label x:Name="protetcedFile" Content="{Binding ProtectedFileLabel}" HorizontalAlignment="Left" Margin="70,175,0,0" VerticalAlignment="Top" FontSize="20" FontWeight="Light"/>
+		<Label x:Name="fileName" Content="{Binding FileName}" HorizontalAlignment="Left" Margin="70,203,0,0" VerticalAlignment="Top" FontSize="14" FontWeight="Light" />
+		<TextBlock x:Name="permissionsCommentTextBlock" HorizontalAlignment="Left" Margin="75,260,0,0" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="12" Width="430" TextTrimming="WordEllipsis" Visibility="{Binding NoPermissionWindow}">
+			<TextBlock.Inlines>
+				<Run FontWeight="Bold" Text="{Binding Refferal}" />
+				<Run Text="{Binding  PermissionsComment}" />
+			</TextBlock.Inlines>
+		</TextBlock>
+		
+		<TextBlock x:Name="templateDescription" HorizontalAlignment="Left" Margin="75,343,0,0" VerticalAlignment="Top" Background="{StaticResource AzIPThemeColor}" Padding="7,10" Foreground="White" FontWeight="Light" FontSize="14" Height="50" TextAlignment="Left" Width="430" Visibility="{Binding NoPermissionWindow}">
+		<StackPanel Orientation="Horizontal">
+		<Image Source ="../Resources/Images/AIP_WinIco.ico" HorizontalAlignment="Left" Height="25" Margin="0,2,0,0"/>
+		<views:SpinningDots Height ="25" Foreground="White" Margin="10,5,0,0" Visibility="{Binding IsProgressAnimationVisible}"/>
+		<TextBlock  TextTrimming="WordEllipsis" Text="{Binding TempalteDesciption}" Foreground="White" MaxHeight="35" Margin="5,5,0,0" FontWeight="Medium"/>
+		</StackPanel>
+		</TextBlock>
+		<Button x:Name="Open" 
+                Style="{StaticResource BlueButton}"
+				HorizontalAlignment="Left"
+                Content="{Binding OpenCloseButtonText}"            
+                Foreground="White"
+				Height="35"
+				Width="100"
+				Margin="75,462,0,88.5"
+				FontSize="14"
+				Command="{Binding OnOpenCommand}"
+				IsEnabled="{Binding IsOpenButtonEnabled}"/>
+		
+		<Button x:Name="Cancel" 
+                Style="{StaticResource BlueButton}"
+				HorizontalAlignment="Left"
+                Content="Cancel"            
+                Foreground="White"
+				Height="35"
+				Width="100"
+				Margin="190,462,0,88.5"
+				FontSize="14"
+				Click="OnCloseClick"
+				Visibility="{Binding IsNoPermissionVisible}"/>-->
+
+	</Grid>
+</Window>
+

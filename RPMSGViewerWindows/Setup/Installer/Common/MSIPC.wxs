@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+	<Fragment>
+		<DirectoryRef Id="INSTALLFOLDER">
+			<Directory Id="dir58A5453E87E2907CD97F6F15216689A2" Name="MSIPC">
+				<Directory Id="dir1BF146E04D90B3387F16C4B17A44F750" Name="i386">
+					<Component Id="cmpC2846734FE441C53BD9FD50483A737E4" Guid="AE7441AA-C460-46EC-98B5-BAE6B11A3891">
+						<File Id="fil7E72F76CBB5CF25C4B1464C48376F4C5" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\MSIPC\i386\adal.dll" />
+						<File Id="fil5828B247E9E1CEFBB75729B151DBE445" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\MSIPC\i386\ipcauth.dll" />
+						<File Id="fil1B8F48A14C87714A69AD509558E4A051" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\MSIPC\i386\IpcFile.dll" />
+						<File Id="fil8A0D16350752CCE529B35E2497894A98" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\MSIPC\i386\ipcsecproc.dll" />
+						<File Id="fil28B8C79E9D217F14EB4095A91EA4F180" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\MSIPC\i386\ipcsecproc_ssp.dll" />
+						<File Id="filB4637B8F1A05ACF49963BFB63FAC107A" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\MSIPC\i386\msipc.dll" />
+						<File Id="fil04A6276284D32D4E46433A582DAE96CD" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\MSIPC\i386\msvcp100.dll" />
+						<File Id="filDEF3357B5837CCE1DF0BB2D6979E8FBA" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\MSIPC\i386\msvcr100.dll" />
+					</Component>
+          <Directory Id="IrmProtectors" Name="IRMProtectors">
+            <Component Id="IrmProtectorsDlls" Guid="CE1692EA-F395-40E0-86CC-FF8C34A724BB">
+              <File Id="microsoft.office.irm.msoprotector.dll" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\MSIPC\i386\IRMProtectors\microsoft.office.irm.msoprotector.dll" />
+              <File Id="microsoft.office.irm.ofcprotector.dll" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\MSIPC\i386\IRMProtectors\microsoft.office.irm.ofcprotector.dll" />
+              <File Id="microsoft.office.irm.pdfprotector.dll" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\MSIPC\i386\IRMProtectors\microsoft.office.irm.pdfprotector.dll" />
+              <File Id="microsoft.office.irm.pdfprotectorlib.dll" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\MSIPC\i386\IRMProtectors\microsoft.office.irm.pdfprotectorlib.dll" />
+              <File Id="Microsoft.Office.Server.Native.dll" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\MSIPC\i386\IRMProtectors\Microsoft.Office.Server.Native.dll" />
+              <File Id="onetutil.dll" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\MSIPC\i386\IRMProtectors\onetutil.dll" />            
+            </Component>
+          </Directory>
+					<Directory Id="dirF56C4B22AEAEAD0F51B7D5474EE5F50B" Name="ar">
+						<Component Id="cmp5FA74866DE4F43019E41D7972639601C" Guid="6938CFF2-26F2-49DA-8BFE-284AD624F511">
+							<File Id="fil977C9325BE088E27AECDA5B6D0916CD3" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\MSIPC\i386\ar\msipc.dll.mui" />
+						</Component>
+					</Directory>
+					<Directory Id="dirC9AD3A9239CD65B558CFE51EEFFBA6C2" Name="bg">
+						<Component Id="cmpDC28E9B5B0A2AF4CCEF7944FB4ADF3DC" Guid="95DDD46F-7792-4D02-901C-1EF2DE9EADB2">
+							<File Id="filFC09DFC5D385E849437521FE51573514" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\MSIPC\i386\bg\msipc.dll.mui" />
+						</Component>
+					</Directory>
+					<Directory Id="dirC3D73756F07E3C597F475156F0EB0287" Name="ca">
+						<Component Id="cmp15F63B73798E9DE9465D74C22CF8CD80" Guid="FF208EEE-FD57-43BE-B6C1-0209B70708D8">
+							<File Id="filADADD7562F9E7F5D609300C6D7FD4B72" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\MSIPC\i386\ca\msipc.dll.mui" />
+						</Component>
+					</Directory>
+					<Directory Id="dir88936247F7852265B53A567FFD63D5C5" Name="cs">
+						<Component Id="cmpB01F07A28AB15C3A01CEE14D4AE77D5D" Guid="909AFBDA-4996-4D89-8A04-4F3FD2E22335">
+							<File Id="fil16AECF8BD0B844B59DDC94A80D6E874B" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\MSIPC\i386\cs\msipc.dll.mui" />
+						</Component>
+					</Directory>
+					<Directory Id="dirD23C899C04E3322CC3BCF69D211A564D" Name="da">
+						<Component Id="cmpB23060A98F609DC1FA8CC2F263D98FE2" Guid="A08B0EE9-7C82-43D8-87A2-64AA56F36AE0">
+							<File Id="fil46FEBC62D1FB5955A962A3F955429182" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\MSIPC\i386\da\msipc.dll.mui" />
+						</Component>
+					</Directory>
+					<Directory Id="dirB8C4FF496977A3B683E94579F2416500" Name="de">
+						<Component Id="cmp18FD4CA2B12B1A81D9E9702B169318C4" Guid="9D1129F7-33F4-4EBD-89CF-93B093AE86CB">
+							<File Id="fil8B08112F445C53464E14C1F02D5C0821" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\MSIPC\i386\de\msipc.dll.mui" />
+						</Component>
+					</Directory>
+					<Directory Id="dir00A3888D3AA3845A7A32FB84DE97D192" Name="el">
+						<Component Id="cmpB5593CD318A09811A76969BE5E335531" Guid="F7078727-8EF9-4200-A7A5-4E6193554465">
+							<File Id="fil5457239500FAAA99AD1448CA31544B4D" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\MSIPC\i386\el\msipc.dll.mui" />
+						</Component>
+					</Directory>
+					<Directory Id="dirA18D4D0ED1C6723B1B3EDB8C7928892C" Name="en-us">
+						<Component Id="cmp7F12173E3A1D2D2B9D04C2568D05BF85" Guid="8D1F73BF-464E-49D1-81B3-79602A4F64EA">
+							<File Id="fil571114EAB01C870215F897057397124D" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\MSIPC\i386\en-us\msipc.dll.mui" />
+						</Component>
+					</Directory>
+					<Directory Id="dir8FC55FA0E723C17A251900D048079021" Name="es">
+						<Component Id="cmp61F9AA20E2DDE15E7534FB5FAF09CCAB" Guid="C2E8D275-141A-4CC6-AB93-44CE7E583928">
+							<File Id="fil37C5F3B4990F34BD589A557E1E99B837" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\MSIPC\i386\es\msipc.dll.mui" />
+						</Component>
+					</Directory>
+					<Directory Id="dirB08D66FA8B4381B9B8B8A549FD39C6A1" Name="et">
+						<Component Id="cmp01FC09BEF04E3B232BE3C860B4616E2C" Guid="A48C6B94-8C3D-4C26-9315-342FD97906C4">
+							<File Id="filCB169615DE0FEA60D7E2F6EE57D9FAA6" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\MSIPC\i386\et\msipc.dll.mui" />
+						</Component>
+					</Directory>
+					<Directory Id="dirFB040FB75EA4111CD2C828BAD21B2E18" Name="eu">
+						<Component Id="cmp4E7CAFBA2D194EBE98DBDFA216D16222" Guid="36DF03FB-529F-4EA7-8BDC-274BB00A5FA9">
+							<File Id="fil3D4B94A8AF8CA02BA10AD16D4FD7FCA1" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\MSIPC\i386\eu\msipc.dll.mui" />
+						</Component>
+					</Directory>
+					<Directory Id="dir361046768FDE0332DF8991CA016BFA64" Name="fi">
+						<Component Id="cmp432A452DD163FA12F7A68C02B5B301DC" Guid="7D398C1B-A786-4D7F-9AA1-C28E268E025C">
+							<File Id="fil2B23AD8046B336AA2A17C8C7B5CF93CD" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\MSIPC\i386\fi\msipc.dll.mui" />
+						</Component>
+					</Directory>
+					<Directory Id="dir61C6455D1B1627FE433D7D65ACD7AE11" Name="fr">
+						<Component Id="cmpC28078D71608D285AED2BA442D7D5FE1" Guid="45A84F70-8D45-457A-8131-72690A7C470D">
+							<File Id="fil61A974C5C25973B8B9C703170BF0F946" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\MSIPC\i386\fr\msipc.dll.mui" />
+						</Component>
+					</Directory>
+					<Directory Id="dir0552388FC218FA3BC8C0935A69F4C3AB" Name="gl">
+						<Component Id="cmp8654BCFCDEE7E31B39E3C6FCD360E0C3" Guid="D67E862F-5E38-4DCF-A870-93D69055DEE3">
+							<File Id="fil7D98FDF56A8AA0678022318882A3ADC7" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\MSIPC\i386\gl\msipc.dll.mui" />
+						</Component>
+					</Directory>
+					<Directory Id="dir86944CD61EA6C1D368D0E670C0EFE408" Name="he">
+						<Component Id="cmpCEE11A12845591C24CBD9AB03755B128" Guid="E0168C0F-5080-4577-8604-B3EBF4332279">
+							<File Id="fil44F67DE6EDF5AD824E2D6A4424DB292D" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\MSIPC\i386\he\msipc.dll.mui" />
+						</Component>
+					</Directory>
+					<Directory Id="dir5B809B36C748B0C986814ED60D49B717" Name="hi">
+						<Component Id="cmpF5266D15F681E2EBC9B5A29B085BBA11" Guid="2520C0EF-6C1B-4F29-A659-ED88C0F1621A">
+							<File Id="fil418BCBB09080CD5700EA1BF2BD00D2BC" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\MSIPC\i386\hi\msipc.dll.mui" />
+						</Component>
+					</Directory>
+					<Directory Id="dir9F979169AE2636DAEE86188C0E9A81C0" Name="hr">
+						<Component Id="cmpC7795808E9D486D10446C23A62F9D926" Guid="DFB9B857-390A-4BE6-BC23-39BAE42946CE">
+							<File Id="filE7DA23ECAEBCE0E231CC4B52383D6D73" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\MSIPC\i386\hr\msipc.dll.mui" />
+						</Component>
+					</Directory>
+					<Directory Id="dir0519A8FE10EABA17CABF8947A1AB8E23" Name="hu">
+						<Component Id="cmp408C5676ABA2D3C368F834F7530F13C7" Guid="9CA7AD32-C8E6-4DF6-822F-6EF7EBA1D36D">
+							<File Id="filC8947087A78CB4959C98DAB394A472A3" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\MSIPC\i386\hu\msipc.dll.mui" />
+						</Component>
+					</Directory>
+					<Directory Id="dirD6CC6486A9788E3E210A7A19109F9060" Name="id">
+						<Component Id="cmp248AEB040F90FE3437567EDEE59FC077" Guid="D97CE305-E75A-4B3A-B983-325CEC6C9ED6">
+							<File Id="filC685041013BE9CF56DCFFE77BCFE6690" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\MSIPC\i386\id\msipc.dll.mui" />
+						</Component>
+					</Directory>
+					<Directory Id="dirB6BCBA8E81645D81D22D3EF232916DCC" Name="it">
+						<Component Id="cmpC348A3A394090C852118569483856CA1" Guid="CC6E166A-FEF0-4124-BAE6-A3178E2D6143">
+							<File Id="fil3B777952059F186E402D729665EC7060" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\MSIPC\i386\it\msipc.dll.mui" />
+						</Component>
+					</Directory>
+					<Directory Id="dir33A1D2C8C594D82310CA4B18AFCB0886" Name="ja">
+						<Component Id="cmpF0FD7B04CDC3802E20B1F7BEAA98D0BC" Guid="5C187B60-E775-45A8-B152-F36AA2FF4379">
+							<File Id="fil94FC675FA27BE3B313A7C0D035280A24" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\MSIPC\i386\ja\msipc.dll.mui" />
+						</Component>
+					</Directory>
+					<Directory Id="dir9594C3E990F92B64CE3D43605E4672FC" Name="kk">
+						<Component Id="cmp3103C019D43DCB83E9ABA6755F643542" Guid="EEC81225-A7DC-4492-9DC6-D06A60CF44FE">
+							<File Id="fil44AC8FED68BAEF926000D31682A8084F" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\MSIPC\i386\kk\msipc.dll.mui" />
+						</Component>
+					</Directory>
+					<Directory Id="dirF35F2F99A88A6C157D0F0C89EBA37F20" Name="ko">
+						<Component Id="cmpB0AE0DBF29CD5F23F233436DE76C71B8" Guid="2F9A4DD8-6F8B-441E-95C6-6AD64A743D4F">
+							<File Id="fil32BEA38BE95B097FD610D76255FC9106" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\MSIPC\i386\ko\msipc.dll.mui" />
+						</Component>
+					</Directory>
+					<Directory Id="dirFCD2646DAE1B29AF50339443ED1A8521" Name="lt">
+						<Component Id="cmpD7656E93D74642D2294FB86DF1C9C9E0" Guid="67FEE739-8E87-4544-9BC8-D9646576E99C">
+							<File Id="fil9F55DF5DBD99CA9008913A1C7A5BF203" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\MSIPC\i386\lt\msipc.dll.mui" />
+						</Component>
+					</Directory>
+					<Directory Id="dir73C27ED893883514C8C85E73636FEAF5" Name="lv">
+						<Component Id="cmp844DCF3C5ADE4EED7F6BFF271DC93B2C" Guid="EF40CA63-7460-47ED-8778-621ECC7043D3">
+							<File Id="filA26E809FFE8F2E54CAE70C24FFA6AA9E" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\MSIPC\i386\lv\msipc.dll.mui" />
+						</Component>
+					</Directory>
+					<Directory Id="dir269BFE140701B7302AAEAF01DF838374" Name="ms">
+						<Component Id="cmp195B581D5731AA32CDC80C1C4FDE054A" Guid="20420374-7586-48F4-8C0B-5706617F8E81">
+							<File Id="fil98F683AD60A4A94C58A83F88431B89AC" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\MSIPC\i386\ms\msipc.dll.mui" />
+						</Component>
+					</Directory>
+					<Directory Id="dir538D58A98A9FB2A9E807EEF7E63A7FEB" Name="nl">
+						<Component Id="cmp1690A8A4C84CA3367CE4D49F90CA756B" Guid="BA09A345-5655-4B18-9471-BD6DA38555BA">
+							<File Id="filFC23DC28A23AC2FC89EA21BCCE2A621E" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\MSIPC\i386\nl\msipc.dll.mui" />
+						</Component>
+					</Directory>
+					<Directory Id="dir2507632F262912EC733B035088D77D77" Name="no">
+						<Component Id="cmpEE9B4DEA12024EB031FF8E773BE77B4E" Guid="7011F19F-A21A-4521-9D25-578BED6C0A76">
+							<File Id="filEC9A3B3EAE439D4373D12A7385EE9415" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\MSIPC\i386\no\msipc.dll.mui" />
+						</Component>
+					</Directory>
+					<Directory Id="dir6DFE2416BA9B579AB365F4E4DF7401EE" Name="pl">
+						<Component Id="cmpD230282C8AA1F17F8EB404E0D528571D" Guid="FA1A2396-7B37-4CC2-B615-F8D9A305569E">
+							<File Id="fil311F54D0D9C550B1ACDAAAAAC490D3CD" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\MSIPC\i386\pl\msipc.dll.mui" />
+						</Component>
+					</Directory>
+					<Directory Id="dir9EDC3991005613448C983D94BE77EDAA" Name="pt">
+						<Component Id="cmpBEBECD6AFB50EAD3200BD02CDAB9620B" Guid="CEEA133F-1C88-47A2-9E23-E2E47B9FA2C5">
+							<File Id="filD149AFEF3433C8201CAB6698277FB93B" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\MSIPC\i386\pt\msipc.dll.mui" />
+						</Component>
+					</Directory>
+					<Directory Id="dir68189422BF0D95E0C4C4BA661BFCF99B" Name="pt-BR">
+						<Component Id="cmp031561861DB211A871CF6AB81F4FDDC3" Guid="B338F904-79C2-4611-9E8D-E43E65E7D95B">
+							<File Id="filF9ECF6F285467B1025662DC93C143547" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\MSIPC\i386\pt-BR\msipc.dll.mui" />
+						</Component>
+					</Directory>
+					<Directory Id="dirF75A24AECAC0D1F5AD26ED3125E4B4AA" Name="ro">
+						<Component Id="cmp4BE5357A4530ED69BDC7A5B719B350D5" Guid="C1FC698A-150E-46F3-A23A-02D178DCA5BF">
+							<File Id="fil10A7AE3BB08C57749CCE1C0DF177416B" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\MSIPC\i386\ro\msipc.dll.mui" />
+						</Component>
+					</Directory>
+					<Directory Id="dir784BE35357004A1C4CAB9DF952116A2A" Name="ru">
+						<Component Id="cmpFD3F6BB0BB0823E7BA028AF2F6E9B235" Guid="896484E5-2239-463D-875E-F57D130EC50E">
+							<File Id="fil5ABD5DD13D5AB74CC7CE5E1586CE28C9" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\MSIPC\i386\ru\msipc.dll.mui" />
+						</Component>
+					</Directory>
+					<Directory Id="dir041E2ED2FACD2CB8B3AD3D6EEA72F6C7" Name="sk">
+						<Component Id="cmp0C411B5189605835921856B3B3BA8142" Guid="C5690EA5-5AB9-4E68-BF9A-72E951E44F0D">
+							<File Id="fil1D1DFA48274546DD2FAA4E770F357178" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\MSIPC\i386\sk\msipc.dll.mui" />
+						</Component>
+					</Directory>
+					<Directory Id="dirE389C2D511ACEA818250D93E693D1A82" Name="sl">
+						<Component Id="cmpDA6439F25D84B670817A0199E4D8E72A" Guid="0BE5BA43-E711-41AC-A58B-E040C7475CA3">
+							<File Id="filD22224AB465AA1A4F6821DA03E9C0466" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\MSIPC\i386\sl\msipc.dll.mui" />
+						</Component>
+					</Directory>
+					<Directory Id="dir4F46A02AADBA77ACAF34B6053F5BC369" Name="sr-Cyrl-BA">
+						<Component Id="cmp2B4BD538659FC9B28B4BF4F36CF7A30A" Guid="51D5A714-C0BB-4F28-8F2F-8EA548B21DD7">
+							<File Id="filF0A80A771167FB4A2673841B89946AA3" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\MSIPC\i386\sr-Cyrl-BA\msipc.dll.mui" />
+						</Component>
+					</Directory>
+					<Directory Id="dir035D85712ADF5BE70666AD987BA5785A" Name="sr-Cyrl-CS">
+						<Component Id="cmpD90A5E2AC51996B8F45FD7AF1A9B19E5" Guid="B55DD4D5-D7D6-4488-A554-79FEA533AB11">
+							<File Id="fil2284346CDB0FC8B699DAAD5780358AA2" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\MSIPC\i386\sr-Cyrl-CS\msipc.dll.mui" />
+						</Component>
+					</Directory>
+					<Directory Id="dir654FD0E6BDA18C18C211C79A5C1A9831" Name="sr-Latn-CS">
+						<Component Id="cmp2CA31F3C36660CB5EF8E50BC80A72EF9" Guid="D5A1A1A4-F7A1-4978-8BDC-350F3E23B69E">
+							<File Id="fil51AA05CB9727EF83D2BDF66A04D080D6" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\MSIPC\i386\sr-Latn-CS\msipc.dll.mui" />
+						</Component>
+					</Directory>
+					<Directory Id="dirF425AEB47240A7FC9A8B2EC9C92D991A" Name="sv">
+						<Component Id="cmp35A96660AFB59698CC18B2FFE47827FA" Guid="001A5407-5204-4160-AD49-B427664BA581">
+							<File Id="filAC7D65832097637BF2865CC833522237" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\MSIPC\i386\sv\msipc.dll.mui" />
+						</Component>
+					</Directory>
+					<Directory Id="dirD9A8D4A41EA56F9E8F0FAC0FF3B47FFA" Name="th">
+						<Component Id="cmp83474567B82642ECC8D03CA94BAB832C" Guid="34A515F2-FCA6-43F6-8D98-A1AB933B867C">
+							<File Id="filC2F08F2B1711278EC4D537D3CE4C6927" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\MSIPC\i386\th\msipc.dll.mui" />
+						</Component>
+					</Directory>
+					<Directory Id="dirDF9182695DA0E430E011D56685DD4A22" Name="tr">
+						<Component Id="cmp6BC2EA71A0819FB66ECAE88A1E4F0572" Guid="B50E2F4B-CC8D-41AE-B8DD-46D16AAEED2E">
+							<File Id="fil37126256E3553CB058F3B3CB66BC4C65" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\MSIPC\i386\tr\msipc.dll.mui" />
+						</Component>
+					</Directory>
+					<Directory Id="dir63589682436D6A623986F7D5594CC84C" Name="uk">
+						<Component Id="cmpFB3A8363FA683AADA9DD8AF6B5AEAB31" Guid="CC14AFA6-327C-49E8-9141-44254035FA2B">
+							<File Id="fil8BD75DD90D4E10C1AADE43105753689E" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\MSIPC\i386\uk\msipc.dll.mui" />
+						</Component>
+					</Directory>
+					<Directory Id="dir576BFD2C296982CD1C477714DE83D0A7" Name="vi">
+						<Component Id="cmpE90BB42D979F680441988C9B52297163" Guid="713442DC-7A53-4883-AC01-8BC64BFEADBC">
+							<File Id="fil556C2F0629B5B2D5E2CB22377C8F0710" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\MSIPC\i386\vi\msipc.dll.mui" />
+						</Component>
+					</Directory>
+					<Directory Id="dir07DFCD63D339262CD379269A2CFBB23B" Name="zh-CN">
+						<Component Id="cmp7EEE4C538E3DC012C0CA5A0DAC32FDFB" Guid="1A96D17C-7652-4470-B324-A5403E868598">
+							<File Id="fil52E6A4FD68EB401BCFC2223578FF75F8" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\MSIPC\i386\zh-CN\msipc.dll.mui" />
+						</Component>
+					</Directory>
+					<Directory Id="dir36768B49905CF7CF687639DC9D203A6B" Name="zh-TW">
+						<Component Id="cmp98A546BD33E0F30A9DAE74CA021707FD" Guid="100E9893-DB38-4644-8796-A2D29C896DAB">
+							<File Id="fil356603AE1E5102B03668C9D7C6694F87" Source="$(var.com.microsoft.rightsmanagement.windows.viewer.TargetDir)\MSIPC\i386\zh-TW\msipc.dll.mui" />
+						</Component>
+					</Directory>
+				</Directory>
+			</Directory>
+		</DirectoryRef>
+	</Fragment>
+
+	<Fragment>
+		<ComponentGroup Id="MSIPC">
+      <ComponentRef Id="IrmProtectorsDlls" />
+			<ComponentRef Id="cmpC2846734FE441C53BD9FD50483A737E4" />
+			<ComponentRef Id="cmp5FA74866DE4F43019E41D7972639601C" />
+			<ComponentRef Id="cmpDC28E9B5B0A2AF4CCEF7944FB4ADF3DC" />
+			<ComponentRef Id="cmp15F63B73798E9DE9465D74C22CF8CD80" />
+			<ComponentRef Id="cmpB01F07A28AB15C3A01CEE14D4AE77D5D" />
+			<ComponentRef Id="cmpB23060A98F609DC1FA8CC2F263D98FE2" />
+			<ComponentRef Id="cmp18FD4CA2B12B1A81D9E9702B169318C4" />
+			<ComponentRef Id="cmpB5593CD318A09811A76969BE5E335531" />
+			<ComponentRef Id="cmp7F12173E3A1D2D2B9D04C2568D05BF85" />
+			<ComponentRef Id="cmp61F9AA20E2DDE15E7534FB5FAF09CCAB" />
+			<ComponentRef Id="cmp01FC09BEF04E3B232BE3C860B4616E2C" />
+			<ComponentRef Id="cmp4E7CAFBA2D194EBE98DBDFA216D16222" />
+			<ComponentRef Id="cmp432A452DD163FA12F7A68C02B5B301DC" />
+			<ComponentRef Id="cmpC28078D71608D285AED2BA442D7D5FE1" />
+			<ComponentRef Id="cmp8654BCFCDEE7E31B39E3C6FCD360E0C3" />
+			<ComponentRef Id="cmpCEE11A12845591C24CBD9AB03755B128" />
+			<ComponentRef Id="cmpF5266D15F681E2EBC9B5A29B085BBA11" />
+			<ComponentRef Id="cmpC7795808E9D486D10446C23A62F9D926" />
+			<ComponentRef Id="cmp408C5676ABA2D3C368F834F7530F13C7" />
+			<ComponentRef Id="cmp248AEB040F90FE3437567EDEE59FC077" />
+			<ComponentRef Id="cmpC348A3A394090C852118569483856CA1" />
+			<ComponentRef Id="cmpF0FD7B04CDC3802E20B1F7BEAA98D0BC" />
+			<ComponentRef Id="cmp3103C019D43DCB83E9ABA6755F643542" />
+			<ComponentRef Id="cmpB0AE0DBF29CD5F23F233436DE76C71B8" />
+			<ComponentRef Id="cmpD7656E93D74642D2294FB86DF1C9C9E0" />
+			<ComponentRef Id="cmp844DCF3C5ADE4EED7F6BFF271DC93B2C" />
+			<ComponentRef Id="cmp195B581D5731AA32CDC80C1C4FDE054A" />
+			<ComponentRef Id="cmp1690A8A4C84CA3367CE4D49F90CA756B" />
+			<ComponentRef Id="cmpEE9B4DEA12024EB031FF8E773BE77B4E" />
+			<ComponentRef Id="cmpD230282C8AA1F17F8EB404E0D528571D" />
+			<ComponentRef Id="cmpBEBECD6AFB50EAD3200BD02CDAB9620B" />
+			<ComponentRef Id="cmp031561861DB211A871CF6AB81F4FDDC3" />
+			<ComponentRef Id="cmp4BE5357A4530ED69BDC7A5B719B350D5" />
+			<ComponentRef Id="cmpFD3F6BB0BB0823E7BA028AF2F6E9B235" />
+			<ComponentRef Id="cmp0C411B5189605835921856B3B3BA8142" />
+			<ComponentRef Id="cmpDA6439F25D84B670817A0199E4D8E72A" />
+			<ComponentRef Id="cmp2B4BD538659FC9B28B4BF4F36CF7A30A" />
+			<ComponentRef Id="cmpD90A5E2AC51996B8F45FD7AF1A9B19E5" />
+			<ComponentRef Id="cmp2CA31F3C36660CB5EF8E50BC80A72EF9" />
+			<ComponentRef Id="cmp35A96660AFB59698CC18B2FFE47827FA" />
+			<ComponentRef Id="cmp83474567B82642ECC8D03CA94BAB832C" />
+			<ComponentRef Id="cmp6BC2EA71A0819FB66ECAE88A1E4F0572" />
+			<ComponentRef Id="cmpFB3A8363FA683AADA9DD8AF6B5AEAB31" />
+			<ComponentRef Id="cmpE90BB42D979F680441988C9B52297163" />
+			<ComponentRef Id="cmp7EEE4C538E3DC012C0CA5A0DAC32FDFB" />
+			<ComponentRef Id="cmp98A546BD33E0F30A9DAE74CA021707FD" />
+		</ComponentGroup>
+	</Fragment>
+</Wix>

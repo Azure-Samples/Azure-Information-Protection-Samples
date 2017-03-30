@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+	
+	<Fragment>
+		<Component Id="Associations" Directory="INSTALLFOLDER" Guid="{E2977758-2321-47B1-A8F0-2A25456487E7}">
+			<ProgId Id='AzIP.ptxt'>
+				<Extension Id='ptxt'>
+					<Verb Id='open' Command='Open' TargetFile='MainExe' Argument='"%1"' />
+					<MIME ContentType='application/ptxt' Default='yes' />
+				</Extension>
+			</ProgId>
+			<ProgId Id='AzIP.pxml'>
+				<Extension Id='pxml'>
+					<Verb Id='open' Command='Open' TargetFile='MainExe' Argument='"%1"' />
+					<MIME ContentType='application/pxml' Default='yes' />
+				</Extension>
+			</ProgId>
+			<ProgId Id='AzIP.ppng'>
+				<Extension Id='ppng'>
+					<Verb Id='open' Command='Open' TargetFile='MainExe' Argument='"%1"' />
+					<MIME ContentType='application/ppng' Default='yes' />
+				</Extension>
+			</ProgId>
+			<ProgId Id='AzIP.pbmp'>
+				<Extension Id='pbmp'>
+					<Verb Id='open' Command='Open' TargetFile='MainExe' Argument='"%1"' />
+					<MIME ContentType='application/pbmp' Default='yes' />
+				</Extension>
+			</ProgId>
+			<ProgId Id='AzIP.pjpg'>
+				<Extension Id='pjpg'>
+					<Verb Id='open' Command='Open' TargetFile='MainExe' Argument='"%1"' />
+					<MIME ContentType='application/pjpg' Default='yes' />
+				</Extension>
+			</ProgId>
+			<ProgId Id='AzIP.pjpeg'>
+				<Extension Id='pjpeg'>
+					<Verb Id='open' Command='Open' TargetFile='MainExe' Argument='"%1"' />
+					<MIME ContentType='application/pjpeg' Default='yes' />
+				</Extension>
+			</ProgId>
+			<ProgId Id='AzIP.pgif'>
+				<Extension Id='pgif'>
+					<Verb Id='open' Command='Open' TargetFile='MainExe' Argument='"%1"' />
+					<MIME ContentType='application/pgif' Default='yes' />
+				</Extension>
+			</ProgId>
+			<ProgId Id='AzIP.pgiff'>
+				<Extension Id='pgiff'>
+					<Verb Id='open' Command='Open' TargetFile='MainExe' Argument='"%1"' />
+					<MIME ContentType='application/pgiff' Default='yes' />
+				</Extension>
+			</ProgId>
+			<ProgId Id='AzIP.ptif'>
+				<Extension Id='ptif'>
+					<Verb Id='open' Command='Open' TargetFile='MainExe' Argument='"%1"' />
+					<MIME ContentType='application/ptif' Default='yes' />
+				</Extension>
+			</ProgId>
+			<ProgId Id='AzIP.ptiff'>
+				<Extension Id='ptiff'>
+					<Verb Id='open' Command='Open' TargetFile='MainExe' Argument='"%1"' />
+					<MIME ContentType='application/ptiff' Default='yes' />
+				</Extension>
+			</ProgId>
+			<ProgId Id='AzIP.pjpe'>
+				<Extension Id='pjpe'>
+					<Verb Id='open' Command='Open' TargetFile='MainExe' Argument='"%1"' />
+					<MIME ContentType='application/pjpe' Default='yes' />
+				</Extension>
+			</ProgId>
+			<ProgId Id='AzIP.pjfif'>
+				<Extension Id='pjfif'>
+					<Verb Id='open' Command='Open' TargetFile='MainExe' Argument='"%1"' />
+					<MIME ContentType='application/pjfif' Default='yes' />
+				</Extension>
+			</ProgId>
+			<ProgId Id='AzIP.ppdf'>
+				<Extension Id='ppdf'>
+					<Verb Id='open' Command='Open' TargetFile='MainExe' Argument='"%1"' />
+					<MIME ContentType='application/ppdf' Default='yes' />
+				</Extension>
+			</ProgId>
+			<ProgId Id='AzIP.pdf'>
+				<Extension Id='pdf'>
+					<Verb Id='open' Command='Open' TargetFile='MainExe' Argument='"%1"' />
+					<MIME ContentType='application/pdf' Default='no' />
+				</Extension>
+			</ProgId>
+		</Component>
+	</Fragment>
+</Wix>
