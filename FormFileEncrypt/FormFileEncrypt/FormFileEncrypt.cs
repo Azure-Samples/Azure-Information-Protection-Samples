@@ -114,13 +114,13 @@ namespace FormFileEncrypt
             var checkEncryptionStatus = SafeFileApiNativeMethods.IpcfIsFileEncrypted(filepathBox.Text.Trim());
             if (checkEncryptionStatus.ToString().ToLower().Contains("encrypted"))
             {
-                DialogResult isEncrypted = MessageBox.Show("Selected file is already encrypted");
-                if (isEncrypted == DialogResult.OK)
-                {
-                    // if you want to decrypt the file before exit then uncomment the following line 
-                    //SafeFileApiNativeMethods.IpcfDecryptFile(filepathBox.Text.Trim(), IPCF_DF_FLAG_DEFAULT, false, false, false, IntPtr.Zero, null, null, null);
-                    Application.Exit();
-                }
+                DialogResult isEncrypted = MessageBox.Show("Selected file is already encrypted \n Please Decrypt the file before encrypting");
+                //if (isEncrypted == DialogResult.OK)
+                //{
+                //    // if you want to decrypt the file before exit then uncomment the following line 
+                //    //SafeFileApiNativeMethods.IpcfDecryptFile(filepathBox.Text.Trim(), IPCF_DF_FLAG_DEFAULT, false, false, false, IntPtr.Zero, null, null, null);
+                //    Application.Exit();
+                //}
                       
             }
             else
@@ -151,6 +151,40 @@ namespace FormFileEncrypt
                 }
 
             }
+        }
+
+        private void DecryptButton_Click(object sender, EventArgs e)
+        {
+            var checkEncryptionStatus = SafeFileApiNativeMethods.IpcfIsFileEncrypted(filepathBox.Text.Trim());
+            
+            if (checkEncryptionStatus.ToString().ToLower().Contains("encrypted"))
+            {
+                DialogResult isEncrypted = MessageBox.Show("Selected file is already encrypted \n Please press OK to Decrypt");
+                if (isEncrypted == DialogResult.OK)
+                {
+                  try
+                    {
+                        string decryptedFilePath=SafeFileApiNativeMethods.IpcfDecryptFile(filepathBox.Text.Trim(), IPCF_DF_FLAG_DEFAULT, false, false, false, IntPtr.Zero, null, null, null);
+                        DialogResult result = MessageBox.Show("File has been decrypted and is at the following location \n " + decryptedFilePath);
+                    }  
+                    catch (Exception ex)
+                    {
+                        DialogResult error = MessageBox.Show("Error: " + ex);
+                        if (error == DialogResult.OK)
+                        {
+                            Application.Exit();
+                        }
+                    }
+                    
+                
+                }
+
+            }
+            else if (checkEncryptionStatus.ToString().ToLower().Contains("decrypted"))
+            {
+                MessageBox.Show("The selected file is already decrypted");
+            }
+
         }
     }
     
