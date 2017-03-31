@@ -134,7 +134,7 @@ namespace FormFileEncrypt
                     TemplateInfo selectedTemplateInfo = templates.ElementAt(templateNum);
                     var license = SafeNativeMethods.IpcCreateLicenseFromTemplateId(selectedTemplateInfo.TemplateId);
                     string encryptedFilePath = SafeFileApiNativeMethods.IpcfEncryptFile(filepathBox.Text.Trim(), license, SafeFileApiNativeMethods.EncryptFlags.IPCF_EF_FLAG_DEFAULT, false, false, true, IntPtr.Zero, null);
-                    DialogResult result = MessageBox.Show("File has been Encrypted and is at the following location: " + encryptedFilePath);
+                    DialogResult result = MessageBox.Show("File has been Protected and is at the following location: " + encryptedFilePath);
                     if (result == DialogResult.OK)
                     {
                         Application.Exit();
@@ -159,13 +159,13 @@ namespace FormFileEncrypt
             
             if (checkEncryptionStatus.ToString().ToLower().Contains("encrypted"))
             {
-                DialogResult isEncrypted = MessageBox.Show("Selected file is already encrypted \n Please press OK to Decrypt");
+                DialogResult isEncrypted = MessageBox.Show("Selected file is already Protected \n Please press OK to Unprotect");
                 if (isEncrypted == DialogResult.OK)
                 {
                   try
                     {
                         string decryptedFilePath=SafeFileApiNativeMethods.IpcfDecryptFile(filepathBox.Text.Trim(), IPCF_DF_FLAG_DEFAULT, false, false, false, IntPtr.Zero, null, null, null);
-                        DialogResult result = MessageBox.Show("File has been decrypted and is at the following location \n " + decryptedFilePath);
+                        DialogResult result = MessageBox.Show("File has been Unprotected and is at the following location \n " + decryptedFilePath);
                     }  
                     catch (Exception ex)
                     {
@@ -182,7 +182,7 @@ namespace FormFileEncrypt
             }
             else if (checkEncryptionStatus.ToString().ToLower().Contains("decrypted"))
             {
-                MessageBox.Show("The selected file is already decrypted");
+                MessageBox.Show("The selected file is already Unprotected");
             }
 
         }

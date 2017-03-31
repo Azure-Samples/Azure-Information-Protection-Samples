@@ -90,7 +90,7 @@
             this.encryptBtn.Name = "encryptBtn";
             this.encryptBtn.Size = new System.Drawing.Size(777, 89);
             this.encryptBtn.TabIndex = 4;
-            this.encryptBtn.Text = "Encrypt";
+            this.encryptBtn.Text = "Protect";
             this.encryptBtn.UseVisualStyleBackColor = true;
             this.encryptBtn.Click += new System.EventHandler(this.encryptBtn_Click);
             // 
@@ -113,7 +113,7 @@
             this.DecryptButton.Name = "DecryptButton";
             this.DecryptButton.Size = new System.Drawing.Size(637, 89);
             this.DecryptButton.TabIndex = 6;
-            this.DecryptButton.Text = "Decrypt";
+            this.DecryptButton.Text = "Unprotect";
             this.DecryptButton.UseVisualStyleBackColor = true;
             this.DecryptButton.Click += new System.EventHandler(this.DecryptButton_Click);
             // 
