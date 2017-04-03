@@ -49,7 +49,7 @@ namespace FormFileEncrypt
 
         }
 
-        private void getTeamplatesBtn_Click(object sender, EventArgs e)
+        private void getTemplatesBtn_Click(object sender, EventArgs e)
         {
 
 
