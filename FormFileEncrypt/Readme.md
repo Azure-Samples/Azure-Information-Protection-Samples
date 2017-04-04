@@ -15,6 +15,9 @@ Once you have compiled the sample after populating the client ID and Redirect UR
 - First click on the Get Templates button
 - Now select the relevant template from the dropdown box
 - Then proceed to select the file you want to encrypt (the app will default to your my documents folder)
-- After selecting the file select encrypt and you should see an encrypted file
-- To make sure that the file is encrypted with the right template open the document in relevant application
+- After selecting the file select encrypt and you should see an protected file
+- To make sure that the file is protected with the right template open the document in relevant application
 - The application has been tested with Office Documents, Portable document format (PDF), and Text files
+## Additional capability
+- You can use the same application to unprotect files as well
+- In order to unprotect files the user needs to have rights to unprotect otherwise the unprotection process will error out
