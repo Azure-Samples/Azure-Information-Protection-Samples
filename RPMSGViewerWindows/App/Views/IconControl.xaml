@@ -1,5 +1,0 @@
-﻿<UserControl x:Class="com.microsoft.rightsmanagement.windows.viewer.Views.IconControl"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <TextBlock Margin="0,3,0,0" FontFamily="{Binding Fontfamily}" Text="{Binding Character}" />
-</UserControl>
