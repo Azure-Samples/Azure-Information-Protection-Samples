@@ -44,6 +44,11 @@ namespace AzureIP_test
                 symmetricKeyCred.Base64Key = ConfigurationManager.AppSettings["Base64Key"];
                 symmetricKeyCred.BposTenantId = ConfigurationManager.AppSettings["BposTenantId"];
 
+                // if you are outside North America please uncomment this section as it is needed 
+                /* Uri IntranetURL = new Uri(ConfigurationManager.AppSettings["LicensingIntranetDistributionPointUrl"]);
+                Uri ExtranetURL = new Uri(ConfigurationManager.AppSettings["LicensingExtranetDistributionPointUrl"]);
+                ConnectionInfo connectionInfo = new ConnectionInfo(ExtranetURL, IntranetURL); */
+
                 //Prompts user to choose whether to encrypt using Azure Template or Ad Hoc Policy
                 Console.WriteLine("Please select the desired encryption method (Enter 1 or 2)");
                 Console.WriteLine("1. Protect via Azure Template \n2. Protect via Ad Hoc Policy");
