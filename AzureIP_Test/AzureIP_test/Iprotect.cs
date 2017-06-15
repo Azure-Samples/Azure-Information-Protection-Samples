@@ -17,6 +17,7 @@ using System.Linq;
 using Microsoft.InformationProtectionAndControl;
 using System.ComponentModel.DataAnnotations;
 using System.Configuration;
+using System.IO;
 
 namespace AzureIP_test
 {
@@ -35,7 +36,7 @@ namespace AzureIP_test
                 //Loads MSIPC.dll
                 SafeNativeMethods.IpcInitialize();
                 SafeNativeMethods.IpcSetAPIMode(APIMode.Server);
-                SafeNativeMethods.IpcSetStoreName("AzureIpTest");
+                //SafeNativeMethods.IpcSetStoreName("AzureIpTest");
 
                 //Loads credentials for the service principal from App.Config 
                 SymmetricKeyCredential symmetricKeyCred = new SymmetricKeyCredential();
@@ -55,7 +56,7 @@ namespace AzureIP_test
                     string filePath = Console.ReadLine();
 
                     //Returns error if no file path is entered
-                    if (filePath.Trim() != "")
+                    if (filePath.Trim() != "" && File.Exists(filePath))
                     {
                         //Checks the encryption status of file from the input path
                         var checkEncryptionStatus = SafeFileApiNativeMethods.IpcfIsFileEncrypted(filePath);
