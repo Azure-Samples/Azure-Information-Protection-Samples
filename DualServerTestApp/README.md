@@ -11,3 +11,10 @@ Under the registry location at HKLM\Software\Microsoft\MSIPC\ServiceLocation
 |EnterpriseCertification|REG_SZ   |https://rmsaip515.us/_wmcs/Certification|
 |EnteprrisePublishing   |REG_SZ   |https://rms.aip515.us/_wmcs/Publshing   | 
 
+Note: the URLs share here are just examples your ADRMS URLs would be different
+
+### Configure the permissions for the Server Certification
+Since the sample application is running as a service, it will address the ServerCertification.asmx endpoint. Permissions must be given to the users and the ADRMS service group for the calls to succeed. For more details please use this link : https://technet.microsoft.com/en-us/library/ee849850(v=ws.10).aspx
+
+![Configuring access to the ServerCertification.asmx](https://github.com/Azure-Samples/Azure-Information-Protection-Samples/blob/master/DualServerTestApp/ServerCertification.png)
+
