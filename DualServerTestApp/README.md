@@ -5,6 +5,7 @@ The sample applicaiton is a console application with self explanatory prompts at
 ## Things to do before running the application
 ### Configure client keys for ADRMS
 Under the registry location at HKLM\Software\Microsoft\MSIPC\ServiceLocation
+
 |Name                   |Type     |Data                                    |
 |-----------------------|---------|----------------------------------------|
 |EnterpriseCertification|REG_SZ   |https://rmsaip515.us/_wmcs/Certification|
