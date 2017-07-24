@@ -1,4 +1,4 @@
-# Encrypting and Decrypting documents using ADRMS and Azure Information protection
+# Encrypting and Decrypting documents using ADRMS and Azure Information Protection
 This sample application demonstrates how you can use Azure Information and ADRMS based on the different needs of an organization to protect data. 
 The sample applicaiton is a console application with self explanatory prompts at each stage.
 
