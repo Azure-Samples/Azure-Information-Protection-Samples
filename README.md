@@ -46,4 +46,8 @@ This sample demonstrates a bulk operation of file protection at the directory le
 
 This is a Client form based application that uses ADAL to encrypt a file
 
+### DualServerTestapp
+
+This is a service application that allows you protect files using either Azure Information Protection or ADRMS (on-premises)
+
 
