@@ -27,6 +27,10 @@ namespace AzureIP_test
         const string EncryptionMethod1 = "1";
         const string EncryptionMethod2 = "2";
         const string alreadyEncrypted = "encrypted";
+    // if you are outside North America please uncomment this section as it is needed 
+  /*   static Uri IntranetURL = new Uri(ConfigurationManager.AppSettings["LicensingIntranetDistributionPointUrl"]);
+       static Uri ExtranetURL = new Uri(ConfigurationManager.AppSettings["LicensingExtranetDistributionPointUrl"]);
+       static  ConnectionInfo connectionInfo = new ConnectionInfo(ExtranetURL, IntranetURL); */
 
         static void Main(string[] args)
         {
@@ -44,10 +48,6 @@ namespace AzureIP_test
                 symmetricKeyCred.Base64Key = ConfigurationManager.AppSettings["Base64Key"];
                 symmetricKeyCred.BposTenantId = ConfigurationManager.AppSettings["BposTenantId"];
 
-                // if you are outside North America please uncomment this section as it is needed 
-                /* Uri IntranetURL = new Uri(ConfigurationManager.AppSettings["LicensingIntranetDistributionPointUrl"]);
-                Uri ExtranetURL = new Uri(ConfigurationManager.AppSettings["LicensingExtranetDistributionPointUrl"]);
-                ConnectionInfo connectionInfo = new ConnectionInfo(ExtranetURL, IntranetURL); */
 
                 //Prompts user to choose whether to encrypt using Azure Template or Ad Hoc Policy
                 Console.WriteLine("Please select the desired encryption method (Enter 1 or 2)");
@@ -113,9 +113,7 @@ namespace AzureIP_test
 
             // If you are based outside of the North American geo you need to provide the connection info
 
-           /* Uri IntranetURL = new Uri(ConfigurationManager.AppSettings["LicensingIntranetDistributionPointUrl"]);
-            Uri ExtranetURL = new Uri(ConfigurationManager.AppSettings["LicensingExtranetDistributionPointUrl"]);
-            ConnectionInfo connectionInfo = new ConnectionInfo(ExtranetURL, IntranetURL);
+           /* 
             Collection<TemplateInfo> templates = SafeNativeMethods.IpcGetTemplateList(connectionInfo, false, true,
                 false, true, null, null, symmetricKeyCredential); */
 
@@ -259,6 +257,13 @@ namespace AzureIP_test
                                             // The available issuers is a list of RMS servers that this user has already contacted.
                                             try
                                             {
+
+                                                // If you are based outside of the North American geo you need to provide the connection info
+
+                                                /* 
+                                                 Collection<TemplateInfo> templates = SafeNativeMethods.IpcGetTemplateList(connectionInfo, false, true,
+                                                     false, true, null, null, symmetricKeyCredential); */
+
                                                 Collection<TemplateIssuer> templateIssuers = SafeNativeMethods
                                                     .IpcGetTemplateIssuerList(
                                                         null,
