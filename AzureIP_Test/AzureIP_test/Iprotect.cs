@@ -261,8 +261,12 @@ namespace AzureIP_test
                                                 // If you are based outside of the North American geo you need to provide the connection info
 
                                                 /* 
-                                                 Collection<TemplateInfo> templates = SafeNativeMethods.IpcGetTemplateList(connectionInfo, false, true,
-                                                     false, true, null, null, symmetricKeyCredential); */
+                                                 Collection<TemplateIssuer> templateIssuers = SafeNativeMethods
+                                                    .IpcGetTemplateIssuerList(
+                                                        connectionInfo,
+                                                        true,
+                                                        false,
+                                                        false, true, null, symmetricKeyCredential); */
 
                                                 Collection<TemplateIssuer> templateIssuers = SafeNativeMethods
                                                     .IpcGetTemplateIssuerList(
