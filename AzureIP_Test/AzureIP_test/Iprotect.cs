@@ -145,7 +145,7 @@ namespace AzureIP_test
                 //Ensures template value entered is valid
                 if (0 < templateSelection && templateSelection <= counter)
                 {
-                    templateSelection -= templateSelection;
+                    templateSelection = templateSelection - 1 ;
 
                     // Encrypts the file using the selected template             
                     TemplateInfo selectedTemplateInfo = templates.ElementAt(templateSelection);
