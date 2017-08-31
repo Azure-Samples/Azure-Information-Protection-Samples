@@ -26,6 +26,7 @@ namespace AzureIP_test
         //Declare string constants to be used in application
         const string EncryptionMethod1 = "1";
         const string EncryptionMethod2 = "2";
+        const string DecryptionMethod1 = "3";
         const string alreadyEncrypted = "encrypted";
     // if you are outside North America please uncomment this section as it is needed 
   /*   static Uri IntranetURL = new Uri(ConfigurationManager.AppSettings["LicensingIntranetDistributionPointUrl"]);
@@ -82,22 +83,43 @@ namespace AzureIP_test
                         else
                         {
                             Console.WriteLine("The file has already been encrypted.");
+                            Console.WriteLine("Would you like to decrypt it (Y/N) ? ");
+                            string response = Console.ReadLine();
+                            response = response.Trim().ToLower();
+                            if (response == "y")
+                            {
+                                try
+                                {
+                                    string decryptedFilePath = SafeFileApiNativeMethods.IpcfDecryptFile(filePath.Trim(), SafeFileApiNativeMethods.DecryptFlags.IPCF_DF_FLAG_DEFAULT, false, false, false, IntPtr.Zero, null, null, null);
+                                    Console.WriteLine(" The decrypted file is at the following location :" + decryptedFilePath);
+                                } catch (Exception dx)
+                                {
+                                    Console.WriteLine("Error:" + dx);
+                                }
+                                
+
+                            } else if (response.Trim().ToLower() =="n")
+                            {
+                                Console.WriteLine("Program Exiting .... ");
+                                System.Environment.Exit(0);
+                            } else
+                            {
+                                System.Environment.Exit(0);
+                            }
                         }
-                    }
-                    else
+                    } else
                     {
                         Console.WriteLine("Please enter a valid file path.");
                     }
-                }
-                else
-                {
-                    Console.WriteLine("Invalid Input. Please enter 1 or 2.");
-                }
-            }
-            catch (Exception ex)
+                    }
+                    else
+                    {
+                        Console.WriteLine("Invalid Input. Please enter 1, 2, or 3");
+                    }
+                } catch (Exception ex)
             {
 
-                Console.WriteLine("An unexpected error occurred : {0}",ex);
+                Console.WriteLine("An unexpected error occurred : {0}", ex);
             }
 
         }
