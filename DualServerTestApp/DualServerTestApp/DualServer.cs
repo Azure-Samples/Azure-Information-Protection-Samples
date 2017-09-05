@@ -28,6 +28,8 @@ namespace DualServerTestApp
             symmetricKeyCred.AppPrincipalId = System.Configuration.ConfigurationManager.AppSettings["AppPrincipalId"];
             symmetricKeyCred.Base64Key = ConfigurationManager.AppSettings["Base64Key"];
             symmetricKeyCred.BposTenantId = ConfigurationManager.AppSettings["BposTenantId"];
+            //Comment out this section if you only want to use ADRMS 
+
 
             intConn = new ConnectionInfo(null, intUrl, false);
             Console.WriteLine("Intialization Complete");
