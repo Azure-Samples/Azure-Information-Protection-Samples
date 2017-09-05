@@ -27,7 +27,7 @@ namespace Microsoft.InformationProtectionAndControl
             bool offline,
             bool hasUserConsent,
             Form parentWindow,
-            SymmetricKeyCredential symmKey = null,
+            object credentialType = null,
             string outputDirectory = null,
             WaitHandle cancelCurrentOperation = null)
         {
@@ -39,7 +39,7 @@ namespace Microsoft.InformationProtectionAndControl
                 offline,
                 hasUserConsent,
                 IpcWindow.Create(parentWindow).Handle,
-                symmKey,
+                credentialType,
                 outputDirectory,
                 cancelCurrentOperation);
         }
@@ -52,7 +52,7 @@ namespace Microsoft.InformationProtectionAndControl
             bool offline,
             bool hasUserConsent,
             IntPtr parentWindow,
-            SymmetricKeyCredential symmKey = null,
+            object credentialType = null,
             string outputDirectory = null,
             WaitHandle cancelCurrentOperation = null)
         {
@@ -65,7 +65,7 @@ namespace Microsoft.InformationProtectionAndControl
                     offline,
                     hasUserConsent,
                     parentWindow,
-                    symmKey,
+					credentialType,
                     cancelCurrentOperation);
 
             IntPtr licenseInfoPtr = Marshal.StringToHGlobalUni(templateId);
@@ -109,7 +109,7 @@ namespace Microsoft.InformationProtectionAndControl
             bool offline,
             bool hasUserConsent,
             Form parentWindow,
-            SymmetricKeyCredential symmKey,
+            object credentialType,
             string outputDirectory = null,
             WaitHandle cancelCurrentOperation = null)
         {
@@ -121,7 +121,7 @@ namespace Microsoft.InformationProtectionAndControl
                 offline,
                 hasUserConsent,
                 IpcWindow.Create(parentWindow).Handle,
-                symmKey,
+				credentialType,
                 outputDirectory,
                 cancelCurrentOperation);
         }
@@ -134,7 +134,7 @@ namespace Microsoft.InformationProtectionAndControl
             bool offline,
             bool hasUserConsent,
             IntPtr parentWindow,
-            SymmetricKeyCredential symmKey,
+            object credentialType,
             string outputDirectory = null,
             WaitHandle cancelCurrentOperation = null)
         {
@@ -147,7 +147,7 @@ namespace Microsoft.InformationProtectionAndControl
                     offline,
                     hasUserConsent,
                     parentWindow,
-                    symmKey,
+					credentialType,
                     cancelCurrentOperation);
 
             try
@@ -189,7 +189,7 @@ namespace Microsoft.InformationProtectionAndControl
            bool offline,
            bool hasUserConsent,
            Form parentWindow,
-           SymmetricKeyCredential symmKey,
+           object credentialType,
            ref Stream outputStream,
            WaitHandle cancelCurrentOperation = null)
         {
@@ -199,7 +199,7 @@ namespace Microsoft.InformationProtectionAndControl
                     offline,
                     hasUserConsent,
                     IpcWindow.Create(parentWindow).Handle,
-                    symmKey,
+					credentialType,
                     cancelCurrentOperation);
 
             return IpcfEncryptFileStream(
@@ -220,7 +220,7 @@ namespace Microsoft.InformationProtectionAndControl
            bool offline,
            bool hasUserConsent,
            IntPtr parentWindow,
-           SymmetricKeyCredential symmKey,
+           object credentialType,
            ref Stream outputStream,
            WaitHandle cancelCurrentOperation = null)
         {
@@ -230,7 +230,7 @@ namespace Microsoft.InformationProtectionAndControl
                     offline,
                     hasUserConsent,
                     parentWindow,
-                    symmKey,
+                    credentialType,
                     cancelCurrentOperation);
 
             return IpcfEncryptFileStream(
@@ -302,7 +302,7 @@ namespace Microsoft.InformationProtectionAndControl
             bool offline,
             bool hasUserConsent,
             Form parentWindow,
-            SymmetricKeyCredential symmKey,
+            object credentialType,
             ref Stream outputStream,
             WaitHandle cancelCurrentOperation = null)
         {
@@ -312,7 +312,7 @@ namespace Microsoft.InformationProtectionAndControl
                     offline,
                     hasUserConsent,
                     IpcWindow.Create(parentWindow).Handle,
-                    symmKey,
+					credentialType,
                     cancelCurrentOperation);
 
             return IpcfEncryptFileStream(
@@ -333,7 +333,7 @@ namespace Microsoft.InformationProtectionAndControl
             bool offline,
             bool hasUserConsent,
             IntPtr parentWindow,
-            SymmetricKeyCredential symmKey,
+            object credentialType,
             ref Stream outputStream,
             WaitHandle cancelCurrentOperation = null)
         {
@@ -343,7 +343,7 @@ namespace Microsoft.InformationProtectionAndControl
                     offline,
                     hasUserConsent,
                     parentWindow,
-                    symmKey,
+                    credentialType,
                     cancelCurrentOperation);
 
             return IpcfEncryptFileStream(
@@ -411,7 +411,7 @@ namespace Microsoft.InformationProtectionAndControl
             bool offline,
             bool hasUserConsent,
             Form parentWindow,
-            SymmetricKeyCredential symmKey,
+            object credentialType,
             string outputDirectory = null,
             WaitHandle cancelCurrentOperation = null)
         {
@@ -422,7 +422,7 @@ namespace Microsoft.InformationProtectionAndControl
                 offline,
                 hasUserConsent,
                 IpcWindow.Create(parentWindow).Handle,
-                symmKey,
+                credentialType,
                 outputDirectory,
                 cancelCurrentOperation);
         }
@@ -434,7 +434,7 @@ namespace Microsoft.InformationProtectionAndControl
             bool offline,
             bool hasUserConsent,
             IntPtr parentWindow,
-            SymmetricKeyCredential symmKey,
+            object credentialType,
             string outputDirectory = null,
             WaitHandle cancelCurrentOperation = null)
         {
@@ -447,7 +447,7 @@ namespace Microsoft.InformationProtectionAndControl
                     offline,
                     hasUserConsent,
                     parentWindow,
-                    symmKey,
+                    credentialType,
                     cancelCurrentOperation);
 
             try
