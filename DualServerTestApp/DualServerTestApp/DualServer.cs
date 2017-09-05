@@ -17,11 +17,13 @@ namespace DualServerTestApp
         static Uri intUrl = new Uri(ConfigurationManager.AppSettings["LicensingIntranetDistributionPointUrl"]);
         static ConnectionInfo intConn;
         static string filePath;
+
         static void Main(string[] args)
         {
             Console.WriteLine("Initialize");
             SafeNativeMethods.IpcInitialize();
             SafeNativeMethods.IpcSetAPIMode(APIMode.Server);
+            //Comment out this section if you only want to use ADRMS
             SymmetricKeyCredential symmetricKeyCred = new SymmetricKeyCredential();
             symmetricKeyCred.AppPrincipalId = System.Configuration.ConfigurationManager.AppSettings["AppPrincipalId"];
             symmetricKeyCred.Base64Key = ConfigurationManager.AppSettings["Base64Key"];
@@ -44,6 +46,8 @@ namespace DualServerTestApp
             
 
             if (choice == "1")
+                // If you are only using ADRMS  then make sure to comment out this line
+                 /* ProtectwithAzure(filePath, symmetricKeyCred)*/
                 ProtectwithAzure(filePath, symmetricKeyCred);
             else if (choice == "2")
                 ProtectwithADRMS(filePath, intConn);
