@@ -189,7 +189,7 @@ namespace Microsoft.InformationProtectionAndControl
            bool offline,
            bool hasUserConsent,
            Form parentWindow,
-           SymmetricKeyCredential symmKey,
+           object credentialType,
            ref Stream outputStream,
            WaitHandle cancelCurrentOperation = null)
         {
@@ -199,7 +199,7 @@ namespace Microsoft.InformationProtectionAndControl
                     offline,
                     hasUserConsent,
                     IpcWindow.Create(parentWindow).Handle,
-                    symmKey,
+					credentialType,
                     cancelCurrentOperation);
 
             return IpcfEncryptFileStream(
@@ -220,7 +220,7 @@ namespace Microsoft.InformationProtectionAndControl
            bool offline,
            bool hasUserConsent,
            IntPtr parentWindow,
-           SymmetricKeyCredential symmKey,
+           object credentialType,
            ref Stream outputStream,
            WaitHandle cancelCurrentOperation = null)
         {
@@ -230,7 +230,7 @@ namespace Microsoft.InformationProtectionAndControl
                     offline,
                     hasUserConsent,
                     parentWindow,
-                    symmKey,
+                    credentialType,
                     cancelCurrentOperation);
 
             return IpcfEncryptFileStream(
@@ -302,7 +302,7 @@ namespace Microsoft.InformationProtectionAndControl
             bool offline,
             bool hasUserConsent,
             Form parentWindow,
-            SymmetricKeyCredential symmKey,
+            object credentialType,
             ref Stream outputStream,
             WaitHandle cancelCurrentOperation = null)
         {
@@ -312,7 +312,7 @@ namespace Microsoft.InformationProtectionAndControl
                     offline,
                     hasUserConsent,
                     IpcWindow.Create(parentWindow).Handle,
-                    symmKey,
+					credentialType,
                     cancelCurrentOperation);
 
             return IpcfEncryptFileStream(
@@ -333,7 +333,7 @@ namespace Microsoft.InformationProtectionAndControl
             bool offline,
             bool hasUserConsent,
             IntPtr parentWindow,
-            SymmetricKeyCredential symmKey,
+            object credentialType,
             ref Stream outputStream,
             WaitHandle cancelCurrentOperation = null)
         {
@@ -343,7 +343,7 @@ namespace Microsoft.InformationProtectionAndControl
                     offline,
                     hasUserConsent,
                     parentWindow,
-                    symmKey,
+                    credentialType,
                     cancelCurrentOperation);
 
             return IpcfEncryptFileStream(
