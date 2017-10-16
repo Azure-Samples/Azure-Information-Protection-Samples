@@ -19,6 +19,12 @@ namespace Microsoft.InformationProtectionAndControl
         internal const string g_MSIPCDllName = "msipc.dll";
 
         [DllImport(g_MSIPCDllName, SetLastError = false, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.StdCall)]
+        internal static extern int IpcInitializeEnvironment();
+
+        [DllImport(g_MSIPCDllName, SetLastError = false, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.StdCall)]
+        internal static extern void IpcUninitializeEnvironment();
+
+        [DllImport(g_MSIPCDllName, SetLastError = false, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.StdCall)]
         internal static extern int IpcGetGlobalProperty(
                                 [In, MarshalAs(UnmanagedType.U4)] uint dwPropID,
                                 [Out] out IntPtr ppvProperty);

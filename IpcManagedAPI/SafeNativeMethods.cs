@@ -103,8 +103,34 @@ namespace Microsoft.InformationProtectionAndControl
             else
             {
                 //Call a quick MSIPC method to load all the MSIPC.dll function pointers
-                IpcGetAPIMode();
+                IpcInitializeEnvironment();
             }
+        }
+
+        private static bool _environmentInitialized = false;
+        public static void IpcInitializeEnvironment()
+        {
+            if (_environmentInitialized)
+            {
+                return;
+            }
+            int hr = UnsafeNativeMethods.IpcInitializeEnvironment();
+            ThrowOnErrorCode(hr);
+            _environmentInitialized = true;
+        }
+
+        public static void IpcUninitializeEnvironment()
+        {
+            if (_environmentInitialized)
+            {
+                UnsafeNativeMethods.IpcUninitializeEnvironment();
+                _environmentInitialized = false;
+            }
+        }
+
+        public static void IpcUnInitialize()
+        {
+            IpcUninitializeEnvironment();
         }
 
         // Environment Properties - http://msdn.microsoft.com/en-us/library/windows/desktop/hh535247(v=vs.85).aspx
@@ -240,7 +266,7 @@ namespace Microsoft.InformationProtectionAndControl
                             suppressUI,
                             offline,
                             hasUserConsent,
-                            IpcWindow.Create(parentWindow).Handle,
+                            parentWindow != null ? parentWindow.Handle : IntPtr.Zero,
                             cultureInfo,
                             credentialType,
                             cancelCurrentOperation);
@@ -328,7 +354,7 @@ namespace Microsoft.InformationProtectionAndControl
                             suppressUI,
                             offline,
                             hasUserConsent,
-                            IpcWindow.Create(parentWindow).Handle,
+                            parentWindow != null ? parentWindow.Handle : IntPtr.Zero,
                             credentialType,
                             cancelCurrentOperation);
         }
@@ -439,7 +465,7 @@ namespace Microsoft.InformationProtectionAndControl
                                 suppressUI,
                                 offline,
                                 hasUserConsent,
-                                IpcWindow.Create(parentWindow).Handle,
+                                parentWindow != null ? parentWindow.Handle : IntPtr.Zero,
                                 out keyHandle,
                                 credentialType,
                                 cancelCurrentOperation);
@@ -510,7 +536,7 @@ namespace Microsoft.InformationProtectionAndControl
                                 suppressUI,
                                 offline,
                                 hasUserConsent,
-                                IpcWindow.Create(parentWindow).Handle,
+                                parentWindow != null ? parentWindow.Handle : IntPtr.Zero,
                                 out keyHandle,
                                 credentialType,
                                 cancelCurrentOperation);
@@ -1451,7 +1477,7 @@ namespace Microsoft.InformationProtectionAndControl
                 suppressUI,
                 offline,
                 hasUserConsent,
-                IpcWindow.Create(parentWindow).Handle,
+                parentWindow != null ? parentWindow.Handle : IntPtr.Zero,
                 credentialType,
                 cancelCurrentOperation);
         }
@@ -1763,7 +1789,8 @@ namespace Microsoft.InformationProtectionAndControl
         // IpcProtectWindow() - http://msdn.microsoft.com/en-us/library/windows/desktop/hh535268(v=vs.85).aspx
         public static void IpcProtectWindow(Form window)
         {
-            IpcProtectWindow(IpcWindow.Create(window).Handle);
+            var handle = window != null ? window.Handle : IntPtr.Zero;
+            IpcProtectWindow(handle);
         }
 
         // IpcUnprotectWindow() - http://msdn.microsoft.com/en-us/library/windows/desktop/hh535272(v=vs.85).aspx
@@ -1777,7 +1804,8 @@ namespace Microsoft.InformationProtectionAndControl
         // IpcUnprotectWindow() - http://msdn.microsoft.com/en-us/library/windows/desktop/hh535272(v=vs.85).aspx
         public static void IpcUnprotectWindow(Form parentWindow)
         {
-            IpcUnprotectWindow(IpcWindow.Create(parentWindow).Handle);
+            var handle = parentWindow != null ? parentWindow.Handle : IntPtr.Zero;
+            IpcUnprotectWindow(handle);
         }        
         
         // IpcCloseHandle() - http://msdn.microsoft.com/en-us/library/windows/desktop/hh535254(v=vs.85).aspx
@@ -1791,14 +1819,16 @@ namespace Microsoft.InformationProtectionAndControl
         public static SafeIpcPromptContext CreateIpcPromptContext(bool suppressUI, bool offline, bool hasUserConsent,
             Form parentWindow, object credentialType = null, WaitHandle cancelCurrentOperation = null)
         {
-            return CreateIpcPromptContext(suppressUI, offline, hasUserConsent, IpcWindow.Create(parentWindow).Handle,
+            var handle = parentWindow != null ? parentWindow.Handle : IntPtr.Zero;
+            return CreateIpcPromptContext(suppressUI, offline, hasUserConsent, handle,
                 credentialType);
         }
 
         public static SafeIpcPromptContext CreateIpcPromptContext(bool suppressUI, bool offline, bool hasUserConsent,
             Form parentWindow, WaitHandle cancelCurrentOperation)
         {
-            return CreateIpcPromptContext(suppressUI, offline, hasUserConsent, IpcWindow.Create(parentWindow).Handle, 
+            var handle = parentWindow != null ? parentWindow.Handle : IntPtr.Zero;
+            return CreateIpcPromptContext(suppressUI, offline, hasUserConsent, handle, 
                 null, cancelCurrentOperation);
         }
 
