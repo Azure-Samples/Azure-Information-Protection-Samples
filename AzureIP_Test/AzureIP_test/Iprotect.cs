@@ -318,10 +318,10 @@ namespace AzureIP_test
                                                     null,
                                                     symmetricKeyCredential);
                                             }
-                                            catch (Exception)
+                                            catch (Exception ex)
                                             {
                                                 Console.WriteLine(
-                                                    "Please enter an owner and user(s) that exist in the Azure AD Tenant.");
+                                                    "Please enter an owner and user(s) that exist in the Azure AD Tenant." + ex);
                                             }
                                         }
                                         else

@@ -12,7 +12,7 @@ The directories of importance are the
 + Android RPMSG handler sample
 + iOS RPMSG handler sample
 
-We do not show how the RPMSG Handler sample for windows because it is managed by the Outlook client.
+The sample shows how to decrypt and RPMSG files. The RPMSG Handler class on Windows is done by the Outlook Client. RPMSG is not an Azure Information Protection format but a format supported by Outlook. As in the begining this code is there to just show how a RPMSG message object can be decrypted and encrypted
 
 ### Important Files 
 Within the Common directory there is the Lib directory within which you will find the directory called Message.rpmsg
