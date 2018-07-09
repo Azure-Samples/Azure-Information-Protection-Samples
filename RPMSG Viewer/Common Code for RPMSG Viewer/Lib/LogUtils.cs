@@ -27,7 +27,7 @@ namespace SI.Mobile.RPMSGViewer.Lib
 			}
 			catch (Exception)
 			{
-				// don't kill us if logs doesn't work
+				// logging is not enabled
 			}
 		}
 
@@ -75,7 +75,7 @@ namespace SI.Mobile.RPMSGViewer.Lib
 			}
 			catch (Exception)
 			{
-				// don't kill us if logs doesn't work
+				// logging is not enabled
 			}
 		}
 	}
