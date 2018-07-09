@@ -40,7 +40,7 @@ namespace SI.Mobile.RPMSGViewer.Lib
 
 			foreach (XmlNode child in node.ChildNodes) // Groups
 			{
-				dataclassGroupName = child.Attributes["name"].Value; //  handle multiple groups
+				dataclassGroupName = child.Attributes["name"].Value; // handle multiple groups
 				foreach (XmlNode grandchild in child.ChildNodes) // DataClasses
 				{
 					classificationList[grandchild.Attributes["name"].Value] = grandchild.Attributes["color"].Value;
