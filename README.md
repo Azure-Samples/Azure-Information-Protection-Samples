@@ -1,3 +1,10 @@
+---
+languages: []
+page_type: sample
+products:
+- azure
+---
+
 Azure Information Protection Samples
 ===================
 
@@ -49,5 +56,3 @@ This is a Client form based application that uses ADAL to encrypt a file
 ### DualServerTestapp
 
 This is a service application that allows you protect files using either Azure Information Protection or ADRMS (on-premises)
-
-
