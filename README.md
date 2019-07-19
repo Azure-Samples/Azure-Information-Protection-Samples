@@ -1,12 +1,14 @@
 ---
-languages: []
+languages:
+- csharp
 page_type: sample
 products:
+- dotnet
 - azure
+description: "Samples that demonstrate how to leverage Azure Information Protection services."
 ---
 
-Azure Information Protection Samples
-===================
+# Azure Information Protection Samples
 
 Azure Information Protection samples for rights-enabling your applications and services.
 
