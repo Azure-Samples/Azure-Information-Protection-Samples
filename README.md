@@ -1,5 +1,14 @@
-Azure Information Protection Samples
-===================
+---
+languages:
+- csharp
+page_type: sample
+products:
+- dotnet
+- azure
+description: "Samples that demonstrate how to leverage Azure Information Protection services."
+---
+
+# Azure Information Protection Samples
 
 Azure Information Protection samples for rights-enabling your applications and services.
 
@@ -49,5 +58,3 @@ This is a Client form based application that uses ADAL to encrypt a file
 ### DualServerTestapp
 
 This is a service application that allows you protect files using either Azure Information Protection or ADRMS (on-premises)
-
-
