@@ -1,0 +1,11 @@
+{
+  "version": "0.2.1",
+  "defaults": {},
+  "configurations": [
+    {
+      "type": "mixed",
+      "name": "C:\\Users\\kartikka\\Documents\\GitHub\\Azure-Information-Protection-Samples\\AzureIP_Test",
+      "project": ""
+    }
+  ]
+}

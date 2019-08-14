@@ -1,0 +1,15 @@
+{
+  "version": "0.2.1",
+  "tasks": [
+    {
+      "taskName": "task-AzureIP_Test",
+      "appliesTo": "/",
+      "type": "launch"
+    },
+    {
+      "taskName": "task-IpcManagedAPI",
+      "appliesTo": "AzureIP_test/IpcManagedAPI/IpcManagedAPI.csproj",
+      "type": "msbuild"
+    }
+  ]
+}

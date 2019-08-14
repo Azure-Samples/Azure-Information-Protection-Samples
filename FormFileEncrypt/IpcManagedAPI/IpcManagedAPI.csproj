@@ -1,0 +1,114 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Condition="'$(BuildingInsideVisualStudio)' != 'true'" Project="$(EnvironmentConfig)" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{F62216AB-28D4-4033-932C-E5A94E38C3B3}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>IpcManagedAPI</RootNamespace>
+    <AssemblyName>IpcManagedAPI</AssemblyName>
+    <AssemblyProduct>Microsoft AD RMS</AssemblyProduct>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <FxCopDisabled>true</FxCopDisabled>
+    <CoverageDisabled>True</CoverageDisabled>
+    <TargetFrameworkProfile />
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Data" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ILockBytesOverStream.cs" />
+    <Compile Include="ManagedAPIClasses.cs" />
+    <Compile Include="NativeAPIStructures.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SafeNativeMethods.cs" />
+    <Compile Include="UnsafeNativeMethods.cs" />
+    <Compile Include="UnsafeFileApiNativeMethods.cs" />
+    <Compile Include="SafeFileApiNativeMethods.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <Import Condition="'$(BuildingInsideVisualStudio)' == 'true'" Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Condition="'$(BuildingInsideVisualStudio)' != 'true'" Project="$(ExtendedTargetsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup Condition="'$(BuildingInsideVisualStudio)' != 'true'">
+    <BinplaceSymbols>-y -x -n $(inetroot)\bins\$(BuildType)\$(BuildArchitecture)\Symbols.pri\test -s $(inetroot)\bins\$(BuildType)\$(BuildArchitecture)\utest\ipviewer</BinplaceSymbols>
+  </PropertyGroup>
+  <Choose>
+    <When Condition="'$(BuildingInsideVisualStudio)' != 'true'">
+      <ItemGroup>
+        <Binplace Include="$(OutDir)$(TargetFileName)">
+          <DestinationFolder>bins\$(BuildType)\$(BuildArchitecture)\utest\ipviewer</DestinationFolder>
+        </Binplace>
+        <Binplace Include="$(OutDir)$(TargetFileName)">
+          <DestinationFolder>bins\$(BuildType)\$(BuildArchitecture)\client\IpcManagedApi\external</DestinationFolder>
+        </Binplace>
+      </ItemGroup>
+    </When>
+    <Otherwise>
+    </Otherwise>
+  </Choose>
+</Project>
