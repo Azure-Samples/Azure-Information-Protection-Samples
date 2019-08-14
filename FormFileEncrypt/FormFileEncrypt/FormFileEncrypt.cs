@@ -19,8 +19,8 @@ namespace FormFileEncrypt
         /* please change these values to run with your 
          * application ID after registering the app in AAD <which is Client ID> and the redirectURI
          * for your application */
-        private static string adalAppID = "7a0987a4-c6fc-4fa5-bedd-571286439708"; //change this 
-        private static string adalRedirectURI = "https://gyrops.onmicrosoft.com/.auth/login/done";  //change this
+        private static string adalAppID = "0e83a03a-4ecd-4b3b-8466-a44bdbcabd2b"; //change this 
+        private static string adalRedirectURI = "https://myisvapp.com/.auth/done";  //change this
         private static SafeFileApiNativeMethods.DecryptFlags IPCF_DF_FLAG_DEFAULT = 0;
 
         IpcAadApplicationId currAppId = new IpcAadApplicationId(adalAppID, adalRedirectURI);

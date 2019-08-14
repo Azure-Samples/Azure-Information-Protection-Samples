@@ -90,11 +90,13 @@ namespace AzureIP_test
                             {
                                 try
                                 {
-                                    string decryptedFilePath = SafeFileApiNativeMethods.IpcfDecryptFile(filePath.Trim(), SafeFileApiNativeMethods.DecryptFlags.IPCF_DF_FLAG_DEFAULT, false, false, false, IntPtr.Zero, null, null, null);
+                                    string decryptedFilePath = SafeFileApiNativeMethods.IpcfDecryptFile(filePath.Trim(), SafeFileApiNativeMethods.DecryptFlags.IPCF_DF_FLAG_DEFAULT, false, false, false, IntPtr.Zero, symmetricKeyCred, null, null);
                                     Console.WriteLine(" The decrypted file is at the following location :" + decryptedFilePath);
                                 } catch (Exception dx)
                                 {
                                     Console.WriteLine("Error:" + dx);
+                                    Console.WriteLine("Press any key");
+                                    string resp = Console.ReadLine();
                                 }
                                 
 
