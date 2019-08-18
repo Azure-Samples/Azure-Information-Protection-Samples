@@ -1,72 +1,197 @@
-﻿$VerbosePreference = "continue"
-$DebugPreference   = "SilentlyContinue"
+<#   
+The MIT License (MIT)
 
+Copyright (c) 2015 Microsoft Corporation
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+#>
+
+
+<#   
+    Script      : Azure-Blob-FiletypeAnalysis.ps1
+
+    Author      : Aashish Ramdas
+
+    Version     : 1.0
+
+    Description : The script recursively enumerates the subscriptions, storage accounts, and blob containers 
+    that you own. [See functions "EnumerateSubscriptions", "EnumerateStorageAccounts", and "EnumerateContainers"]
+    In each storage account, the blobs are enumerated [See function "Run-MainScript"] the blob metadata is analyzed
+    and aggregated using the function "ParseBlobList". The output is written to a bunch of .TXT files
+
+    Output      : The output of this script is split into four .TXT files
+                  1) SubscriptionList.txt     -  Enumerates the TenantID, SubscriptionID, and the Enabled state
+                  2) StorageAccountList.txt   -  Enumerates the storage accounts with additional metadata like the Location, 
+                                                 AccessTier, SubscriptionId, and TenantId
+                  3) StorageContainerList.txt -  Enumerates the containers in the storage accounts with additional metadata 
+                                                 like PublicAccess, BlobEndpoint, SubscriptionId, and TenantId
+                  4) BlobAnalysis.txt         -  Aggregated and summarized analysis of the blob metadata, including the 
+                                                 File extension, Total data size, File count etc.  
+
+#>
+
+
+<#  INPUT PARAMETER DEFINITION #>
+param( [string]$InputSubscription = "")
+
+<#  GLOBAL VARIABLES  #>
+$VerbosePreference   = "continue"
+$DebugPreference     = "SilentlyContinue"
+$Progress_Activity   = "Enumerating data sources"
+$Progress_Id         = 1
+$Progress_Task       = ""
+$SUBSCRIPTION_LIST   = $null
+$STORAGEACCOUNTLIST  = $null
+$BLOB_CONTAINER_LIST = $null
+$blobanalysis_hashtable = @{}
+
+<#  INITIAL SETUP  #>
+$FOLDER       = (Get-Date -Format "MM.dd.yyyy-hh.mm").ToString() + " AzBlob_Analysis"
+$FILE_sublist = "./$FOLDER/SubscriptionList.txt"
+$FILE_storacc = "./$FOLDER/StorageAccountList.txt"
+$FILE_storcon = "./$FOLDER/StorageContainerList.txt"
+$FILE_blobsum = "./$FOLDER/BlobAnalysis.txt"
+$dir = New-Item -Name $FOLDER -ItemType "directory" -Force
 
 
 function EnumerateSubscriptions {
-    $Activity = "Enumerating data sources"
-    $Id       = 1
-    $Task     = "Enumerating subscriptions"
-    Write-Progress -Id $Id -Activity $Activity -Status $Task
+    
+    # ---------------------------------------------------------------   
+    #    Function       : EnumerateSubscriptions
+    #
+    #    Input          : None
+    #
+    #    Output         : Array of PSObject
+    #                     [
+    #                        TenantId
+    #                        SubscriptionId
+    #                        State
+    #                     ]
+    #
+    #    File Output    : SubscriptionList.txt
+    # ---------------------------------------------------------------
+
+
+    $Progress_Task     = "Enumerating subscriptions"
+    Write-Progress -Id $Progress_Id -Activity $Progress_Activity -Status $Progress_Task
     
     $subscriptions = Get-AzSubscription | Select-Object TenantId,SubscriptionId,State
+    if($subscriptions -eq $null   )    { $subscriptions = @() }  
+    if($subscriptions -isnot [array] ) { $subscriptions = @($subscriptions)  }
 
-    ## Write verbose message
-    if($subscriptions -eq $null   ) { $message = "No Azure subscription found" }
-    if($subscriptions -is [array] ) { $message = $subscriptions.Count.ToString() + " subscriptions found" }
-    else                            { $message = "1 subscription found" }
-    Write-Verbose -Message $message
+
+    #Write output to file
+    $subscriptions | Export-CSV $FILE_sublist -NoTypeInformation
+    Write-Verbose -Message ("Subscription: " + $subscriptions.Count.ToString() + " [count] , File location: " + $FILE_sublist)
 
     return $subscriptions
 }
 
 
+
 function EnumerateStorageAccounts {
-    param( [PSObject]$subscription, 
-           [int]$percentCompleted )
+    param( [PSObject]$subscription )
 
-    $Activity = "Enumerating data sources"
-    $Id       = 1
-    $Task     = "Enumerating storage accounts for subscription " + $subscription.SubscriptionId
-    Write-Progress -Id $Id -Activity $Activity -Status $Task -PercentComplete $percentCompleted
-    
-    ## Set the subscription context
-    $local:context = Get-AzSubscription -SubscriptionId $subscription.SubscriptionId -Verbose
-    $x = Set-AzContext $context -Verbose
+    # ---------------------------------------------------------------
+    # Function       : EnumerateStorageAccounts
+    #
+    # Input          : 1) Subscription info
+    #                  2) percent completed status 
+    #
+    # Output         : Array of PSObject
+    #                  [
+    #                     StorageAccountName
+    #                     Id
+    #                     Location
+    #                     AccessTier
+    #                     Context
+    #                     PrimaryEndpoints
+    #                     TenantId
+    #                     SubscriptionId
+    #                  ]
+    # 
+    # File Output    : StorageAccountList.txt
+    # ---------------------------------------------------------------
 
-    ## Get a list of storage accounts in te subscription
-    $local:saList = Get-AzStorageAccount | Select-Object StorageAccountName, Id, Location, AccessTier, Context, PrimaryEndpoints 
+    ## Update which subscription is being enumerated
+    $Progress_Task     = "Enumerating storage accounts for subscription " + $subscription.SubscriptionId
+    Write-Progress -Id $Progress_Id -Activity $Progress_Activity -Status $Progress_Task
     
-    #merge tenant and subscription info
+    ## Set the subscription context, if the current context is different
+    if( (Get-AzContext).Id -ne $subscription.SubscriptionId ) {  $a = Set-AzContext (Get-AzSubscription -SubscriptionId $subscription.SubscriptionId -Verbose) -Verbose  }
+
+    ## Enumerate the storage accounts in the subscription
+    $saList = Get-AzStorageAccount | Select-Object StorageAccountName, Id, Location, AccessTier, Context, PrimaryEndpoints 
+    if($saList -eq $null   )    { $saList = @() }  
+    if($saList -isnot [array] ) { $saList = @($saList)  }
+
+    ## Merge tenant and subscription info
     foreach($sa in $saList) 
     { 
         Add-Member -InputObject $sa -MemberType NoteProperty -Name "TenantId" -Value $subscription.TenantId 
         Add-Member -InputObject $sa -MemberType NoteProperty -Name "SubscriptionId" -Value $subscription.SubscriptionId 
     }
 
-    ## Write verbose message
-    if($saList -eq $null   ) { $message = "Subscription " + $subscription.SubscriptionId + "doesn't have storage accounts" }
-    if($saList -is [array] ) { $message = $storageAccountList.Count.ToString() + " storage accounts found in subscription " + $subscription.SubscriptionId }
-    else                     { $message = "1 storage account found in subscription " + $subscription.SubscriptionId }
-    Write-Debug -Message $message
+    ## Write output to file
+    $saList | Export-CSV $FILE_storacc -NoTypeInformation -Append
+    Write-Verbose -Message ("Subscription: " + $subscription.SubscriptionId + " , Storage Account: " + $saList.Count.ToString() + " [count] , File location: " + $FILE_storacc)
 
     return $saList
 }
 
 
-function EnumerateContainers {
-    param( [PSObject]$storageAccount,
-           [int]$percentCompleted )
 
-    $Activity = "Enumerating data sources"
-    $Id       = 1
-    $Task     = "Enumerating containers for Storage Account " + $storageAccountContext.StorageAccountName
-    Write-Progress -Id $Id -Activity $Activity -Status $Task -PercentComplete $percentCompleted
+function EnumerateBlobStorageContainers {
+    param( [PSObject]$storageAccount )
 
+    # ---------------------------------------------------------------   
+    # Function       : EnumerateBlobStorageContainers 
+    # 
+    # Input          : 1) storage account info
+    #                  2) percent completed status
+    # 
+    # Output         : Array of PSObject
+    #                  [
+    #                     Name
+    #                     PublicAccess
+    #                     Context
+    #                     TenantId
+    #                     SubscriptionId
+    #                     StorageAccountName
+    #                     BlobEndpoint
+    #                  ]
+    # 
+    # File Output    : StorageContainerList.txt
+    # ---------------------------------------------------------------
+
+
+    $Progress_Task     = "Enumerating containers for Storage Account " + $storageAccount.StorageAccountName
+    Write-Progress -Id $Progress_Id -Activity $Progress_Activity -Status $Progress_Task
+
+    ## Enumerate the blob storage containers in the storage account
     $local:containerList = $null
     $containerList = Get-AzStorageContainer -Context $storageAccount.Context | Select-Object Name, PublicAccess, Context
-    
-    #merge tenant and subscription info
+    if($containerList -eq $null   )    { $containerList = @() }  
+    if($containerList -isnot [array] ) { $containerList = @($containerList)  }
+
+
+    ## Merge tenant and subscription info
     foreach($c in $containerList) 
     { 
         Add-Member -InputObject $c -MemberType NoteProperty -Name "TenantId" -Value $storageAccount.TenantId 
@@ -75,67 +200,39 @@ function EnumerateContainers {
         Add-Member -InputObject $c -MemberType NoteProperty -Name "BlobEndpoint" -Value $storageAccount.PrimaryEndpoints.Blob
     }
 
-    if     ($containerList -eq $null   ) { $message = "No container found in storage acccount " + $storageAccountContext.StorageAccountName }
-    elseif ($containerList -is [array] ) { $message = $containerList.Count.ToString() + " containers found in storage account " + $storageAccountContext.StorageAccountName }
-    else                                 { $message = "1 container found in storage account " + $storageAccountContext.StorageAccountName }
-    Write-Verbose -Message $message
+    ## Write output to file
+    $containerList | Export-CSV $FILE_storcon -NoTypeInformation -Append
+    Write-Verbose -Message ("Subscription: " + $storageAccount.SubscriptionId  + " , Storage Account: " + $acc.StorageAccountName + " , Container : " + $containerList.Count.ToString() + " [count] , File location: " + $FILE_storcon)
 
     return $containerList
 }
 
 
-<#  FILE EXTENSION ANALYSIS - DATA STRUCTURE DEFINITION
 
-    Hashtable
-    ---------
-    Key   : FileExt (string)
-    Value : PSObejct
-            [
-                TenantID
-                SubscriptionID
-                StorageAccountURL
-                ContainerName
-                ContainerType
-                ContainerPublicAccess
-                Extension
-                ContentType
-
-                TotalFileCount
-                LT1KBFileCount    (count of files <1KB)
-                LT10KBFileCount   (count of files >=1KB and <10KB)
-                LT100KBFileCount  (count of files >=10KB and <100KB)
-                LT1MBFileCount    (count of files >=100KB and <1MB)
-                LT10MBFileCount   (count of files >=1MB and <10MB)
-                GE10MBFileCount   (count of files >=10MB)
-                HotTierFileCount
-                CoolTierFileCount
-                OtherTierFileCount
-                
-                TotalSize
-                LT1KBFileSize      
-                LT10KBFileSize     
-                LT100KBFileSize    
-                LT1MBFileSize      
-                LT10MBFileSize     
-                GE10MBFileSize
-                HotTierFileSize
-                CoolTierFileSize
-                OtherTierFileSize
-                
-            ]                       
-#>
 function ParseBlobList {
     param( [PSObject]$blobs,
            [PSObject]$container,
-           [string]$filepath,
            [string]$StorAccAccessTier )
     
-    $blobanalysis_hashtable = @{}
+    # ---------------------------------------------------------------   
+    # Function       : ParseBlobList 
+    # 
+    # Input          : 1) Array of blob objects
+    #                  2) blob container
+    #                  3) storage account access tier
+    # 
+    # Output         : none
+    # 
+    # File Output    : BlobAnalysis.txt
+    # ---------------------------------------------------------------
+
 
     foreach($b in $blobs)
     {
         $fileext = [System.IO.Path]::GetExtension($b.Name)
-        if($blobanalysis_hashtable[$fileext] -eq $null) #add new
+
+        #add empty new entry IF hashtable didn't contain the file extension object
+        if($blobanalysis_hashtable[$fileext] -eq $null) 
         {
             $f = [PSCustomObject]@{    
                 TenantID           = $container.TenantId
@@ -147,111 +244,137 @@ function ParseBlobList {
                 Extension          = $fileext
                 ContentType        = $b.ContentType
 
-                TotalFileCount     = 1
-                LT1KBFileCount     = if($b.Length -lt 1024) { 1 } else { 0 }
-                LT10KBFileCount    = if($b.Length -lt 10240  -and $b.Length -ge 1024)  { 1 } else { 0 }
-                LT100KBFileCount   = if($b.Length -lt 102400 -and $b.Length -ge 10240) { 1 } else { 0 }
-                LT1MBFileCount     = if($b.Length -lt 1024*1024 -and $b.Length -ge 102400) { 1 } else { 0 }
-                LT10MBFileCount    = if($b.Length -lt 1024*1024*10 -and $b.Length -ge 1024*1024) { 1 } else { 0 }
-                GE10MBFileCount    = if($b.Length -ge 1024*1024*10) { 1 } else { 0 }
-                HotTierFileCount   = if(($b.ICloudBlob.AccessTier -eq $null -and $StorAccAccessTier -eq "Hot") -or $b.ICloudBlob.AccessTier -eq "Hot") { 1 } else { 0 }
-                CoolTierFileCount  = if(($b.ICloudBlob.AccessTier -eq $null -and $StorAccAccessTier -eq "Cool") -or $b.ICloudBlob.AccessTier -eq "Cool") { 1 } else { 0 }
-                OtherTierFileCount = if($b.ICloudBlob.AccessTier -ne $null -and $b.AccessTier -ne "Cool" -and $b.AccessTier -ne "Hot") { 1 } else { 0 }
+                TotalFileCount     = 0
+                LT1KBFileCount     = 0  #count of files <1KB
+                LT10KBFileCount    = 0  #count of files >=1KB and <10KB
+                LT100KBFileCount   = 0  #count of files >=10KB and <100KB
+                LT1MBFileCount     = 0  #count of files >=100KB and <1MB
+                LT10MBFileCount    = 0  #count of files >=1MB and <10MB
+                GE10MBFileCount    = 0  #count of files >=10MB
+                HotTierFileCount   = 0
+                CoolTierFileCount  = 0
+                OtherTierFileCount = 0
 
-                TotalSize          = $b.Length
-                LT1KBFileSize      = if($b.Length -lt 1024) { $b.Length } else { 0 }
-                LT10KBFileSize     = if($b.Length -lt 10240  -and $b.Length -ge 1024)  { $b.Length } else { 0 }
-                LT100KBFileSize    = if($b.Length -lt 102400 -and $b.Length -ge 10240) { $b.Length } else { 0 }
-                LT1MBFileSize      = if($b.Length -lt 1024*1024 -and $b.Length -ge 102400) { $b.Length } else { 0 }
-                LT10MBFileSize     = if($b.Length -lt 1024*1024*10 -and $b.Length -ge 1024*1024) { $b.Length } else { 0 }
-                GE10MBFileSize     = if($b.Length -ge 1024*1024*10) { $b.Length } else { 0 }
-                HotTierFileSize    = if(($b.ICloudBlob.AccessTier -eq $null -and $StorAccAccessTier -eq "Hot") -or $b.ICloudBlob.AccessTier -eq "Hot") { $b.Length } else { 0 }
-                CoolTierFileSize   = if(($b.ICloudBlob.AccessTier -eq $null -and $StorAccAccessTier -eq "Cool") -or $b.ICloudBlob.AccessTier -eq "Cool") { $b.Length } else { 0 }
-                OtherTierFileSize  = if($b.ICloudBlob.AccessTier -ne $null -and $b.AccessTier -ne "Cool" -and $b.AccessTier -ne "Hot") { $b.Length } else { 0 }
+                TotalSize          = 0
+                LT1KBFileSize      = 0
+                LT10KBFileSize     = 0
+                LT100KBFileSize    = 0
+                LT1MBFileSize      = 0
+                LT10MBFileSize     = 0
+                GE10MBFileSize     = 0
+                HotTierFileSize    = 0
+                CoolTierFileSize   = 0
+                OtherTierFileSize  = 0
             }
 
             $blobanalysis_hashtable.Add($fileext, $f) 
         }
-        else #increment 
-        {
-            $blobanalysis_hashtable[$fileext].TotalFileCount     += 1
-            $blobanalysis_hashtable[$fileext].TotalSize          += $b.Length
+        
+        #increment 
+        $temp = $blobanalysis_hashtable[$fileext]
 
-            $blobanalysis_hashtable[$fileext].LT1KBFileCount     += if($b.Length -lt 1024) { 1 } else { 0 }
-            $blobanalysis_hashtable[$fileext].LT10KBFileCount    += if($b.Length -lt 10240  -and $b.Length -ge 1024)  { 1 } else { 0 }
-            $blobanalysis_hashtable[$fileext].LT100KBFileCount   += if($b.Length -lt 102400 -and $b.Length -ge 10240) { 1 } else { 0 }
-            $blobanalysis_hashtable[$fileext].LT1MBFileCount     += if($b.Length -lt 1024*1024 -and $b.Length -ge 102400) { 1 } else { 0 }
-            $blobanalysis_hashtable[$fileext].LT10MBFileCount    += if($b.Length -lt 1024*1024*10 -and $b.Length -ge 1024*1024) { 1 } else { 0 }
-            $blobanalysis_hashtable[$fileext].GE10MBFileCount    += if($b.Length -ge 1024*1024*10) { 1 } else { 0 }
-            $blobanalysis_hashtable[$fileext].HotTierFileCount   += if(($b.ICloudBlob.AccessTier -eq $null -and $StorAccAccessTier -eq "Hot") -or $b.ICloudBlob.AccessTier -eq "Hot") { 1 } else { 0 }
-            $blobanalysis_hashtable[$fileext].CoolTierFileCount  += if(($b.ICloudBlob.AccessTier -eq $null -and $StorAccAccessTier -eq "Cool") -or $b.ICloudBlob.AccessTier -eq "Cool") { 1 } else { 0 }
-            $blobanalysis_hashtable[$fileext].OtherTierFileCount += if($b.ICloudBlob.AccessTier -ne $null -and $b.AccessTier -ne "Cool" -and $b.AccessTier -ne "Hot") { 1 } else { 0 }
+            $temp.TotalFileCount     += 1
+            $temp.TotalSize          += $b.Length
 
-            $blobanalysis_hashtable[$fileext].LT1KBFileSize      += if($b.Length -lt 1024) { $b.Length } else { 0 }
-            $blobanalysis_hashtable[$fileext].LT10KBFileSize     += if($b.Length -lt 10240  -and $b.Length -ge 1024)  { $b.Length } else { 0 }
-            $blobanalysis_hashtable[$fileext].LT100KBFileSize    += if($b.Length -lt 102400 -and $b.Length -ge 10240) { $b.Length } else { 0 }
-            $blobanalysis_hashtable[$fileext].LT1MBFileSize      += if($b.Length -lt 1024*1024 -and $b.Length -ge 102400) { $b.Length } else { 0 }
-            $blobanalysis_hashtable[$fileext].LT10MBFileSize     += if($b.Length -lt 1024*1024*10 -and $b.Length -ge 1024*1024) { $b.Length } else { 0 }
-            $blobanalysis_hashtable[$fileext].GE10MBFileSize     += if($b.Length -ge 1024*1024*10) { $b.Length } else { 0 }
-            $blobanalysis_hashtable[$fileext].HotTierFileSize    += if(($b.ICloudBlob.AccessTier -eq $null -and $StorAccAccessTier -eq "Hot") -or $b.ICloudBlob.AccessTier -eq "Hot") { $b.Length } else { 0 }
-            $blobanalysis_hashtable[$fileext].CoolTierFileSize   += if(($b.ICloudBlob.AccessTier -eq $null -and $StorAccAccessTier -eq "Cool") -or $b.ICloudBlob.AccessTier -eq "Cool")  { $b.Length } else { 0 }
-            $blobanalysis_hashtable[$fileext].OtherTierFileSize  += if($b.ICloudBlob.AccessTier -ne $null -and $b.AccessTier -ne "Cool" -and $b.AccessTier -ne "Hot") { $b.Length } else { 0 }
-        }
+            $temp.LT1KBFileCount     += if($b.Length -lt 1024) { 1 } else { 0 }
+            $temp.LT10KBFileCount    += if($b.Length -lt 10240  -and $b.Length -ge 1024)  { 1 } else { 0 }
+            $temp.LT100KBFileCount   += if($b.Length -lt 102400 -and $b.Length -ge 10240) { 1 } else { 0 }
+            $temp.LT1MBFileCount     += if($b.Length -lt 1024*1024 -and $b.Length -ge 102400) { 1 } else { 0 }
+            $temp.LT10MBFileCount    += if($b.Length -lt 1024*1024*10 -and $b.Length -ge 1024*1024) { 1 } else { 0 }
+            $temp.GE10MBFileCount    += if($b.Length -ge 1024*1024*10) { 1 } else { 0 }
+            $temp.HotTierFileCount   += if(($b.ICloudBlob.AccessTier -eq $null -and $StorAccAccessTier -eq "Hot") -or $b.ICloudBlob.AccessTier -eq "Hot") { 1 } else { 0 }
+            $temp.CoolTierFileCount  += if(($b.ICloudBlob.AccessTier -eq $null -and $StorAccAccessTier -eq "Cool") -or $b.ICloudBlob.AccessTier -eq "Cool") { 1 } else { 0 }
+            $temp.OtherTierFileCount += if($b.ICloudBlob.AccessTier -ne $null -and $b.AccessTier -ne "Cool" -and $b.AccessTier -ne "Hot") { 1 } else { 0 }
+
+            $temp.LT1KBFileSize      += if($b.Length -lt 1024) { $b.Length } else { 0 }
+            $temp.LT10KBFileSize     += if($b.Length -lt 10240  -and $b.Length -ge 1024)  { $b.Length } else { 0 }
+            $temp.LT100KBFileSize    += if($b.Length -lt 102400 -and $b.Length -ge 10240) { $b.Length } else { 0 }
+            $temp.LT1MBFileSize      += if($b.Length -lt 1024*1024 -and $b.Length -ge 102400) { $b.Length } else { 0 }
+            $temp.LT10MBFileSize     += if($b.Length -lt 1024*1024*10 -and $b.Length -ge 1024*1024) { $b.Length } else { 0 }
+            $temp.GE10MBFileSize     += if($b.Length -ge 1024*1024*10) { $b.Length } else { 0 }
+            $temp.HotTierFileSize    += if(($b.ICloudBlob.AccessTier -eq $null -and $StorAccAccessTier -eq "Hot") -or $b.ICloudBlob.AccessTier -eq "Hot") { $b.Length } else { 0 }
+            $temp.CoolTierFileSize   += if(($b.ICloudBlob.AccessTier -eq $null -and $StorAccAccessTier -eq "Cool") -or $b.ICloudBlob.AccessTier -eq "Cool")  { $b.Length } else { 0 }
+            $temp.OtherTierFileSize  += if($b.ICloudBlob.AccessTier -ne $null -and $b.AccessTier -ne "Cool" -and $b.AccessTier -ne "Hot") { $b.Length } else { 0 }
+
+        $blobanalysis_hashtable[$fileext] = $temp
     }
-
-    $outputarray = @()
-    foreach($k in $blobanalysis_hashtable.Keys) {
-      
-      $outputarray += $blobanalysis_hashtable[$k]  
-    }
-    $outputarray | Export-CSV $filepath -NoTypeInformation -Append
 }
 
 
+
+#### C++ main() equivalent ####
 function Run-MainScript {
-    #Get a list of SUBSCRIPTIONS
-    $SUBSCRIPTION_LIST = $null
+
+    ## Get a list of SUBSCRIPTIONS
     $SUBSCRIPTION_LIST = (EnumerateSubscriptions)
-    $SUBSCRIPTION_LIST | Export-CSV subscriptionlist.txt -NoTypeInformation
-    Write-Verbose "Subscription list written to ./subscriptionlist.txt"
+    
+    ## if an explicit subscription has been provided, filter list to just this subscription
+    $filtered = $false
+    if($InputSubscription -ne "")
+    {  
+        foreach($s in $SUBSCRIPTION_LIST)
+        {
+            if( $s.SubscriptionId -eq $InputSubscription )
+            {
+                $SUBSCRIPTION_LIST = @($s)
+                $filtered = $true
+                break;
+            }
+        }
 
-    #Get a list of STORAGE ACCOUNTs
-    $step = 1
-    if($SUBSCRIPTION_LIST -is [array]) {$subcount = $SUBSCRIPTION_LIST.Count}
-    else {$subcount = 1}
-    foreach($sub in $SUBSCRIPTION_LIST)
-    {
-        $STORAGEACCOUNTLIST = $null
-        $STORAGEACCOUNTLIST = (EnumerateStorageAccounts -subscription $sub -percentCompleted ($step/$subcount*100))
-        $step += 1
-        $STORAGEACCOUNTLIST | Export-CSV storageAccountList.txt -NoTypeInformation -Append
-        Write-Verbose ("Storage account list for " + $sub.SubscriptionId + " written to ./storageAccountList.txt")
+        #check if filtering actually worked
+        if($filtered -eq $false) {  Write-Error "Input subscription was not found in the list of enumerated subscriptions! Exiting script..." -Category InvalidArgument ; return;  }
+    }
+    
+    ## Get a list of STORAGE ACCOUNTs
+    foreach( $sub in $SUBSCRIPTION_LIST )   
+    {  
+        $STORAGEACCOUNTLIST += (EnumerateStorageAccounts -subscription $sub)   
     }
 
-    #Get a list of STORAGE CONTAINERS
-    $step = 1
-    if($STORAGEACCOUNTLIST -is [array]) {$subcount = $STORAGEACCOUNTLIST.Count}
-    else {$subcount = 1}
-    $containerList = $null
-    $sacontext = $null
-    foreach( $acc in $STORAGEACCOUNTLIST )
-    {
-        $containerList += (EnumerateContainers -storageAccount $acc -percentCompleted ($step/$subcount*100))
-        $step += 1
-        if( $containerList -eq $null ) { continue; }
-        $containerList | Export-CSV storageContainerList.txt -NoTypeInformation -Append
-        Write-Verbose ("Storage container list for " + $acc.StorageAccountName + " written to ./storageContainerList.txt")
+    ## Get a list of BLOB STORAGE CONTAINERS
+    foreach( $acc in $STORAGEACCOUNTLIST )  
+    {  
+        $BLOB_CONTAINER_LIST += (EnumerateBlobStorageContainers -storageAccount $acc)   
     }
 
-    #Enumerate blobs per container
-    foreach($c in $containerList)
+    ## Enumerate and Analyze blobs in each container
+    foreach($c in $BLOB_CONTAINER_LIST)
     {
-        Write-Verbose -Message ("Enumerating container: " + $c.BlobEndpoint + $c.Name )
+        $c_Token = $null
+        $c_total = 0
+        $blobanalysis_hashtable = @{}
 
-        $bloblist = Get-AzStorageBlob -Context $c.Context -Container $c.Name
-        ParseBlobList -container $c -blobs $bloblist -filepath "blobanalysis.txt" -StorAccAccessTier $acc.AccessTier
+        do #enumerate blobs in batches of 10000 and analyze
+        {
+            #show progress
+            $Progress_Task     = "Enumerating blobs for container " + $c.Name + ", batch " + $c_total.ToString() + " - " + ($c_total+10000).ToString()
+            Write-Progress -Id $Progress_Id -Activity $Progress_Activity -Status $Progress_Task
+
+            #enumerate
+            $bloblist = Get-AzStorageBlob -Context $c.Context -Container $c.Name -MaxCount 10000 -ContinuationToken $c_Token
+            $c_total += $bloblist.Count
+            Write-Verbose -Message ("Subscription: " + $c.SubscriptionId  + " , Storage Account: " + $c.StorageAccountName + " , Container: " + $c.Name  + " , Enumerated : " + $c_total)
+
+            #analyze
+            ParseBlobList -container $c -blobs $bloblist -StorAccAccessTier $acc.AccessTier
+
+            #prep for next fetch
+            if($bloblist.Count -le 0) { break; }
+            else                       { $c_Token = $bloblist[$bloblist.Count - 1].ContinuationToken }
+        } 
+        while ($c_Token -ne $null)
+
+
+        #convert hashtable to array for easy csv export
+        $outputarray = @()
+        foreach($k in $blobanalysis_hashtable.Keys) {  $outputarray += $blobanalysis_hashtable[$k] }
+
+        #write output to csv
+        $outputarray | Export-CSV $FILE_blobsum -NoTypeInformation -Append
+        Write-Verbose -Message ("Subscription: " + $c.SubscriptionId  + " , Storage Account: " + $c.StorageAccountName + " , Container: " + (split-path -path $c.Name -leaf) + " , File location: " + $FILE_blobsum)
+
     }
 }
-
 
 Run-MainScript
