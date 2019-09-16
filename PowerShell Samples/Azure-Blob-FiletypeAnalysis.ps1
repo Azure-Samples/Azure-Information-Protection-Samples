@@ -28,7 +28,7 @@ SOFTWARE.
 
     Author      : Aashish Ramdas
 
-    Version     : 1.0
+    Version     : 1.1
 
     Description : The script recursively enumerates the subscriptions, storage accounts, and blob containers 
     that you own. [See functions "EnumerateSubscriptions", "EnumerateStorageAccounts", and "EnumerateContainers"]
@@ -48,7 +48,8 @@ SOFTWARE.
 
 
 <#  INPUT PARAMETER DEFINITION #>
-param( [string]$InputSubscription = "")
+param( [string]$InputSubscription = "",
+       [bool]$AnonymizeNames = $false )
 
 <#  GLOBAL VARIABLES  #>
 $VerbosePreference   = "continue"
@@ -229,7 +230,8 @@ function ParseBlobList {
 
     foreach($b in $blobs)
     {
-        $fileext = [System.IO.Path]::GetExtension($b.Name)
+        $fileext = [System.IO.Path]::GetExtension($b.Name)   
+        #$fileext = Split-Path $b.Name -Extension   #PowerShell version 6.0 compatible; for machines that dont have access to System.IO. 
 
         #add empty new entry IF hashtable didn't contain the file extension object
         if($blobanalysis_hashtable[$fileext] -eq $null) 
@@ -335,7 +337,8 @@ function Run-MainScript {
     ## Get a list of BLOB STORAGE CONTAINERS
     foreach( $acc in $STORAGEACCOUNTLIST )  
     {  
-        $BLOB_CONTAINER_LIST += (EnumerateBlobStorageContainers -storageAccount $acc)   
+        $BLOB_CONTAINER_LIST += (EnumerateBlobStorageContainers -storageAccount $acc)
+        if( $BLOB_CONTAINER_LIST -isnot [array] ) { $BLOB_CONTAINER_LIST = @($BLOB_CONTAINER_LIST) }   
     }
 
     ## Enumerate and Analyze blobs in each container
@@ -365,6 +368,17 @@ function Run-MainScript {
         } 
         while ($c_Token -ne $null)
 
+
+        #anonymize StorageAccountURL and ContainerNames if the -Anonymize parameter is set to $true
+        if( $AnonymizeNames -eq $true )
+        {
+            $sha256 = [System.Security.Cryptography.HashAlgorithm]::Create('sha256')
+            foreach ($k in $blobanalysis_hashtable.Keys) 
+            { 
+                $blobanalysis_hashtable[$k].StorageAccountURL = [System.BitConverter]::ToString($sha256.ComputeHash([System.Text.Encoding]::UTF8.GetBytes($blobanalysis_hashtable[$k].StorageAccountURL))).replace('-', '')
+                $blobanalysis_hashtable[$k].ContainerName = [System.BitConverter]::ToString($sha256.ComputeHash([System.Text.Encoding]::UTF8.GetBytes($blobanalysis_hashtable[$k].ContainerName))).replace('-','')
+            }
+        }
 
         #convert hashtable to array for easy csv export
         $outputarray = @()
