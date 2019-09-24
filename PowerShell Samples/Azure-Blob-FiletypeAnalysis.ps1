@@ -331,7 +331,8 @@ function Run-MainScript {
     ## Get a list of STORAGE ACCOUNTs
     foreach( $sub in $SUBSCRIPTION_LIST )   
     {  
-        $STORAGEACCOUNTLIST += (EnumerateStorageAccounts -subscription $sub)   
+        $STORAGEACCOUNTLIST += (EnumerateStorageAccounts -subscription $sub)
+        if( $STORAGEACCOUNTLIST -isnot [array] ) { $STORAGEACCOUNTLIST = @($STORAGEACCOUNTLIST) }   
     }
 
     ## Get a list of BLOB STORAGE CONTAINERS
