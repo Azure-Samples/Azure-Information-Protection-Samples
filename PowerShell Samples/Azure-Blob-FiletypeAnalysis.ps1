@@ -23,194 +23,126 @@ SOFTWARE.
 #>
 
 
+
 <#   
-    Script      : Azure-Blob-FiletypeAnalysis.ps1
+Script      : AzureDataResourcesEnumeration.ps1
+Author      : Aashish Ramdas
+Version     : 3.0
+Description : The script recursively enumerates the subscriptions and data resources that you own.
+Output      : The output of this script is split into four tables in Log Analytics
+              
+              1) Table : IP4A_AZSUBSCRIPTIONS
+                 Fields: CustomerTenantID, SubscriptionID, State
 
-    Author      : Aashish Ramdas
+              2) Table : IP4A_AZRESOURCES
+                 Fields: CustomerTenantID, SubscriptionID, ResourceGroupName, ResourceType, ResourceName, Location
+                 
+                 ResourceType = Microsoft.Storage/StorageAccount
+                                Microsoft.Sql/servers
+                                Microsoft.DocumentDb/databaseAccounts
 
-    Version     : 1.1
+              3) Table : IP4A_AZDATACONTAINERS 
+                 Fields: CustomerTenantID, SubscriptionID, ContainerType, ContainerName, ContainerURL, ResourceType, ResourceName, ResourceURL, Location, PublicAccess
 
-    Description : The script recursively enumerates the subscriptions, storage accounts, and blob containers 
-    that you own. [See functions "EnumerateSubscriptions", "EnumerateStorageAccounts", and "EnumerateContainers"]
-    In each storage account, the blobs are enumerated [See function "Run-MainScript"] the blob metadata is analyzed
-    and aggregated using the function "ParseBlobList". The output is written to a bunch of .TXT files
+                 ContainerType = Microsoft.Storage/StorageAccount/BlobContainer
+                                 Microsoft.Storage/StorageAccount/FileShare
+                                 Microsoft.Storage/StorageAccount/DataLakeGen2
+                                 Microsoft.Sql/servers/databases
 
-    Output      : The output of this script is split into four .TXT files
-                  1) SubscriptionList.txt     -  Enumerates the TenantID, SubscriptionID, and the Enabled state
-                  2) StorageAccountList.txt   -  Enumerates the storage accounts with additional metadata like the Location, 
-                                                 AccessTier, SubscriptionId, and TenantId
-                  3) StorageContainerList.txt -  Enumerates the containers in the storage accounts with additional metadata 
-                                                 like PublicAccess, BlobEndpoint, SubscriptionId, and TenantId
-                  4) BlobAnalysis.txt         -  Aggregated and summarized analysis of the blob metadata, including the 
-                                                 File extension, Total data size, File count etc.  
-
+              4) Table : IP4A_BlobAnalysis         
+                 Fields: (see function for PSObject)
 #>
 
 
-<#  INPUT PARAMETER DEFINITION #>
-param( [string]$InputSubscription = "",
-       [bool]$AnonymizeNames = $false )
 
-<#  GLOBAL VARIABLES  #>
+# INPUT PARAMETER DEFINITION
+param( [string]$InputSubscription = "",
+       [bool]$AnonymizeNames = $false)
+       
+
+# GLOBAL VARIABLES
 $VerbosePreference   = "continue"
 $DebugPreference     = "SilentlyContinue"
 $Progress_Activity   = "Enumerating data sources"
-$Progress_Id         = 1
 $Progress_Task       = ""
-$SUBSCRIPTION_LIST   = $null
-$STORAGEACCOUNTLIST  = $null
-$BLOB_CONTAINER_LIST = $null
+$AZSUBSCRIPTIONS     = @()
+$AZRESOURCES         = @()
+$AZDATACONTAINERS    = @()
 $blobanalysis_hashtable = @{}
 
-<#  INITIAL SETUP  #>
-$FOLDER       = (Get-Date -Format "MM.dd.yyyy-hh.mm").ToString() + " AzBlob_Analysis"
-$FILE_sublist = "./$FOLDER/SubscriptionList.txt"
-$FILE_storacc = "./$FOLDER/StorageAccountList.txt"
-$FILE_storcon = "./$FOLDER/StorageContainerList.txt"
-$FILE_blobsum = "./$FOLDER/BlobAnalysis.txt"
-$dir = New-Item -Name $FOLDER -ItemType "directory" -Force
+# INITIAL SETUP
+$LogAnalyticsWorkspaceId = "<<insert workspaceID from step 3 in documentation here>>"
+$LogAnalyticsPrimaryKey = "<<insert PrimaryKey from step 3 in documentation here>>"
+$LOGNAME_sublist   = "IP4A_AZSUBSCRIPTIONS"
+$LOGNAME_azres     = "IP4A_AZRESOURCES"
+$LOGNAME_container = "IP4A_AZDATACONTAINERS"
+$LOGNAME_blobsum   = "IP4A_BLOBANALYSIS"
 
 
-function EnumerateSubscriptions {
-    
+
+Function Build-Signature ($customerId, $sharedKey, $date, $contentLength, $method, $contentType, $resource) {
     # ---------------------------------------------------------------   
-    #    Function       : EnumerateSubscriptions
-    #
-    #    Input          : None
-    #
-    #    Output         : Array of PSObject
-    #                     [
-    #                        TenantId
-    #                        SubscriptionId
-    #                        State
-    #                     ]
-    #
-    #    File Output    : SubscriptionList.txt
+    #    Name           : Build-Signature
+    #    Value          : Creates the authorization signature used in the REST API call to Log Analytics
     # ---------------------------------------------------------------
 
+    $xHeaders = "x-ms-date:" + $date
+    $stringToHash = $method + "`n" + $contentLength + "`n" + $contentType + "`n" + $xHeaders + "`n" + $resource
 
-    $Progress_Task     = "Enumerating subscriptions"
-    Write-Progress -Id $Progress_Id -Activity $Progress_Activity -Status $Progress_Task
-    
-    $subscriptions = Get-AzSubscription | Select-Object TenantId,SubscriptionId,State
-    if($subscriptions -eq $null   )    { $subscriptions = @() }  
-    if($subscriptions -isnot [array] ) { $subscriptions = @($subscriptions)  }
+    $bytesToHash = [Text.Encoding]::UTF8.GetBytes($stringToHash)
+    $keyBytes = [Convert]::FromBase64String($sharedKey)
 
-
-    #Write output to file
-    $subscriptions | Export-CSV $FILE_sublist -NoTypeInformation
-    Write-Verbose -Message ("Subscription: " + $subscriptions.Count.ToString() + " [count] , File location: " + $FILE_sublist)
-
-    return $subscriptions
+    $sha256 = New-Object System.Security.Cryptography.HMACSHA256
+    $sha256.Key = $keyBytes
+    $calculatedHash = $sha256.ComputeHash($bytesToHash)
+    $encodedHash = [Convert]::ToBase64String($calculatedHash)
+    $authorization = 'SharedKey {0}:{1}' -f $customerId,$encodedHash
+    return $authorization
 }
 
 
-
-function EnumerateStorageAccounts {
-    param( [PSObject]$subscription )
-
-    # ---------------------------------------------------------------
-    # Function       : EnumerateStorageAccounts
-    #
-    # Input          : 1) Subscription info
-    #                  2) percent completed status 
-    #
-    # Output         : Array of PSObject
-    #                  [
-    #                     StorageAccountName
-    #                     Id
-    #                     Location
-    #                     AccessTier
-    #                     Context
-    #                     PrimaryEndpoints
-    #                     TenantId
-    #                     SubscriptionId
-    #                  ]
-    # 
-    # File Output    : StorageAccountList.txt
-    # ---------------------------------------------------------------
-
-    ## Update which subscription is being enumerated
-    $Progress_Task     = "Enumerating storage accounts for subscription " + $subscription.SubscriptionId
-    Write-Progress -Id $Progress_Id -Activity $Progress_Activity -Status $Progress_Task
-    
-    ## Set the subscription context, if the current context is different
-    if( (Get-AzContext).Id -ne $subscription.SubscriptionId ) {  $a = Set-AzContext (Get-AzSubscription -SubscriptionId $subscription.SubscriptionId -Verbose) -Verbose  }
-
-    ## Enumerate the storage accounts in the subscription
-    $saList = Get-AzStorageAccount | Select-Object StorageAccountName, Id, Location, AccessTier, Context, PrimaryEndpoints 
-    if($saList -eq $null   )    { $saList = @() }  
-    if($saList -isnot [array] ) { $saList = @($saList)  }
-
-    ## Merge tenant and subscription info
-    foreach($sa in $saList) 
-    { 
-        Add-Member -InputObject $sa -MemberType NoteProperty -Name "TenantId" -Value $subscription.TenantId 
-        Add-Member -InputObject $sa -MemberType NoteProperty -Name "SubscriptionId" -Value $subscription.SubscriptionId 
-    }
-
-    ## Write output to file
-    $saList | Export-CSV $FILE_storacc -NoTypeInformation -Append
-    Write-Verbose -Message ("Subscription: " + $subscription.SubscriptionId + " , Storage Account: " + $saList.Count.ToString() + " [count] , File location: " + $FILE_storacc)
-
-    return $saList
-}
-
-
-
-function EnumerateBlobStorageContainers {
-    param( [PSObject]$storageAccount )
-
+Function Post-LogAnalyticsData($body, $LogAnalyticsTableName) {
     # ---------------------------------------------------------------   
-    # Function       : EnumerateBlobStorageContainers 
-    # 
-    # Input          : 1) storage account info
-    #                  2) percent completed status
-    # 
-    # Output         : Array of PSObject
-    #                  [
-    #                     Name
-    #                     PublicAccess
-    #                     Context
-    #                     TenantId
-    #                     SubscriptionId
-    #                     StorageAccountName
-    #                     BlobEndpoint
-    #                  ]
-    # 
-    # File Output    : StorageContainerList.txt
+    #    Name           : Post-LogAnalyticsData
+    #    Value          : Writes the data to Log Analytics using a REST API
+    #    Input          : 1) PSObject with the data
+    #                     2) Table name in Log Analytics
+    #    Output         : None
     # ---------------------------------------------------------------
+    
+    #Step 0: sanity checks
+    if($body -isnot [array]) {return}
+    if($body.Count -eq 0) {return}
 
+    #Step 1: convert the PSObject to JSON
+    $bodyJson = $body | ConvertTo-Json
 
-    $Progress_Task     = "Enumerating containers for Storage Account " + $storageAccount.StorageAccountName
-    Write-Progress -Id $Progress_Id -Activity $Progress_Activity -Status $Progress_Task
+    #Step 2: get the UTF8 bytestream for the JSON
+    $bodyJsonUTF8 = ([System.Text.Encoding]::UTF8.GetBytes($bodyJson))
 
-    ## Enumerate the blob storage containers in the storage account
-    $local:containerList = $null
-    $containerList = Get-AzStorageContainer -Context $storageAccount.Context | Select-Object Name, PublicAccess, Context
-    if($containerList -eq $null   )    { $containerList = @() }  
-    if($containerList -isnot [array] ) { $containerList = @($containerList)  }
+    #Step 3: build the signature        
+    $method = "POST"
+    $contentType = "application/json"
+    $resource = "/api/logs"
+    $rfc1123date = [DateTime]::UtcNow.ToString("r")
+    $contentLength = $bodyJsonUTF8.Length    
+    $signature = Build-Signature -customerId $LogAnalyticsWorkspaceId -sharedKey $LogAnalyticsPrimaryKey -date $rfc1123date -contentLength $contentLength -method $method -contentType $contentType -resource $resource
+    
+    #Step 4: create the header
+    $headers = @{
+        "Authorization" = $signature;
+        "Log-Type" = $LogAnalyticsTableName;
+        "x-ms-date" = $rfc1123date;
+        #"time-generated-field" = $TimeStampField;
+    };
 
-
-    ## Merge tenant and subscription info
-    foreach($c in $containerList) 
-    { 
-        Add-Member -InputObject $c -MemberType NoteProperty -Name "TenantId" -Value $storageAccount.TenantId 
-        Add-Member -InputObject $c -MemberType NoteProperty -Name "SubscriptionId" -Value $storageAccount.SubscriptionId 
-        Add-Member -InputObject $c -MemberType NoteProperty -Name "StorageAccountName" -Value $storageAccount.StorageAccountName
-        Add-Member -InputObject $c -MemberType NoteProperty -Name "BlobEndpoint" -Value $storageAccount.PrimaryEndpoints.Blob
-    }
-
-    ## Write output to file
-    $containerList | Export-CSV $FILE_storcon -NoTypeInformation -Append
-    Write-Verbose -Message ("Subscription: " + $storageAccount.SubscriptionId  + " , Storage Account: " + $acc.StorageAccountName + " , Container : " + $containerList.Count.ToString() + " [count] , File location: " + $FILE_storcon)
-
-    return $containerList
+    #Step 5: REST API call
+    $uri = "https://" + $LogAnalyticsWorkspaceId + ".ods.opinsights.azure.com" + $resource + "?api-version=2016-04-01"
+    $response = Invoke-WebRequest -Uri $uri -Method Post -Headers $headers -ContentType $contentType -Body $bodyJsonUTF8 -UseBasicParsing
 }
 
 
-
-function ParseBlobList {
+function ParseBlobs {
     param( [PSObject]$blobs,
            [PSObject]$container,
            [string]$StorAccAccessTier )
@@ -230,19 +162,19 @@ function ParseBlobList {
 
     foreach($b in $blobs)
     {
-        $fileext = [System.IO.Path]::GetExtension($b.Name)   
+        $fileext = [System.IO.Path]::GetExtension($b.Name)    #old style
         #$fileext = Split-Path $b.Name -Extension   #PowerShell version 6.0 compatible; for machines that dont have access to System.IO. 
 
         #add empty new entry IF hashtable didn't contain the file extension object
         if($blobanalysis_hashtable[$fileext] -eq $null) 
         {
             $f = [PSCustomObject]@{    
-                TenantID           = $container.TenantId
+                CustomerTenantID   = $container.CustomerTenantId
                 SubscriptionID     = $container.SubscriptionId
                 StorageAccountURL  = $container.BlobEndpoint
-                ContainerName      = $container.Name
-                ContainerType      = $b.BlobType
-                ContainerPublicAccess = $container.PublicAccess
+                ContainerName      = $container.ContainerName
+                ContainerType      = $container.ContainerType
+                ContainerAccess    = $container.ContainerAccess
                 Extension          = $fileext
                 ContentType        = $b.ContentType
 
@@ -303,93 +235,294 @@ function ParseBlobList {
 }
 
 
+function EnumerateSubscriptions {
+    
+    # ---------------------------------------------------------------   
+    #    Function       : EnumerateSubscriptions
+    #    Input          : None
+    #    Output         : Array of PSObject written to IP4A_AZSUBSCRIPTIONS table
+    # ---------------------------------------------------------------
+    
+    $subscriptions = Get-AzSubscription | Select-Object TenantId,SubscriptionId,State
+    if($subscriptions -eq $null   )    { $subscriptions = @() }  
+    if($subscriptions -isnot [array] ) { $subscriptions = @($subscriptions)  }
+
+
+    $azsub = @()
+    foreach($s in $subscriptions)  
+    {
+        $new_s = [PSCustomObject]@{    
+            CustomerTenantID   = $s.TenantId
+            SubscriptionID     = $s.SubscriptionId
+            State              = $s.State
+        }
+
+        $azsub += $new_s
+    }
+
+    if($azsub.Count -ne 0) {
+        $azsub | Export-CSV "./subscriptions.txt" -NoTypeInformation
+        Write-Verbose -Message ("Subscription: " + $azsub.Count.ToString() + " [count] , Log Analytics table: " + $LOGNAME_sublist)
+        Post-LogAnalyticsData -LogAnalyticsTableName $LOGNAME_sublist -body $azsub
+    }
+    else {
+        Write-Verbose -Message ("Subscription: " + $azsub.Count.ToString() + " [count] , NO DATA WRITTEN TO LOG ANALYTICS!")
+    }
+
+    return $azsub
+}
+
+
+function EnumerateResources {
+    param( [PSObject]$subscription )
+
+    Write-Verbose -Message ("Enumerating data resources for subscription: " + $subscription.SubscriptionID)
+    
+    $res = @()
+    $res = $res + (Get-AzResource -ResourceType "Microsoft.Storage/storageaccounts")       #Blobs, Files, ADLS
+    $res = $res + (Get-AzResource -ResourceType "Microsoft.Sql/servers")                   #Azure SQL
+    $res = $res + (Get-AzResource -ResourceType "Microsoft.DocumentDb/databaseAccounts")   #CosmosDB
+
+
+    $azres = @()
+    foreach($r in $res)  
+    {
+        $new_r = [PSCustomObject]@{    
+            CustomerTenantID   = $subscription.CustomerTenantId
+            SubscriptionID     = $subscription.SubscriptionId
+            ResourceGroupName  = $r.ResourceGroupName
+            ResourceType       = $r.ResourceType
+            ResourceName       = $r.Name
+            Location           = $r.location
+        }
+
+        $azres += $new_r
+    }
+
+    if($azres.Count -ne 0) {
+        $azres | Export-CSV "./azres.txt" -NoTypeInformation -Append
+        Write-Verbose -Message ("Subscription: " + $subscription.SubscriptionId + " , Resources: " + $azres.Count.ToString() + " [count] , Log Analytics table: " + $LOGNAME_azres)
+        Post-LogAnalyticsData -LogAnalyticsTableName $LOGNAME_azres -body $azres
+    }
+    else {
+        Write-Verbose -Message ("Subscription: " + $subscription.SubscriptionId + " , Resources: " + $azres.Count.ToString() + " [count] , NO DATA WRITTEN TO LOG ANALYTICS!")
+    }
+
+    return $azres
+}
+
+
+function EnumerateContainers {
+    param( [PSObject]$Subscription, 
+           [PSObject]$Resources )
+
+    $containers = @()
+
+    Write-Verbose "Enumerating containers"
+
+    # Parse storage resources
+    $Resources_Storage = $Resources | Where-Object {$_.ResourceType -eq 'Microsoft.Storage/storageaccounts'}
+    
+    foreach( $r in $Resources_Storage )
+    {
+        # get storage account 
+        $local:sa = Get-AzStorageAccount -ResourceGroupName $r.ResourceGroupName -Name $r.ResourceName  | Select-Object StorageAccountName, Id, Location, AccessTier, Context, PrimaryEndpoints, EnableHierarchicalNamespace
+
+        # get blob/adls containers + file shares
+        $local:blobcon    = Get-AzStorageContainer -Context $sa.Context
+        $local:fileshare  = Get-AzStorageShare -Context $sa.Context
+
+        # cleanup
+        if($blobcon -eq $null   )    { $blobcon = @() }  
+        if($blobcon -isnot [array] ) { $blobcon = @($blobcon)  }
+        if($fileshare -eq $null   )    { $fileshare = @() }  
+        if($fileshare -isnot [array] ) { $fileshare = @($fileshare)  }
+
+
+        foreach($b in $blobcon)  
+        {
+            $c = [PSCustomObject]@{    
+                CustomerTenantID   = $r.CustomerTenantId
+                SubscriptionID     = $r.SubscriptionId
+                ResourceGroupName  = $r.ResourceGroupName
+                ResourceType       = $r.ResourceType
+                ResourceName       = $r.ResourceName
+                Location           = $r.location
+                ContainerName      = $b.Name
+                ContainerType      = if ($sa.EnableHierarchicalNamespace -eq $true) { "Azure Data Lake Storage" } else { "Azure Blob Storage" } 
+                ContainerUrl       = $sa.Context.BlobEndPoint
+                ContainerAccess    = $b.PublicAccess
+            }
+
+            $containers += $c
+        }
+
+        foreach($fs in $fileshare)  
+        {
+            $c = [PSCustomObject]@{    
+                CustomerTenantID   = $r.CustomerTenantId
+                SubscriptionID     = $r.SubscriptionId
+                ResourceGroupName  = $r.ResourceGroupName
+                ResourceType       = $r.ResourceType
+                ResourceName       = $r.ResourceName
+                Location           = $r.location
+                ContainerName      = $fs.Name
+                ContainerType      = "Azure Files Share"
+                ContainerUrl       = $fs.Uri
+                ContainerAccess    = ""
+            }
+
+            $containers += $c
+        }
+
+    }
+
+
+    # Parse SQL servers
+    $Resources_SQL = $Resources | Where-Object {$_.ResourceType -eq 'Microsoft.Sql/servers'}
+    foreach( $r in $Resources_SQL )
+    {
+        $local:sqldbs = Get-AzSqlDatabase -ResourceGroupName $r.ResourceGroupName -ServerName $r.ResourceName
+        if($sqldbs -eq $null   )    { $sqldbs = @() }  
+        if($sqldbs -isnot [array] ) { $sqldbs = @($sqldbs)  }
+
+        foreach($db in $sqldbs)  
+        {
+            $c = [PSCustomObject]@{    
+                CustomerTenantID   = $r.CustomerTenantId
+                SubscriptionID     = $r.SubscriptionId
+                ResourceGroupName  = $r.ResourceGroupName
+                ResourceType       = $r.ResourceType
+                ResourceName       = $r.ResourceName
+                Location           = $r.location
+                ContainerName      = $db.DatabaseName
+                ContainerType      = "Azure SQL Database"
+                ContainerUrl       = $db.ResourceId
+                ContainerAccess    = ""
+            }
+
+            $containers += $c
+        }
+
+    }
+
+
+    # Parse CosmosDB
+    <#
+    $Resources_CosmosDB = $Resources | Where-Object {$_.ResourceType -eq 'Microsoft.DocumentDb/databaseAccounts'}
+    foreach( $r in $Resources_CosmosDB )
+    {
+        $local:cosmosdbs = Get-AzResource -ResourceType "Microsoft.DocumentDb/databaseAccounts/apis/databases" -ResourceGroupName $r.ResourceGroupName -Name ($ResourceName+"/sql/")
+        if($cosmosdbs -eq $null   )    { $cosmosdbs = @() }  
+        if($cosmosdbs -isnot [array] ) { $cosmosdbs = @($cosmosdbs)  }
+
+        foreach($db in $cosmosdbs)  
+        {
+            $c = [PSCustomObject]@{    
+                TenantID           = $r.TenantId
+                SubscriptionID     = $r.SubscriptionId
+                ResourceGroupName  = $r.ResourceGroupName
+                ResourceType       = $r.ResourceType
+                ResourceName       = $r.ResourceName
+                Location           = $r.location
+                ContainerName      = $db.DatabaseName
+                ContainerType      = "Azure SQL Database"
+                ContainerUrl       = $db.ResourceId
+                ContainerAccess    = ""
+            }
+
+            $containers += $c
+        }
+    }
+    #>
+
+
+    if($containers.Count -ne 0) {
+        $containers | Export-CSV "./containers.txt" -NoTypeInformation -Append
+        Write-Verbose -Message ("Subscription: " + $subscription.SubscriptionId + " , Resources: " + $azres.Count.ToString() + " [count] , Log Analytics table: " + $LOGNAME_azres)
+        Post-LogAnalyticsData -LogAnalyticsTableName $LOGNAME_container -body $containers
+    }
+    else {
+        Write-Verbose -Message ("Subscription: " + $subscription.SubscriptionId + " , Resources: " + $azres.Count.ToString() + " [count] , NO DATA WRITTEN TO LOG ANALYTICS!")
+    }
+
+    return $containers
+}
+
+
+function BlobFiletypeAnalysis {
+    param( [PSObject]$container )
+
+    # Set the subscription context, if the current context is different
+    if( (Get-AzContext).Subscription -ne $container.SubscriptionID ) {  $a = Set-AzContext (Get-AzSubscription -SubscriptionId $container.SubscriptionID -Verbose) -Verbose  }
+
+    # Set the storage account context
+    $local:sa = Get-AzStorageAccount -ResourceGroupName $container.ResourceGroupName -Name $container.ResourceName  | Select-Object StorageAccountName, Id, Location, AccessTier, Context, PrimaryEndpoints
+
+    #read blob data in batches of 10000 and analyze
+    $c_Token = $null
+    $c_total = 0
+    $blobanalysis_hashtable = @{}        
+    do 
+    {
+        #enumerate
+        $blobs = Get-AzStorageBlob -Context $sa.Context -Container $container.ContainerName -MaxCount 10000 -ContinuationToken $c_Token
+        $c_total += $blobs.Count
+        Write-Verbose -Message ("Subscription: " + $container.SubscriptionID  + " , Storage Account: " + $container.ResourceName + " , Container: " + $container.ContainerName  + " , Enumerated : " + $c_total)
+
+        #analyze
+        Parseblobs -container $container -blobs $blobs -StorAccAccessTier $sa.AccessTier
+
+        #prep for next fetch
+        if($blobs.Count -le 0) { break; }
+        else                   { $c_Token = $blobs[$blobs.Count - 1].ContinuationToken }
+    } 
+    while ($c_Token -ne $null)
+
+
+    #anonymize StorageAccountURL and ContainerNames if the -Anonymize parameter is set to $true
+    if( $AnonymizeNames -eq $true )
+    {
+        $sha256 = [System.Security.Cryptography.HashAlgorithm]::Create('sha256')
+        foreach ($k in $blobanalysis_hashtable.Keys) 
+        { 
+            $blobanalysis_hashtable[$k].StorageAccountURL = [System.BitConverter]::ToString($sha256.ComputeHash([System.Text.Encoding]::UTF8.GetBytes($blobanalysis_hashtable[$k].StorageAccountURL))).replace('-', '')
+            $blobanalysis_hashtable[$k].ContainerName = [System.BitConverter]::ToString($sha256.ComputeHash([System.Text.Encoding]::UTF8.GetBytes($blobanalysis_hashtable[$k].ContainerName))).replace('-','')
+        }
+    }
+
+    #convert hashtable to array for easy csv export
+    $outputarray = @()
+    foreach($k in $blobanalysis_hashtable.Keys) {  $outputarray += $blobanalysis_hashtable[$k] }
+
+    #write output to csv
+    $outputarray | Export-CSV "./blobanalysis.txt" -NoTypeInformation -Append
+    Post-LogAnalyticsData -LogAnalyticsTableName $LOGNAME_blobsum -body $outputarray
+
+}
+
 
 #### C++ main() equivalent ####
 function Run-MainScript {
 
-    ## Get a list of SUBSCRIPTIONS
-    $SUBSCRIPTION_LIST = (EnumerateSubscriptions)
+    # Get a list of SUBSCRIPTIONS
+    $AZSUBSCRIPTIONS += (EnumerateSubscriptions)
     
-    ## if an explicit subscription has been provided, filter list to just this subscription
-    $filtered = $false
-    if($InputSubscription -ne "")
+    # if an explicit subscription has been provided, filter list to just this subscription
+    if($InputSubscription -ne "") { $AZSUBSCRIPTIONS = $AZSUBSCRIPTIONS | Where-Object { $_.SubscriptionId -eq $InputSubscription } }
+    if($AZSUBSCRIPTIONS.Count -eq 0) { Write-Error "Input subscription was not found in the list of enumerated subscriptions! Exiting script..." -Category InvalidArgument ; return;  }
+ 
+    # Get a list of resources and containers within each subscription
+    foreach( $sub in $AZSUBSCRIPTIONS )   
     {  
-        foreach($s in $SUBSCRIPTION_LIST)
-        {
-            if( $s.SubscriptionId -eq $InputSubscription )
-            {
-                $SUBSCRIPTION_LIST = @($s)
-                $filtered = $true
-                break;
-            }
-        }
-
-        #check if filtering actually worked
-        if($filtered -eq $false) {  Write-Error "Input subscription was not found in the list of enumerated subscriptions! Exiting script..." -Category InvalidArgument ; return;  }
-    }
-    
-    ## Get a list of STORAGE ACCOUNTs
-    foreach( $sub in $SUBSCRIPTION_LIST )   
-    {  
-        $STORAGEACCOUNTLIST += (EnumerateStorageAccounts -subscription $sub)
-        if( $STORAGEACCOUNTLIST -isnot [array] ) { $STORAGEACCOUNTLIST = @($STORAGEACCOUNTLIST) }   
+        Set-AzContext (Get-AzSubscription -SubscriptionId $sub.SubscriptionID -Verbose) -Verbose
+        $AZRESOURCES += (EnumerateResources -subscription $sub)
+        $AZDATACONTAINERS += (EnumerateContainers -Subscription $sub -Resources $AZRESOURCES)
     }
 
-    ## Get a list of BLOB STORAGE CONTAINERS
-    foreach( $acc in $STORAGEACCOUNTLIST )  
-    {  
-        $BLOB_CONTAINER_LIST += (EnumerateBlobStorageContainers -storageAccount $acc)
-        if( $BLOB_CONTAINER_LIST -isnot [array] ) { $BLOB_CONTAINER_LIST = @($BLOB_CONTAINER_LIST) }   
-    }
-
-    ## Enumerate and Analyze blobs in each container
-    foreach($c in $BLOB_CONTAINER_LIST)
-    {
-        $c_Token = $null
-        $c_total = 0
-        $blobanalysis_hashtable = @{}
-
-        do #enumerate blobs in batches of 10000 and analyze
-        {
-            #show progress
-            $Progress_Task     = "Enumerating blobs for container " + $c.Name + ", batch " + $c_total.ToString() + " - " + ($c_total+10000).ToString()
-            Write-Progress -Id $Progress_Id -Activity $Progress_Activity -Status $Progress_Task
-
-            #enumerate
-            $bloblist = Get-AzStorageBlob -Context $c.Context -Container $c.Name -MaxCount 10000 -ContinuationToken $c_Token
-            $c_total += $bloblist.Count
-            Write-Verbose -Message ("Subscription: " + $c.SubscriptionId  + " , Storage Account: " + $c.StorageAccountName + " , Container: " + $c.Name  + " , Enumerated : " + $c_total)
-
-            #analyze
-            ParseBlobList -container $c -blobs $bloblist -StorAccAccessTier $acc.AccessTier
-
-            #prep for next fetch
-            if($bloblist.Count -le 0) { break; }
-            else                       { $c_Token = $bloblist[$bloblist.Count - 1].ContinuationToken }
-        } 
-        while ($c_Token -ne $null)
-
-
-        #anonymize StorageAccountURL and ContainerNames if the -Anonymize parameter is set to $true
-        if( $AnonymizeNames -eq $true )
-        {
-            $sha256 = [System.Security.Cryptography.HashAlgorithm]::Create('sha256')
-            foreach ($k in $blobanalysis_hashtable.Keys) 
-            { 
-                $blobanalysis_hashtable[$k].StorageAccountURL = [System.BitConverter]::ToString($sha256.ComputeHash([System.Text.Encoding]::UTF8.GetBytes($blobanalysis_hashtable[$k].StorageAccountURL))).replace('-', '')
-                $blobanalysis_hashtable[$k].ContainerName = [System.BitConverter]::ToString($sha256.ComputeHash([System.Text.Encoding]::UTF8.GetBytes($blobanalysis_hashtable[$k].ContainerName))).replace('-','')
-            }
-        }
-
-        #convert hashtable to array for easy csv export
-        $outputarray = @()
-        foreach($k in $blobanalysis_hashtable.Keys) {  $outputarray += $blobanalysis_hashtable[$k] }
-
-        #write output to csv
-        $outputarray | Export-CSV $FILE_blobsum -NoTypeInformation -Append
-        Write-Verbose -Message ("Subscription: " + $c.SubscriptionId  + " , Storage Account: " + $c.StorageAccountName + " , Container: " + (split-path -path $c.Name -leaf) + " , File location: " + $FILE_blobsum)
-
-    }
+    # Run filetype analysis on the blobs in the container
+    $blob_containers = $AZDATACONTAINERS | Where-Object { $_.ContainerType -eq "Azure Blob Storage" }
+    foreach( $c in $blob_containers )   {   BlobFiletypeAnalysis -container $c   }
 }
 
 Run-MainScript
