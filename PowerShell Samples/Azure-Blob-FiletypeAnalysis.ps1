@@ -27,7 +27,8 @@ SOFTWARE.
 <#   
 Script      : AzureDataResourcesEnumeration.ps1
 Author      : Aashish Ramdas
-Version     : 3.0
+Co-Author   : Chris Boehm
+Version     : 3.0.1
 Description : The script recursively enumerates the subscriptions and data resources that you own.
 Output      : The output of this script is split into four tables in Log Analytics
               
@@ -73,6 +74,7 @@ $blobanalysis_hashtable = @{}
 # INITIAL SETUP
 $LogAnalyticsWorkspaceId = "<<insert workspaceID from step 3 in documentation here>>"
 $LogAnalyticsPrimaryKey = "<<insert PrimaryKey from step 3 in documentation here>>"
+$TenantId = "<<insert TenantID here>>"
 $LOGNAME_sublist   = "IP4A_AZSUBSCRIPTIONS"
 $LOGNAME_azres     = "IP4A_AZRESOURCES"
 $LOGNAME_container = "IP4A_AZDATACONTAINERS"
@@ -243,7 +245,7 @@ function EnumerateSubscriptions {
     #    Output         : Array of PSObject written to IP4A_AZSUBSCRIPTIONS table
     # ---------------------------------------------------------------
     
-    $subscriptions = Get-AzSubscription | Select-Object TenantId,SubscriptionId,State
+    $subscriptions = Get-AzSubscription -TenantId $TenantId | Select-Object TenantId,SubscriptionId,State
     if($subscriptions -eq $null   )    { $subscriptions = @() }  
     if($subscriptions -isnot [array] ) { $subscriptions = @($subscriptions)  }
 
@@ -454,7 +456,7 @@ function BlobFiletypeAnalysis {
     param( [PSObject]$container )
 
     # Set the subscription context, if the current context is different
-    if( (Get-AzContext).Subscription -ne $container.SubscriptionID ) {  $a = Set-AzContext (Get-AzSubscription -SubscriptionId $container.SubscriptionID -Verbose) -Verbose  }
+    if( (Get-AzContext).Subscription -ne $container.SubscriptionID ) {  $a = Set-AzContext (Get-AzSubscription -TenantId $TenantId -SubscriptionId $container.SubscriptionID -Verbose) -Verbose  }
 
     # Set the storage account context
     $local:sa = Get-AzStorageAccount -ResourceGroupName $container.ResourceGroupName -Name $container.ResourceName  | Select-Object StorageAccountName, Id, Location, AccessTier, Context, PrimaryEndpoints
@@ -505,6 +507,11 @@ function BlobFiletypeAnalysis {
 #### C++ main() equivalent ####
 function Run-MainScript {
 
+    # Checks Tenant - If not logged into the configured tenant script will establish az-context to appropate tenant
+    $ChckTenantID = Get-AzContext
+    if(($ChckTenantID.Tenant.Id) -eq $TenantId) { } else { Clear-AzContext -Force
+    Connect-AzAccount -Tenant $TenantId }
+
     # Get a list of SUBSCRIPTIONS
     $AZSUBSCRIPTIONS += (EnumerateSubscriptions)
     
@@ -515,7 +522,7 @@ function Run-MainScript {
     # Get a list of resources and containers within each subscription
     foreach( $sub in $AZSUBSCRIPTIONS )   
     {  
-        Set-AzContext (Get-AzSubscription -SubscriptionId $sub.SubscriptionID -Verbose) -Verbose
+        Set-AzContext (Get-AzSubscription -TenantId $TenantId -SubscriptionId $sub.SubscriptionID -Verbose) -Verbose
         $AZRESOURCES += (EnumerateResources -subscription $sub)
         $AZDATACONTAINERS += (EnumerateContainers -Subscription $sub -Resources $AZRESOURCES)
     }
