@@ -6,7 +6,7 @@
       "content": {
         "version": "KqlParameterItem/1.0",
         "crossComponentResources": [
-          "{Workspace}"
+          "value::selected"
         ],
         "parameters": [
           {
@@ -21,10 +21,7 @@
             "delimiter": ",",
             "query": "resources\r\n| where type =~ 'microsoft.operationalinsights/workspaces'\r\n| project id",
             "crossComponentResources": [
-              "/subscriptions/458b9821-8f00-483f-acf9-ff6ab17332c4"
-            ],
-            "value": [
-              "value::all"
+              "value::selected"
             ],
             "typeSettings": {
               "resourceTypeFilter": {
@@ -144,8 +141,8 @@
           }
         ],
         "style": "pills",
-        "queryType": 0,
-        "resourceType": "microsoft.operationalinsights/workspaces"
+        "queryType": 1,
+        "resourceType": "microsoft.resourcegraph/resources"
       },
       "name": "parameters - 0"
     },
