@@ -198,7 +198,7 @@
     {
       "type": 1,
       "content": {
-        "json": "##### Value to Customers\r\n\r\nIt provides enterprises with:\r\n- A data discovery solution using automated scanning technology for sensitivity and malware\r\n- A unified view of the data estate with risk insights across their multi-cloud assets\r\n- A consolidated threat protection experience across all data-related Azure Defenders for Azure SQL, OSS DB, Storage, etc.\r\n\r\n##### Definitions\r\nAn asset is the granular data object within Azure Purview. For example, blobs within Azure Blob Storage, files within Azure Files, and columns and tables within Azure SQL are all considered assets."
+        "json": "##### Value to Customers\r\n\r\nIt provides enterprises with:\r\n- A data discovery solution using automated scanning technology for sensitivity and malware\r\n- A unified view of the data estate with risk insights across their multi-cloud assets\r\n- A consolidated threat protection experience for data within Microsoft Defender for Cloud\r\n\r\n##### Definitions\r\nAn asset is the granular data object within Azure Purview, like a blob within Azure Blob Storage"
       },
       "conditionalVisibility": {
         "parameterName": "Tab",
@@ -380,7 +380,7 @@
               "size": 1,
               "title": "Percentage of classified assets",
               "timeContext": {
-                "durationMs": 2592000000
+                "durationMs": 0
               },
               "timeContextFromParameter": "Time",
               "queryType": 0,
@@ -404,6 +404,24 @@
                     "formatOptions": {
                       "palette": "blue"
                     }
+                  }
+                ],
+                "labelSettings": [
+                  {
+                    "columnId": "SourceType",
+                    "label": "Source Type"
+                  },
+                  {
+                    "columnId": "AssetCount",
+                    "label": "Asset Count"
+                  },
+                  {
+                    "columnId": "AssetClassifiedCount",
+                    "label": "Asset Classified Count"
+                  },
+                  {
+                    "columnId": "ClassifiedPercentage",
+                    "label": "Classified Percentage"
                   }
                 ]
               },
@@ -509,7 +527,7 @@
               "size": 1,
               "title": "File Extensions",
               "timeContext": {
-                "durationMs": 2592000000
+                "durationMs": 0
               },
               "timeContextFromParameter": "Time",
               "queryType": 0,
@@ -519,6 +537,10 @@
               ],
               "gridSettings": {
                 "labelSettings": [
+                  {
+                    "columnId": "FileExtension",
+                    "label": "File Extension"
+                  },
                   {
                     "columnId": "count_",
                     "label": "Count"
@@ -541,7 +563,7 @@
               "size": 4,
               "title": "Top sensitivity labels found",
               "timeContext": {
-                "durationMs": 2592000000
+                "durationMs": 0
               },
               "timeContextFromParameter": "Time",
               "queryType": 0,
@@ -591,7 +613,7 @@
               "size": 1,
               "title": "Top classifications found",
               "timeContext": {
-                "durationMs": 2592000000
+                "durationMs": 0
               },
               "timeContextFromParameter": "Time",
               "queryType": 0,
@@ -605,6 +627,12 @@
                   {
                     "columnMatch": "AssetCount",
                     "formatter": 1
+                  }
+                ],
+                "labelSettings": [
+                  {
+                    "columnId": "AssetCount",
+                    "label": "Asset Count"
                   }
                 ]
               },
@@ -738,7 +766,7 @@
               "size": 1,
               "title": "Percentage of classified assets",
               "timeContext": {
-                "durationMs": 2592000000
+                "durationMs": 0
               },
               "timeContextFromParameter": "Time",
               "queryType": 0,
@@ -762,6 +790,24 @@
                     "formatOptions": {
                       "palette": "blue"
                     }
+                  }
+                ],
+                "labelSettings": [
+                  {
+                    "columnId": "SourceType",
+                    "label": "Source Type"
+                  },
+                  {
+                    "columnId": "AssetCount",
+                    "label": "Asset Count"
+                  },
+                  {
+                    "columnId": "AssetClassifiedCount",
+                    "label": "Asset Classified Count"
+                  },
+                  {
+                    "columnId": "ClassifiedPercentage",
+                    "label": "Classified Percentage"
                   }
                 ]
               },
@@ -827,7 +873,7 @@
               "size": 0,
               "title": "Data source region",
               "timeContext": {
-                "durationMs": 2592000000
+                "durationMs": 0
               },
               "timeContextFromParameter": "Time",
               "queryType": 0,
@@ -836,6 +882,18 @@
                 "{Workspace}"
               ],
               "visualization": "table",
+              "gridSettings": {
+                "labelSettings": [
+                  {
+                    "columnId": "SourceRegion",
+                    "label": "Source Region"
+                  },
+                  {
+                    "columnId": "AssetCount",
+                    "label": "Asset Count"
+                  }
+                ]
+              },
               "mapSettings": {
                 "locInfo": "CountryRegion",
                 "locInfoColumn": "SourceRegion",
@@ -867,7 +925,7 @@
               "size": 1,
               "title": "File Extensions",
               "timeContext": {
-                "durationMs": 2592000000
+                "durationMs": 0
               },
               "timeContextFromParameter": "Time",
               "queryType": 0,
@@ -877,6 +935,10 @@
               ],
               "gridSettings": {
                 "labelSettings": [
+                  {
+                    "columnId": "FileExtension",
+                    "label": "File Extension"
+                  },
                   {
                     "columnId": "count_",
                     "label": "Count"
@@ -899,7 +961,7 @@
               "size": 4,
               "title": "Top sensitivity labels found",
               "timeContext": {
-                "durationMs": 2592000000
+                "durationMs": 0
               },
               "timeContextFromParameter": "Time",
               "queryType": 0,
@@ -916,8 +978,8 @@
                 ],
                 "labelSettings": [
                   {
-                    "columnId": "newSensitivityLabelName",
-                    "label": "Label"
+                    "columnId": "newSensitivityLabel",
+                    "label": "Sensitivity Label"
                   },
                   {
                     "columnId": "AssetCount",
@@ -937,7 +999,7 @@
               "size": 1,
               "title": "Top classifications found",
               "timeContext": {
-                "durationMs": 2592000000
+                "durationMs": 0
               },
               "timeContextFromParameter": "Time",
               "queryType": 0,
@@ -951,6 +1013,12 @@
                   {
                     "columnMatch": "AssetCount",
                     "formatter": 1
+                  }
+                ],
+                "labelSettings": [
+                  {
+                    "columnId": "AssetCount",
+                    "label": "Asset Count"
                   }
                 ]
               },
@@ -1091,9 +1159,9 @@
         "query": "PurviewDataSensitivityLogs\r\n| where ActivityType == \"Classification\"\r\n| where \"{DataSource:label}\" == \"All\" or SourceType in~ (split(\"{DataSource:label}\", \", \"))\r\n| where \"{Region:label}\" == \"All\" or SourceRegion in~ (split(\"{Region:label}\", \", \"))\r\n| extend CloudProvider = iff((SourceName contains \"Azure\"), \"Azure\", \"Amazon Web Services\")\r\n| where Classification != \"\"\r\n| where CloudProvider in (split(\"{CloudProvider:label}\", \", \"))\r\n| summarize ClassifiedAssetCount = count() by DateClassified = bin(TimeGenerated, 1d), SourceType",
         "size": 0,
         "showAnalytics": true,
-        "title": "Classified assets",
+        "title": "Classification events",
         "timeContext": {
-          "durationMs": 2592000000
+          "durationMs": 0
         },
         "timeContextFromParameter": "Time",
         "queryType": 0,
@@ -1227,7 +1295,7 @@
         "showAnalytics": true,
         "title": "Classifications Drilldown- Asset Level",
         "timeContext": {
-          "durationMs": 2592000000
+          "durationMs": 0
         },
         "timeContextFromParameter": "Time",
         "showRefreshButton": true,
@@ -1371,6 +1439,16 @@
               "itemKey": "AssetLastScanTime",
               "sortOrder": 2
             }
+          ],
+          "labelSettings": [
+            {
+              "columnId": "AssetLastScanTime",
+              "label": "Last Scan Time"
+            },
+            {
+              "columnId": "AssetPath",
+              "label": "Asset Path"
+            }
           ]
         },
         "sortBy": [
@@ -1398,9 +1476,9 @@
         "query": "PurviewDataSensitivityLogs\r\n| where ActivityType == \"Labeling\"\r\n| where \"{DataSource:label}\" == \"All\" or SourceType in~ (split(\"{DataSource:label}\", \", \"))\r\n| where \"{Region:label}\" == \"All\" or SourceRegion in~ (split(\"{Region:label}\", \", \"))\r\n| extend CloudProvider = iff((SourceName contains \"Azure\"), \"Azure\", \"Amazon Web Services\")\r\n| where CloudProvider in (split(\"{CloudProvider:label}\", \", \"))\r\n| where SensitivityLabel != \"\"\r\n| summarize LabeledAssetCount = count() by DateClassified = bin(TimeGenerated, 1d), SourceType",
         "size": 0,
         "showAnalytics": true,
-        "title": "Labeled assets",
+        "title": "Labeling events",
         "timeContext": {
-          "durationMs": 2592000000
+          "durationMs": 0
         },
         "timeContextFromParameter": "Time",
         "exportFieldName": "DateClassified",
@@ -1505,7 +1583,7 @@
         "size": 0,
         "title": "Sensitivity Labels Drilldown- Asset Level",
         "timeContext": {
-          "durationMs": 2592000000
+          "durationMs": 0
         },
         "timeContextFromParameter": "Time",
         "queryType": 0,
@@ -1644,8 +1722,12 @@
           "filter": true,
           "labelSettings": [
             {
-              "columnId": "SensitivityLabel",
-              "label": "Label"
+              "columnId": "AssetLastScanTime",
+              "label": "Last Scan Time"
+            },
+            {
+              "columnId": "AssetPath",
+              "label": "Asset Path"
             }
           ]
         }
@@ -1853,7 +1935,7 @@
         "size": 0,
         "title": "Asset Drilldown",
         "timeContext": {
-          "durationMs": 2592000000
+          "durationMs": 0
         },
         "timeContextFromParameter": "Time",
         "queryType": 0,
@@ -2036,6 +2118,10 @@
             {
               "columnId": "SensitivityLabel",
               "label": "Sensitivity Label"
+            },
+            {
+              "columnId": "SourceName",
+              "label": "Source Name"
             },
             {
               "columnId": "SourcePath",
