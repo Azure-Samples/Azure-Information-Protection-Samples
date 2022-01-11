@@ -523,7 +523,7 @@
             "type": 3,
             "content": {
               "version": "KqlItem/1.0",
-              "query": "PurviewDataSensitivityLogs\r\n| where ActivityType == \"Classification\" \r\n| where SourceName contains \"Azure\"\r\n| summarize arg_max(AssetPath, SourcePath, FileExtension) by AssetPath \r\n| summarize count() by FileExtension\r\n| sort by count_ desc",
+              "query": "PurviewDataSensitivityLogs\r\n| where ActivityType == \"Classification\" \r\n| where SourceType contains \"Azure\"\r\n| summarize arg_max(AssetPath, SourcePath, FileExtension) by AssetPath \r\n| summarize count() by FileExtension\r\n| sort by count_ desc",
               "size": 1,
               "title": "File Extensions",
               "timeContext": {
