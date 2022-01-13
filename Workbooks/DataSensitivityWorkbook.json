@@ -34,7 +34,10 @@
             },
             "defaultValue": "value::all",
             "queryType": 1,
-            "resourceType": "microsoft.resourcegraph/resources"
+            "resourceType": "microsoft.resourcegraph/resources",
+            "value": [
+              "value::all"
+            ]
           },
           {
             "id": "96f40e28-0b8a-4121-8dda-d32d8a37feb8",
@@ -177,6 +180,22 @@
             "style": "link"
           },
           {
+            "id": "8cca6c7a-4c0a-41e7-95e9-76a17b2d4a8c",
+            "cellValue": "Tab",
+            "linkTarget": "parameter",
+            "linkLabel": "Scans",
+            "subTarget": "Scans",
+            "style": "link"
+          },
+          {
+            "id": "9874eb83-7189-441e-ab23-07c8cca3e95b",
+            "cellValue": "Tab",
+            "linkTarget": "parameter",
+            "linkLabel": "File Extension",
+            "subTarget": "FileExtension",
+            "style": "link"
+          },
+          {
             "id": "69734e4b-4811-4079-a9b2-f76383ea998e",
             "cellValue": "Tab",
             "linkTarget": "parameter",
@@ -198,7 +217,7 @@
     {
       "type": 1,
       "content": {
-        "json": "##### Value to Customers\r\n\r\nIt provides enterprises with:\r\n- A data discovery solution using automated scanning technology for sensitivity and malware\r\n- A unified view of the data estate with risk insights across their multi-cloud assets\r\n- A consolidated threat protection experience for data within Microsoft Defender for Cloud\r\n\r\n##### Definitions\r\nAn asset is the granular data object within Azure Purview, like a blob within Azure Blob Storage"
+        "json": "#### Value to Customers\r\n\r\nIt provides enterprises with:\r\n- A data discovery solution using automated scanning technology for sensitivity and malware\r\n- A unified view of the data estate with risk insights across their multi-cloud assets\r\n- A consolidated threat protection experience for data within Microsoft Defender for Cloud"
       },
       "conditionalVisibility": {
         "parameterName": "Tab",
@@ -209,72 +228,9 @@
       "name": "text - 10 - Copy - Copy"
     },
     {
-      "type": 3,
+      "type": 1,
       "content": {
-        "version": "KqlItem/1.0",
-        "query": "PurviewDataSensitivityLogs\r\n| where ActivityType == \"Classification\" \r\n| extend CloudProvider = iff((SourceType contains \"Amazon\"), \"Amazon Web Services\", \"Azure\")\r\n| summarize arg_max(AssetPath, SourcePath, SourceType, CloudProvider) by AssetPath \r\n| summarize ResourceCount = count() by CloudProvider;",
-        "size": 3,
-        "title": "Total assets per cloud",
-        "timeContext": {
-          "durationMs": 2592000000
-        },
-        "timeContextFromParameter": "Time",
-        "queryType": 0,
-        "resourceType": "microsoft.operationalinsights/workspaces",
-        "crossComponentResources": [
-          "{Workspace}"
-        ],
-        "visualization": "piechart",
-        "tileSettings": {
-          "titleContent": {
-            "columnMatch": "SourceType",
-            "formatter": 16,
-            "formatOptions": {
-              "showIcon": true
-            }
-          },
-          "leftContent": {
-            "columnMatch": "AssetClassifiedCount",
-            "formatter": 12,
-            "formatOptions": {
-              "palette": "auto"
-            },
-            "numberFormat": {
-              "unit": 17,
-              "options": {
-                "style": "decimal",
-                "maximumFractionDigits": 2,
-                "maximumSignificantDigits": 3
-              },
-              "emptyValCustomText": "0"
-            }
-          },
-          "secondaryContent": {
-            "columnMatch": "AssetCount"
-          },
-          "showBorder": true
-        },
-        "chartSettings": {
-          "seriesLabelSettings": [
-            {
-              "seriesName": "Amazon",
-              "color": "orange"
-            }
-          ]
-        },
-        "mapSettings": {
-          "locInfo": "LatLong",
-          "sizeSettings": "AssetClassifiedCount",
-          "sizeAggregation": "Sum",
-          "legendMetric": "AssetClassifiedCount",
-          "legendAggregation": "Sum",
-          "itemColorSettings": {
-            "type": "heatmap",
-            "colorAggregation": "Sum",
-            "nodeColorField": "AssetClassifiedCount",
-            "heatmapPalette": "greenRed"
-          }
-        }
+        "json": "#### Definitions\r\n- For a Storage account, an asset refers to the file or blob stored in the account.\r\n- For Amazon S3, an asset refers to the object stored in the bucket."
       },
       "conditionalVisibility": {
         "parameterName": "Tab",
@@ -282,22 +238,40 @@
         "value": "Overview"
       },
       "customWidth": "50",
-      "name": "query - 25 - Copy",
-      "styleSettings": {
-        "maxWidth": "100"
-      }
+      "name": "text - 19"
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": "#### Known Limitations\r\n- The data shown in this workbook is based on logs generated from scans done in the past. To get the current state of scanning for your resources, view the Information protection dashboard.\r\n- The resource count and status from the Information Protection dashboard might not match the data shown in the workbook.",
+        "style": "info"
+      },
+      "conditionalVisibility": {
+        "parameterName": "Tab",
+        "comparison": "isEqualTo",
+        "value": "Overview"
+      },
+      "name": "text - 18"
     },
     {
       "type": 12,
       "content": {
         "version": "NotebookGroup/1.0",
         "groupType": "editable",
-        "title": "  ",
+        "title": "  Azure",
+        "expandable": true,
+        "expanded": true,
+        "loadType": "always",
         "items": [
           {
             "type": 1,
             "content": {
               "json": "## Azure"
+            },
+            "conditionalVisibility": {
+              "parameterName": "Tab",
+              "comparison": "isEqualTo",
+              "value": "Hidden"
             },
             "name": "text - 0"
           },
@@ -305,82 +279,10 @@
             "type": 3,
             "content": {
               "version": "KqlItem/1.0",
-              "query": "let allAssets = PurviewDataSensitivityLogs\r\n| where ActivityType == \"Classification\" \r\n| where SourceType contains \"Azure\"\r\n| distinct AssetPath, SourcePath, SourceType\r\n| summarize AssetCount = count() by SourceType;\r\n\r\nlet classifiedAssets =  PurviewDataSensitivityLogs\r\n| where ActivityType == \"Classification\" \r\n| where SourceType contains \"Azure\"\r\n| mv-expand Classification\r\n| where Classification != \"\"\r\n| distinct AssetPath, SourcePath, SourceType\r\n| summarize AssetClassifiedCount = count() by SourceType;\r\n\r\nlet ClassifiedAssetsByResourceType = allAssets\r\n| join kind= leftouter classifiedAssets on SourceType\r\n| extend ClassifiedPercentage = strcat(round((100.0 * AssetClassifiedCount / AssetCount),2), \"%\")\r\n| extend AssetCount = strcat(AssetCount, \" assets found in total\")\r\n| project SourceType, AssetCount, AssetClassifiedCount, ClassifiedPercentage;\r\n\r\nClassifiedAssetsByResourceType",
-              "size": 1,
-              "title": "Number of classified assets",
+              "query": "let MostRecentScanLogs = PurviewDataSensitivityLogs\r\n| where ActivityType == \"Classification\" \r\n| where SourceType contains \"Azure\"\r\n| extend ResourceType = iff(SourceType==\"AzureBlob\", \"Storage account\", \"Amazon S3\")\r\n| summarize arg_max( AssetLastScanTime, *) by AssetPath, ActivityType;\r\n\r\nlet Sources = MostRecentScanLogs\r\n| summarize count() by SourceName, ResourceType;\r\n\r\nlet SourcesCount = Sources\r\n| summarize ResourcesCount = count() by ResourceType;\r\n\r\nlet Assets = MostRecentScanLogs\r\n| summarize AssetCount = count() by ResourceType;\r\n\r\nlet ClassifiedAssets = MostRecentScanLogs\r\n| where Classification != \"[]\"\r\n| summarize AssetClassifiedCount = count() by ResourceType;\r\n\r\nlet ClassifiedAssetsByResourceType = Assets\r\n| join kind= leftouter ClassifiedAssets on ResourceType\r\n| extend ClassifiedPercentage = round((100.0 * AssetClassifiedCount / AssetCount),2)\r\n| join kind= leftouter SourcesCount on ResourceType\r\n| project ResourceType, ResourcesCount, AssetCount, AssetClassifiedCount, ClassifiedPercentage;\r\n\r\nClassifiedAssetsByResourceType\r\n\r\n",
+              "size": 3,
               "timeContext": {
                 "durationMs": 2592000000
-              },
-              "timeContextFromParameter": "Time",
-              "queryType": 0,
-              "resourceType": "microsoft.operationalinsights/workspaces",
-              "crossComponentResources": [
-                "{Workspace}"
-              ],
-              "visualization": "tiles",
-              "tileSettings": {
-                "titleContent": {
-                  "columnMatch": "SourceType",
-                  "formatter": 16,
-                  "formatOptions": {
-                    "showIcon": true
-                  }
-                },
-                "leftContent": {
-                  "columnMatch": "AssetClassifiedCount",
-                  "formatter": 12,
-                  "formatOptions": {
-                    "palette": "auto"
-                  },
-                  "numberFormat": {
-                    "unit": 17,
-                    "options": {
-                      "style": "decimal",
-                      "maximumFractionDigits": 2,
-                      "maximumSignificantDigits": 3
-                    },
-                    "emptyValCustomText": "0"
-                  }
-                },
-                "secondaryContent": {
-                  "columnMatch": "AssetCount"
-                },
-                "showBorder": true
-              },
-              "mapSettings": {
-                "locInfo": "LatLong",
-                "sizeSettings": "AssetClassifiedCount",
-                "sizeAggregation": "Sum",
-                "legendMetric": "AssetClassifiedCount",
-                "legendAggregation": "Sum",
-                "itemColorSettings": {
-                  "type": "heatmap",
-                  "colorAggregation": "Sum",
-                  "nodeColorField": "AssetClassifiedCount",
-                  "heatmapPalette": "greenRed"
-                }
-              }
-            },
-            "customWidth": "100",
-            "conditionalVisibility": {
-              "parameterName": "Tab",
-              "comparison": "isEqualTo",
-              "value": "Overview"
-            },
-            "name": "query - 25",
-            "styleSettings": {
-              "maxWidth": "100"
-            }
-          },
-          {
-            "type": 3,
-            "content": {
-              "version": "KqlItem/1.0",
-              "query": "let allAssets = PurviewDataSensitivityLogs\r\n| where ActivityType == \"Classification\" \r\n| where SourceType contains \"Azure\"\r\n| distinct AssetPath, SourcePath, SourceType\r\n| summarize AssetCount = count() by SourceType;\r\n\r\nlet classifiedAssets =  PurviewDataSensitivityLogs\r\n| where ActivityType == \"Classification\" \r\n| where SourceType contains \"Azure\"\r\n| mv-expand Classification\r\n| where Classification != \"\"\r\n| distinct AssetPath, SourcePath, SourceType\r\n| summarize AssetClassifiedCount = count() by SourceType;\r\n\r\nlet ClassifiedAssetsByResourceType = allAssets\r\n| join kind= leftouter classifiedAssets on SourceType\r\n| extend ClassifiedPercentage = strcat(round((100.0 * AssetClassifiedCount / AssetCount),2), \"%\")\r\n| project SourceType, AssetCount, AssetClassifiedCount, ClassifiedPercentage;\r\n\r\nClassifiedAssetsByResourceType",
-              "size": 1,
-              "title": "Percentage of classified assets",
-              "timeContext": {
-                "durationMs": 0
               },
               "timeContextFromParameter": "Time",
               "queryType": 0,
@@ -392,36 +294,68 @@
               "gridSettings": {
                 "formatters": [
                   {
+                    "columnMatch": "ResourceType",
+                    "formatter": 1
+                  },
+                  {
+                    "columnMatch": "ResourcesCount",
+                    "formatter": 1
+                  },
+                  {
                     "columnMatch": "AssetCount",
-                    "formatter": 4,
-                    "formatOptions": {
-                      "palette": "blue"
-                    }
+                    "formatter": 1
                   },
                   {
                     "columnMatch": "AssetClassifiedCount",
-                    "formatter": 4,
+                    "formatter": 1
+                  },
+                  {
+                    "columnMatch": "ClassifiedPercentage",
+                    "formatter": 1,
                     "formatOptions": {
-                      "palette": "blue"
+                      "compositeBarSettings": {
+                        "labelText": "",
+                        "columnSettings": [
+                          {
+                            "columnName": "AssetCount",
+                            "color": "blue"
+                          },
+                          {
+                            "columnName": "AssetClassifiedCount",
+                            "color": "green"
+                          }
+                        ]
+                      }
+                    },
+                    "numberFormat": {
+                      "unit": 1,
+                      "options": {
+                        "style": "decimal",
+                        "maximumFractionDigits": 2
+                      }
                     }
                   }
                 ],
                 "labelSettings": [
                   {
-                    "columnId": "SourceType",
-                    "label": "Source Type"
+                    "columnId": "ResourceType",
+                    "label": "Resource Type"
+                  },
+                  {
+                    "columnId": "ResourcesCount",
+                    "label": "Resources Scanned"
                   },
                   {
                     "columnId": "AssetCount",
-                    "label": "Asset Count"
+                    "label": "Assets Discovered"
                   },
                   {
                     "columnId": "AssetClassifiedCount",
-                    "label": "Asset Classified Count"
+                    "label": "Assets with Classifications"
                   },
                   {
                     "columnId": "ClassifiedPercentage",
-                    "label": "Classified Percentage"
+                    "label": "Percentage of Classified Assets"
                   }
                 ]
               },
@@ -468,24 +402,25 @@
                 }
               }
             },
-            "customWidth": "100",
             "conditionalVisibility": {
               "parameterName": "Tab",
               "comparison": "isEqualTo",
               "value": "Overview"
             },
-            "name": "query - 25 - Copy",
+            "name": "Azure resources summary",
             "styleSettings": {
-              "maxWidth": "100"
+              "margin": "0",
+              "padding": "0",
+              "showBorder": true
             }
           },
           {
             "type": 3,
             "content": {
               "version": "KqlItem/1.0",
-              "query": "let NumberofSourcesByRegion = PurviewDataSensitivityLogs\r\n| where ActivityType == \"Classification\" \r\n| where SourceType contains \"Azure\"\r\n| summarize arg_max(AssetPath, SourcePath, SourceType, SourceRegion) by AssetPath \r\n| summarize AssetCount = count() by SourceRegion;\r\n\r\nNumberofSourcesByRegion",
+              "query": "let ResourcebyRegion = PurviewDataSensitivityLogs\r\n| where ActivityType == \"Classification\" \r\n| where SourceType contains \"Azure\"\r\n| extend ResourceType = iff(SourceType==\"AzureBlob\", \"Storage account\", \"Amazon S3\")\r\n| summarize arg_max( AssetLastScanTime, *) by AssetPath, ActivityType\r\n| distinct SourcePath, SourceRegion\r\n| summarize AssetCount = count() by SourceRegion;\r\n\r\nResourcebyRegion",
               "size": 0,
-              "title": "Data source region",
+              "title": "Resource region",
               "timeContext": {
                 "durationMs": 2592000000
               },
@@ -501,69 +436,34 @@
                 "locInfoColumn": "SourceRegion",
                 "sizeSettings": "AssetCount",
                 "sizeAggregation": "Sum",
+                "minSize": 40,
                 "legendMetric": "AssetCount",
                 "legendAggregation": "Sum",
                 "itemColorSettings": {
                   "nodeColorField": "AssetCount",
                   "colorAggregation": "Sum",
                   "type": "heatmap",
-                  "heatmapPalette": "purpleBlue"
+                  "heatmapPalette": "coldHot"
                 }
               }
             },
-            "customWidth": "100",
+            "customWidth": "40",
             "conditionalVisibility": {
               "parameterName": "Tab",
               "comparison": "isEqualTo",
               "value": "Overview"
             },
-            "name": "query - 33"
+            "name": "Azure resources region"
           },
           {
             "type": 3,
             "content": {
               "version": "KqlItem/1.0",
-              "query": "PurviewDataSensitivityLogs\r\n| where ActivityType == \"Classification\" \r\n| where SourceType contains \"Azure\"\r\n| summarize arg_max(AssetPath, SourcePath, FileExtension) by AssetPath \r\n| summarize count() by FileExtension\r\n| sort by count_ desc",
-              "size": 1,
-              "title": "File Extensions",
-              "timeContext": {
-                "durationMs": 0
-              },
-              "timeContextFromParameter": "Time",
-              "queryType": 0,
-              "resourceType": "microsoft.operationalinsights/workspaces",
-              "crossComponentResources": [
-                "{Workspace}"
-              ],
-              "gridSettings": {
-                "labelSettings": [
-                  {
-                    "columnId": "FileExtension",
-                    "label": "File Extension"
-                  },
-                  {
-                    "columnId": "count_",
-                    "label": "Count"
-                  }
-                ]
-              }
-            },
-            "conditionalVisibility": {
-              "parameterName": "Tab",
-              "comparison": "isEqualTo",
-              "value": "Overview"
-            },
-            "name": "query - 6"
-          },
-          {
-            "type": 3,
-            "content": {
-              "version": "KqlItem/1.0",
-              "query": "let SensitivityLabels = PurviewDataSensitivityLogs\r\n| where ActivityType == \"Labeling\" \r\n| where SourceType contains \"Azure\"\r\n| mv-expand SensitivityLabel\r\n| extend newSensitivityLabel = tostring(SensitivityLabel)\r\n| summarize arg_max(newSensitivityLabel, SourceType, FileSize) by AssetPath \r\n| summarize AssetCount = count() by newSensitivityLabel\r\n| sort by AssetCount;\r\n\r\nSensitivityLabels",
+              "query": "let SensitivityLabels = PurviewDataSensitivityLogs\r\n| where ActivityType == \"Labeling\" \r\n| where SourceType contains \"Azure\"\r\n| mv-expand SensitivityLabel\r\n| extend newSensitivityLabel = tostring(SensitivityLabel)\r\n| summarize arg_max(newSensitivityLabel, SourceType, FileSize) by AssetPath \r\n| summarize AssetCount = count() by newSensitivityLabel\r\n| top 4 by AssetCount;\r\n\r\n\r\nSensitivityLabels",
               "size": 4,
               "title": "Top sensitivity labels found",
               "timeContext": {
-                "durationMs": 0
+                "durationMs": 2592000000
               },
               "timeContextFromParameter": "Time",
               "queryType": 0,
@@ -602,8 +502,8 @@
               },
               "sortBy": []
             },
-            "customWidth": "50",
-            "name": "query - 4"
+            "customWidth": "30",
+            "name": "Azure resources - top labels"
           },
           {
             "type": 3,
@@ -613,7 +513,7 @@
               "size": 1,
               "title": "Top classifications found",
               "timeContext": {
-                "durationMs": 0
+                "durationMs": 2592000000
               },
               "timeContextFromParameter": "Time",
               "queryType": 0,
@@ -668,8 +568,8 @@
                 "size": "full"
               }
             },
-            "customWidth": "50",
-            "name": "query - 19 - Copy"
+            "customWidth": "30",
+            "name": "Azure resources - top classifications"
           }
         ]
       },
@@ -678,8 +578,8 @@
         "comparison": "isEqualTo",
         "value": "Overview"
       },
-      "customWidth": "50",
-      "name": "group - 22",
+      "customWidth": "100",
+      "name": "Azure group - Overview",
       "styleSettings": {
         "margin": "10px",
         "padding": "10px",
@@ -691,12 +591,19 @@
       "content": {
         "version": "NotebookGroup/1.0",
         "groupType": "editable",
-        "title": " ",
+        "title": "Amazon",
+        "expandable": true,
+        "loadType": "always",
         "items": [
           {
             "type": 1,
             "content": {
-              "json": "## Amazon Web Services"
+              "json": "## Amazon"
+            },
+            "conditionalVisibility": {
+              "parameterName": "Tab",
+              "comparison": "isEqualTo",
+              "value": "Hidden"
             },
             "name": "text - 0"
           },
@@ -704,69 +611,11 @@
             "type": 3,
             "content": {
               "version": "KqlItem/1.0",
-              "query": "let allAssets = PurviewDataSensitivityLogs\r\n| where ActivityType == \"Classification\" \r\n| where SourceType contains \"Amazon\"\r\n| distinct AssetPath, SourcePath, SourceType\r\n| summarize AssetCount = count() by SourceType;\r\n\r\nlet classifiedAssets =  PurviewDataSensitivityLogs\r\n| where ActivityType == \"Classification\" \r\n| where SourceType contains \"Amazon\"\r\n| mv-expand Classification\r\n| where Classification != \"\"\r\n| distinct AssetPath, SourcePath, SourceType\r\n| summarize AssetClassifiedCount = count() by SourceType;\r\n\r\nlet ClassifiedAssetsByResourceType = allAssets\r\n| join kind= leftouter classifiedAssets on SourceType\r\n| extend ClassifiedPercentage = strcat(round((100.0 * AssetClassifiedCount / AssetCount),2), \"%\")\r\n| extend AssetCount = strcat(AssetCount, \" assets found in total\")\r\n| project SourceType, AssetCount, AssetClassifiedCount, ClassifiedPercentage;\r\n\r\nClassifiedAssetsByResourceType",
-              "size": 1,
-              "title": "Number of classified assets",
+              "query": "let MostRecentScanLogs = PurviewDataSensitivityLogs\r\n| where ActivityType == \"Classification\" \r\n| where SourceType contains \"Amazon\"\r\n| extend ResourceType = iff(SourceType==\"AzureBlob\", \"Storage account\", \"Amazon S3\")\r\n| summarize arg_max( AssetLastScanTime, *) by AssetPath, ActivityType;\r\n\r\nlet Sources = MostRecentScanLogs\r\n| summarize count() by SourceName, ResourceType;\r\n\r\nlet SourcesCount = Sources\r\n| summarize ResourcesCount = count() by ResourceType;\r\n\r\nlet Assets = MostRecentScanLogs\r\n| summarize AssetCount = count() by ResourceType;\r\n\r\nlet ClassifiedAssets = MostRecentScanLogs\r\n| where Classification != \"[]\"\r\n| summarize AssetClassifiedCount = count() by ResourceType;\r\n\r\nlet ClassifiedAssetsByResourceType = Assets\r\n| join kind= leftouter ClassifiedAssets on ResourceType\r\n| extend ClassifiedPercentage = round((100.0 * AssetClassifiedCount / AssetCount),2)\r\n| join kind= leftouter SourcesCount on ResourceType\r\n| project ResourceType, ResourcesCount, AssetCount, AssetClassifiedCount, ClassifiedPercentage;\r\n\r\nClassifiedAssetsByResourceType\r\n\r\n",
+              "size": 3,
+              "noDataMessage": "Scan AWS resources to populate query. If no AWS resources located in data estate, delete this query.",
               "timeContext": {
                 "durationMs": 2592000000
-              },
-              "timeContextFromParameter": "Time",
-              "queryType": 0,
-              "resourceType": "microsoft.operationalinsights/workspaces",
-              "crossComponentResources": [
-                "{Workspace}"
-              ],
-              "visualization": "tiles",
-              "tileSettings": {
-                "titleContent": {
-                  "columnMatch": "SourceType",
-                  "formatter": 16,
-                  "formatOptions": {
-                    "showIcon": true
-                  }
-                },
-                "leftContent": {
-                  "columnMatch": "AssetClassifiedCount",
-                  "formatter": 12,
-                  "formatOptions": {
-                    "palette": "auto"
-                  },
-                  "numberFormat": {
-                    "unit": 17,
-                    "options": {
-                      "style": "decimal",
-                      "maximumFractionDigits": 2,
-                      "maximumSignificantDigits": 3
-                    },
-                    "emptyValCustomText": "0"
-                  }
-                },
-                "secondaryContent": {
-                  "columnMatch": "AssetCount"
-                },
-                "showBorder": true
-              }
-            },
-            "customWidth": "100",
-            "conditionalVisibility": {
-              "parameterName": "Tab",
-              "comparison": "isEqualTo",
-              "value": "Overview"
-            },
-            "name": "query - 25",
-            "styleSettings": {
-              "maxWidth": "100"
-            }
-          },
-          {
-            "type": 3,
-            "content": {
-              "version": "KqlItem/1.0",
-              "query": "let allAssets = PurviewDataSensitivityLogs\r\n| where ActivityType == \"Classification\" \r\n| where SourceType contains \"Amazon\"\r\n| distinct AssetPath, SourcePath, SourceType\r\n| summarize AssetCount = count() by SourceType;\r\n\r\nlet classifiedAssets =  PurviewDataSensitivityLogs\r\n| where ActivityType == \"Classification\" \r\n| where SourceType contains \"Amazon\"\r\n| mv-expand Classification\r\n| where Classification != \"\"\r\n| distinct AssetPath, SourcePath, SourceType\r\n| summarize AssetClassifiedCount = count() by SourceType;\r\n\r\nlet ClassifiedAssetsByResourceType = allAssets\r\n| join kind= leftouter classifiedAssets on SourceType\r\n| extend ClassifiedPercentage = strcat(round((100.0 * AssetClassifiedCount / AssetCount),2), \"%\")\r\n| project SourceType, AssetCount, AssetClassifiedCount, ClassifiedPercentage;\r\n\r\nClassifiedAssetsByResourceType",
-              "size": 1,
-              "title": "Percentage of classified assets",
-              "timeContext": {
-                "durationMs": 0
               },
               "timeContextFromParameter": "Time",
               "queryType": 0,
@@ -778,36 +627,68 @@
               "gridSettings": {
                 "formatters": [
                   {
+                    "columnMatch": "ResourceType",
+                    "formatter": 1
+                  },
+                  {
+                    "columnMatch": "ResourcesCount",
+                    "formatter": 1
+                  },
+                  {
                     "columnMatch": "AssetCount",
-                    "formatter": 4,
-                    "formatOptions": {
-                      "palette": "blue"
-                    }
+                    "formatter": 1
                   },
                   {
                     "columnMatch": "AssetClassifiedCount",
-                    "formatter": 4,
+                    "formatter": 1
+                  },
+                  {
+                    "columnMatch": "ClassifiedPercentage",
+                    "formatter": 1,
                     "formatOptions": {
-                      "palette": "blue"
+                      "compositeBarSettings": {
+                        "labelText": "",
+                        "columnSettings": [
+                          {
+                            "columnName": "AssetCount",
+                            "color": "blue"
+                          },
+                          {
+                            "columnName": "AssetClassifiedCount",
+                            "color": "green"
+                          }
+                        ]
+                      }
+                    },
+                    "numberFormat": {
+                      "unit": 1,
+                      "options": {
+                        "style": "decimal",
+                        "maximumFractionDigits": 2
+                      }
                     }
                   }
                 ],
                 "labelSettings": [
                   {
-                    "columnId": "SourceType",
-                    "label": "Source Type"
+                    "columnId": "ResourceType",
+                    "label": "Resource Type"
+                  },
+                  {
+                    "columnId": "ResourcesCount",
+                    "label": "Resources Scanned"
                   },
                   {
                     "columnId": "AssetCount",
-                    "label": "Asset Count"
+                    "label": "Assets Discovered"
                   },
                   {
                     "columnId": "AssetClassifiedCount",
-                    "label": "Asset Classified Count"
+                    "label": "Assets with Classifications"
                   },
                   {
                     "columnId": "ClassifiedPercentage",
-                    "label": "Classified Percentage"
+                    "label": "Percentage of Classified Assets"
                   }
                 ]
               },
@@ -854,24 +735,26 @@
                 }
               }
             },
-            "customWidth": "100",
             "conditionalVisibility": {
               "parameterName": "Tab",
               "comparison": "isEqualTo",
               "value": "Overview"
             },
-            "name": "query - 25 - Copy - Copy",
+            "name": "Amazon resources summary",
             "styleSettings": {
-              "maxWidth": "100"
+              "margin": "0",
+              "padding": "0",
+              "showBorder": true
             }
           },
           {
             "type": 3,
             "content": {
               "version": "KqlItem/1.0",
-              "query": "let NumberofSourcesByRegion = PurviewDataSensitivityLogs\r\n| where ActivityType == \"Classification\" \r\n| where SourceType contains \"Amazon\"\r\n| distinct AssetPath, SourceRegion\r\n| summarize AssetCount = count() by SourceRegion;\r\n\r\nNumberofSourcesByRegion",
+              "query": "let ResourcebyRegion = PurviewDataSensitivityLogs\r\n| where ActivityType == \"Classification\" \r\n| where SourceType contains \"Amazon\"\r\n| extend ResourceType = iff(SourceType==\"AzureBlob\", \"Storage account\", \"Amazon S3\")\r\n| summarize arg_max( AssetLastScanTime, *) by AssetPath, ActivityType\r\n| distinct SourcePath, SourceRegion\r\n| summarize AssetCount = count() by SourceRegion;\r\n\r\nResourcebyRegion",
               "size": 0,
-              "title": "Data source region",
+              "title": "Resource region",
+              "noDataMessage": "Scan AWS resources to populate query. If no AWS resources located in data estate, delete this query.",
               "timeContext": {
                 "durationMs": 0
               },
@@ -882,86 +765,40 @@
                 "{Workspace}"
               ],
               "visualization": "table",
-              "gridSettings": {
-                "labelSettings": [
-                  {
-                    "columnId": "SourceRegion",
-                    "label": "Source Region"
-                  },
-                  {
-                    "columnId": "AssetCount",
-                    "label": "Asset Count"
-                  }
-                ]
-              },
               "mapSettings": {
-                "locInfo": "CountryRegion",
+                "locInfo": "AzureLoc",
                 "locInfoColumn": "SourceRegion",
                 "sizeSettings": "AssetCount",
                 "sizeAggregation": "Sum",
+                "minSize": 40,
                 "legendMetric": "AssetCount",
                 "legendAggregation": "Sum",
                 "itemColorSettings": {
                   "nodeColorField": "AssetCount",
                   "colorAggregation": "Sum",
                   "type": "heatmap",
-                  "heatmapPalette": "purpleBlue"
+                  "heatmapPalette": "coldHot"
                 }
               }
             },
-            "customWidth": "100",
+            "customWidth": "40",
             "conditionalVisibility": {
               "parameterName": "Tab",
               "comparison": "isEqualTo",
               "value": "Overview"
             },
-            "name": "query - 33 - Copy"
+            "name": "Amazon resources region"
           },
           {
             "type": 3,
             "content": {
               "version": "KqlItem/1.0",
-              "query": "PurviewDataSensitivityLogs\r\n| where ActivityType == \"Classification\" \r\n| where SourceType contains \"Amazon\"\r\n| distinct AssetPath, FileExtension\r\n| summarize count() by FileExtension\r\n| sort by count_ desc",
-              "size": 1,
-              "title": "File Extensions",
-              "timeContext": {
-                "durationMs": 0
-              },
-              "timeContextFromParameter": "Time",
-              "queryType": 0,
-              "resourceType": "microsoft.operationalinsights/workspaces",
-              "crossComponentResources": [
-                "{Workspace}"
-              ],
-              "gridSettings": {
-                "labelSettings": [
-                  {
-                    "columnId": "FileExtension",
-                    "label": "File Extension"
-                  },
-                  {
-                    "columnId": "count_",
-                    "label": "Count"
-                  }
-                ]
-              }
-            },
-            "conditionalVisibility": {
-              "parameterName": "Tab",
-              "comparison": "isEqualTo",
-              "value": "Overview"
-            },
-            "name": "query - 6"
-          },
-          {
-            "type": 3,
-            "content": {
-              "version": "KqlItem/1.0",
-              "query": "let SensitivityLabels = PurviewDataSensitivityLogs\r\n| where ActivityType == \"Labeling\" \r\n| where SourceType contains \"Amazon\"\r\n| mv-expand SensitivityLabel\r\n| extend newSensitivityLabel = tostring(SensitivityLabel)\r\n| summarize arg_max(newSensitivityLabel, SourceType, FileSize) by AssetPath \r\n| summarize AssetCount = count() by newSensitivityLabel\r\n| sort by AssetCount;\r\n\r\nSensitivityLabels",
+              "query": "let SensitivityLabels = PurviewDataSensitivityLogs\r\n| where ActivityType == \"Labeling\" \r\n| where SourceType contains \"Amazon\"\r\n| mv-expand SensitivityLabel\r\n| extend newSensitivityLabel = tostring(SensitivityLabel)\r\n| summarize arg_max(newSensitivityLabel, SourceType, FileSize) by AssetPath \r\n| summarize AssetCount = count() by newSensitivityLabel\r\n| top 4 by AssetCount;\r\n\r\n\r\nSensitivityLabels",
               "size": 4,
               "title": "Top sensitivity labels found",
+              "noDataMessage": "Scan AWS resources to populate query. If no AWS resources located in data estate, delete this query.",
               "timeContext": {
-                "durationMs": 0
+                "durationMs": 2592000000
               },
               "timeContextFromParameter": "Time",
               "queryType": 0,
@@ -971,6 +808,17 @@
               ],
               "gridSettings": {
                 "formatters": [
+                  {
+                    "columnMatch": "newSensitivityLabel",
+                    "formatter": 0,
+                    "numberFormat": {
+                      "unit": 0,
+                      "options": {
+                        "style": "decimal"
+                      },
+                      "emptyValCustomText": "No Label"
+                    }
+                  },
                   {
                     "columnMatch": "AssetCount",
                     "formatter": 1
@@ -986,10 +834,11 @@
                     "label": "Asset Count"
                   }
                 ]
-              }
+              },
+              "sortBy": []
             },
-            "customWidth": "50",
-            "name": "query - 4"
+            "customWidth": "30",
+            "name": "Amazon resources - top labels"
           },
           {
             "type": 3,
@@ -998,8 +847,9 @@
               "query": "let Classifications = PurviewDataSensitivityLogs\r\n| where ActivityType == \"Classification\"\r\n| where SourceType contains \"Amazon\"\r\n| summarize arg_max(TimeGenerated, Classification, FileSize, AssetType) by AssetPath \r\n| extend classifications = split(Classification, ',')\r\n| mv-expand classifications\r\n| extend Classification = trim(@\"[^\\w]+\", tostring(classifications))\r\n| where Classification != \"\"\r\n| summarize AssetCount = count() by Classification\r\n| project Classification, AssetCount\r\n| top 4 by AssetCount;\r\n\r\nClassifications",
               "size": 1,
               "title": "Top classifications found",
+              "noDataMessage": "Scan AWS resources to populate query. If no AWS resources located in data estate, delete this query.",
               "timeContext": {
-                "durationMs": 0
+                "durationMs": 2592000000
               },
               "timeContextFromParameter": "Time",
               "queryType": 0,
@@ -1054,8 +904,8 @@
                 "size": "full"
               }
             },
-            "customWidth": "50",
-            "name": "query - 19 - Copy"
+            "customWidth": "30",
+            "name": "Azure resources - top classifications"
           }
         ]
       },
@@ -1064,8 +914,8 @@
         "comparison": "isEqualTo",
         "value": "Overview"
       },
-      "customWidth": "50",
-      "name": "group - 22 - Copy",
+      "customWidth": "100",
+      "name": "Amazon group - Overview ",
       "styleSettings": {
         "margin": "10px",
         "padding": "10px",
@@ -1156,23 +1006,22 @@
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
-        "query": "PurviewDataSensitivityLogs\r\n| where ActivityType == \"Classification\"\r\n| where \"{DataSource:label}\" == \"All\" or SourceType in~ (split(\"{DataSource:label}\", \", \"))\r\n| where \"{Region:label}\" == \"All\" or SourceRegion in~ (split(\"{Region:label}\", \", \"))\r\n| extend CloudProvider = iff((SourceName contains \"Azure\"), \"Azure\", \"Amazon Web Services\")\r\n| where Classification != \"\"\r\n| where CloudProvider in (split(\"{CloudProvider:label}\", \", \"))\r\n| summarize ClassifiedAssetCount = count() by DateClassified = bin(TimeGenerated, 1d), SourceType",
+        "query": "PurviewDataSensitivityLogs\r\n| where ActivityType == \"Classification\"\r\n| where \"{DataSource:label}\" == \"All\" or SourceType in~ (split(\"{DataSource:label}\", \", \"))\r\n| where \"{Region:label}\" == \"All\" or SourceRegion in~ (split(\"{Region:label}\", \", \"))\r\n| extend CloudProvider = iff((SourceName contains \"Azure\"), \"Azure\", \"Amazon Web Services\")\r\n| where Classification != \"[]\"\r\n| where CloudProvider in (split(\"{CloudProvider:label}\", \", \"))\r\n| extend ResourceType = iff(SourceType==\"AzureBlob\", \"Storage accounts\", \"Amazon S3\")\r\n| summarize ClassifiedAssetCount = count() by DateClassified = bin(TimeGenerated, 1d), ResourceType",
         "size": 0,
         "showAnalytics": true,
-        "title": "Classification events",
+        "title": "Classification events logged",
         "timeContext": {
-          "durationMs": 0
+          "durationMs": 2592000000
         },
-        "timeContextFromParameter": "Time",
         "queryType": 0,
         "resourceType": "microsoft.operationalinsights/workspaces",
         "crossComponentResources": [
           "{Workspace}"
         ],
-        "visualization": "barchart",
+        "visualization": "categoricalbar",
         "chartSettings": {
           "xAxis": "DateClassified",
-          "group": "SourceType",
+          "group": "ResourceType",
           "createOtherGroup": 0
         }
       },
@@ -1185,276 +1034,314 @@
       "name": "query - 24"
     },
     {
-      "type": 3,
+      "type": 1,
       "content": {
-        "version": "KqlItem/1.0",
-        "query": "let Classifications = PurviewDataSensitivityLogs\r\n| where ActivityType == \"Classification\"\r\n| where \"{DataSource:label}\" == \"All\" or SourceType in~ (split(\"{DataSource:label}\", \", \"))\r\n| where \"{Region:label}\" == \"All\" or SourceRegion in~ (split(\"{Region:label}\", \", \"))\r\n| extend CloudProvider = iff((SourceName contains \"Azure\"), \"Azure\", \"Amazon Web Services\")\r\n| where CloudProvider in (split(\"{CloudProvider:label}\", \", \"))\r\n| summarize arg_max(TimeGenerated, Classification, FileSize, AssetType) by AssetPath \r\n| extend classifications = split(Classification, ',')\r\n| mv-expand classifications\r\n| extend Classification = trim(@\"[^\\w]+\", tostring(classifications))\r\n| where Classification != \"\"\r\n| summarize AssetCount = count() by Classification\r\n| project Classification, AssetCount;\r\n\r\nClassifications\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n",
-        "size": 0,
-        "showAnalytics": true,
-        "title": "Classifications",
-        "timeContext": {
-          "durationMs": 2592000000
-        },
-        "timeContextFromParameter": "Time",
-        "showRefreshButton": true,
-        "exportFieldName": "Classification",
-        "exportParameterName": "UserSelectedClassification",
-        "exportDefaultValue": "All",
-        "showExportToExcel": true,
-        "queryType": 0,
-        "resourceType": "microsoft.operationalinsights/workspaces",
-        "crossComponentResources": [
-          "{Workspace}"
-        ],
-        "visualization": "table",
-        "gridSettings": {
-          "formatters": [
-            {
-              "columnMatch": "Classification",
-              "formatter": 0,
-              "formatOptions": {
-                "customColumnWidthSetting": "50ch"
-              }
-            },
-            {
-              "columnMatch": "FileSize",
-              "formatter": 8,
-              "formatOptions": {
-                "palette": "blue",
-                "customColumnWidthSetting": "25ch"
-              }
-            },
-            {
-              "columnMatch": "AssetCount",
-              "formatter": 4,
-              "formatOptions": {
-                "palette": "blue",
-                "customColumnWidthSetting": "25ch"
-              }
-            }
-          ],
-          "filter": true,
-          "sortBy": [
-            {
-              "itemKey": "$gen_bar_AssetCount_1",
-              "sortOrder": 1
-            }
-          ],
-          "labelSettings": [
-            {
-              "columnId": "AssetCount",
-              "label": "Classified Asset Count"
-            }
-          ]
-        },
-        "sortBy": [
-          {
-            "itemKey": "$gen_bar_AssetCount_1",
-            "sortOrder": 1
-          }
-        ],
-        "tileSettings": {
-          "showBorder": false,
-          "titleContent": {
-            "columnMatch": "Classification",
-            "formatter": 1
-          },
-          "leftContent": {
-            "columnMatch": "Size",
-            "formatter": 12,
-            "formatOptions": {
-              "palette": "auto"
-            },
-            "numberFormat": {
-              "unit": 17,
-              "options": {
-                "maximumSignificantDigits": 3,
-                "maximumFractionDigits": 2
-              }
-            }
-          }
-        }
+        "json": "### Classification events\r\n- A classification event is generated when an asset is scanned, and non-zero classifications are found. \r\n- With incremental scans, a classification event is generated only if the asset has been modified from the last scan. \r\n- If the same asset is scanned multiple times over a period of time, then multiple classification events will be logged within Log Analytics. \r\n\r\n##### The number of classification events shown here may exceed the total number of assets in the resource.",
+        "style": "info"
       },
       "conditionalVisibility": {
         "parameterName": "Tab",
         "comparison": "isEqualTo",
         "value": "Classifications"
       },
-      "customWidth": "35",
-      "name": "query - 4 - Copy",
-      "styleSettings": {
-        "showBorder": true
-      }
+      "name": "text - 20"
     },
     {
-      "type": 3,
+      "type": 12,
       "content": {
-        "version": "KqlItem/1.0",
-        "query": "let ClassificationCountColumn = PurviewDataSensitivityLogs\r\n| mv-expand ClassificationDetails\r\n| summarize ClassificationCount = sum(toint(ClassificationDetails[\"UniqueCount\"])) by AssetPath;\r\nlet ClassificationsDrilldown = PurviewDataSensitivityLogs\r\n| where ActivityType == \"Classification\" \r\n| where \"{DataSource:label}\" == \"All\" or SourceType in~ (split(\"{DataSource:label}\", \", \"))\r\n| where \"{Region:label}\" == \"All\" or SourceRegion in~ (split(\"{Region:label}\", \", \"))\r\n| extend CloudProvider = iff((SourceName contains \"Azure\"), \"Azure\", \"Amazon Web Services\")\r\n| where CloudProvider in (split(\"{CloudProvider:label}\", \", \"))\r\n| extend classifications = split(Classification, ',')\r\n| mv-expand classifications\r\n| where Classification != \"\"\r\n| where \"{UserSelectedClassification:label}\" == \"All\" or Classification contains \"{UserSelectedClassification:label}\";\r\n\r\nClassificationsDrilldown | join ClassificationCountColumn on AssetPath\r\n| summarize arg_max(TimeGenerated, PurviewTenantId, PurviewAccountName, PurviewRegion, SourceName, SourceType, SourcePath, SourceSubscriptionId, SourceRegion, SourceCollectionName, AssetName, AssetPath, AssetType, AssetCreationTime, AssetModifiedTime, AssetLastScanTime, FileExtension, FileSize, ActivityType, ClassificationTrigger, Classification, ClassificationCount, ClassificationDetails, SourceScanId) by AssetPath \r\n| project TimeGenerated, PurviewTenantId, PurviewAccountName, PurviewRegion, AssetLastScanTime, AssetName, AssetPath, AssetType, AssetCreationTime, AssetModifiedTime, FileExtension, FileSize, ActivityType, ClassificationTrigger, Classification, ClassificationCount, ClassificationDetails, SourceName, SourceType, SourcePath, SourceSubscriptionId, SourceRegion, SourceCollectionName, SourceScanId;\r\n\r\nClassificationsDrilldown\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n",
-        "size": 0,
-        "showAnalytics": true,
-        "title": "Classifications Drilldown- Asset Level",
-        "timeContext": {
-          "durationMs": 0
-        },
-        "timeContextFromParameter": "Time",
-        "showRefreshButton": true,
-        "showExportToExcel": true,
-        "queryType": 0,
-        "resourceType": "microsoft.operationalinsights/workspaces",
-        "crossComponentResources": [
-          "{Workspace}"
-        ],
-        "gridSettings": {
-          "formatters": [
-            {
-              "columnMatch": "TimeGenerated",
-              "formatter": 5
-            },
-            {
-              "columnMatch": "PurviewTenantId",
-              "formatter": 5
-            },
-            {
-              "columnMatch": "PurviewAccountName",
-              "formatter": 5
-            },
-            {
-              "columnMatch": "PurviewRegion",
-              "formatter": 5
-            },
-            {
-              "columnMatch": "AssetLastScanTime",
-              "formatter": 0,
-              "formatOptions": {
-                "customColumnWidthSetting": "30ch"
-              }
-            },
-            {
-              "columnMatch": "AssetName",
-              "formatter": 5
-            },
-            {
-              "columnMatch": "AssetPath",
-              "formatter": 7,
-              "formatOptions": {
-                "linkTarget": "GenericDetails",
-                "linkIsContextBlade": true,
-                "customColumnWidthSetting": "70ch"
-              }
-            },
-            {
-              "columnMatch": "AssetType",
-              "formatter": 5
-            },
-            {
-              "columnMatch": "AssetCreationTime",
-              "formatter": 5
-            },
-            {
-              "columnMatch": "AssetModifiedTime",
-              "formatter": 5
-            },
-            {
-              "columnMatch": "FileExtension",
-              "formatter": 5
-            },
-            {
-              "columnMatch": "FileSize",
-              "formatter": 5
-            },
-            {
-              "columnMatch": "ActivityType",
-              "formatter": 5
-            },
-            {
-              "columnMatch": "Classification",
-              "formatter": 5
-            },
-            {
-              "columnMatch": "ClassificationCount",
-              "formatter": 5
-            },
-            {
-              "columnMatch": "SourceName",
-              "formatter": 5
-            },
-            {
-              "columnMatch": "SourceType",
-              "formatter": 5
-            },
-            {
-              "columnMatch": "SourcePath",
-              "formatter": 5
-            },
-            {
-              "columnMatch": "SourceSubscriptionId",
-              "formatter": 5
-            },
-            {
-              "columnMatch": "SourceRegion",
-              "formatter": 5
-            },
-            {
-              "columnMatch": "SourceCollectionName",
-              "formatter": 5
-            },
-            {
-              "columnMatch": "SourceScanId",
-              "formatter": 5
-            },
-            {
-              "columnMatch": "PurviewSubscriptionId",
-              "formatter": 5
-            },
-            {
-              "columnMatch": "SourceOwner",
-              "formatter": 5
-            },
-            {
-              "columnMatch": "AssetOwner",
-              "formatter": 5
-            },
-            {
-              "columnMatch": "ActivityTrigger",
-              "formatter": 5
-            },
-            {
-              "columnMatch": "SensitivityLabelGuid",
-              "formatter": 5
-            },
-            {
-              "columnMatch": "SensitivityLabelName",
-              "formatter": 5
-            },
-            {
-              "columnMatch": "UserId",
-              "formatter": 5
-            }
-          ],
-          "rowLimit": 1000,
-          "filter": true,
-          "sortBy": [
-            {
-              "itemKey": "AssetLastScanTime",
-              "sortOrder": 2
-            }
-          ],
-          "labelSettings": [
-            {
-              "columnId": "AssetLastScanTime",
-              "label": "Last Scan Time"
-            },
-            {
-              "columnId": "AssetPath",
-              "label": "Asset Path"
-            }
-          ]
-        },
-        "sortBy": [
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
           {
-            "itemKey": "AssetLastScanTime",
-            "sortOrder": 2
+            "type": 1,
+            "content": {
+              "json": "### Asset Classification Drilldown\r\n\r\n- Use the table on the left to filter the table on the right. \r\n- The table on the left shows the classifications and unique asset count. \r\n- The table on the right shows the assets that contain the selected classification."
+            },
+            "name": "text - 21"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "let Classifications = PurviewDataSensitivityLogs\r\n| where ActivityType == \"Classification\"\r\n| where \"{DataSource:label}\" == \"All\" or SourceType in~ (split(\"{DataSource:label}\", \", \"))\r\n| where \"{Region:label}\" == \"All\" or SourceRegion in~ (split(\"{Region:label}\", \", \"))\r\n| extend CloudProvider = iff((SourceName contains \"Azure\"), \"Azure\", \"Amazon Web Services\")\r\n| where CloudProvider in (split(\"{CloudProvider:label}\", \", \"))\r\n| summarize arg_max(TimeGenerated, Classification, FileSize, AssetType) by AssetPath \r\n| extend classifications = split(Classification, ',')\r\n| mv-expand classifications\r\n| extend Classification = trim(@\"[^\\w]+\", tostring(classifications))\r\n| where Classification != \"\"\r\n| summarize AssetCount = count() by Classification\r\n| project Classification, AssetCount;\r\n\r\nClassifications\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n",
+              "size": 0,
+              "showAnalytics": true,
+              "timeContext": {
+                "durationMs": 2592000000
+              },
+              "timeContextFromParameter": "Time",
+              "showRefreshButton": true,
+              "exportFieldName": "Classification",
+              "exportParameterName": "UserSelectedClassification",
+              "exportDefaultValue": "All",
+              "showExportToExcel": true,
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{Workspace}"
+              ],
+              "visualization": "table",
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "Classification",
+                    "formatter": 0,
+                    "formatOptions": {
+                      "customColumnWidthSetting": "50ch"
+                    }
+                  },
+                  {
+                    "columnMatch": "AssetCount",
+                    "formatter": 4,
+                    "formatOptions": {
+                      "palette": "gray",
+                      "customColumnWidthSetting": "25ch"
+                    }
+                  },
+                  {
+                    "columnMatch": "FileSize",
+                    "formatter": 8,
+                    "formatOptions": {
+                      "palette": "blue",
+                      "customColumnWidthSetting": "25ch"
+                    }
+                  }
+                ],
+                "filter": true,
+                "sortBy": [
+                  {
+                    "itemKey": "$gen_bar_AssetCount_1",
+                    "sortOrder": 2
+                  }
+                ],
+                "labelSettings": [
+                  {
+                    "columnId": "AssetCount",
+                    "label": "Unique Assets",
+                    "comment": ""
+                  }
+                ]
+              },
+              "sortBy": [
+                {
+                  "itemKey": "$gen_bar_AssetCount_1",
+                  "sortOrder": 2
+                }
+              ],
+              "tileSettings": {
+                "showBorder": false,
+                "titleContent": {
+                  "columnMatch": "Classification",
+                  "formatter": 1
+                },
+                "leftContent": {
+                  "columnMatch": "Size",
+                  "formatter": 12,
+                  "formatOptions": {
+                    "palette": "auto"
+                  },
+                  "numberFormat": {
+                    "unit": 17,
+                    "options": {
+                      "maximumSignificantDigits": 3,
+                      "maximumFractionDigits": 2
+                    }
+                  }
+                }
+              }
+            },
+            "customWidth": "35",
+            "conditionalVisibility": {
+              "parameterName": "Tab",
+              "comparison": "isEqualTo",
+              "value": "Classifications"
+            },
+            "name": "query - 4 - Copy",
+            "styleSettings": {
+              "showBorder": true
+            }
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "let ClassificationCountColumn = PurviewDataSensitivityLogs\r\n| summarize arg_max( AssetLastScanTime, *) by AssetPath, ActivityType\r\n| mv-expand ClassificationDetails\r\n| summarize ClassificationCount = sum(toint(ClassificationDetails[\"UniqueCount\"])) by AssetPath;\r\nlet ClassificationsDrilldown = PurviewDataSensitivityLogs\r\n| where ActivityType == \"Classification\" \r\n| where \"{DataSource:label}\" == \"All\" or SourceType in~ (split(\"{DataSource:label}\", \", \"))\r\n| where \"{Region:label}\" == \"All\" or SourceRegion in~ (split(\"{Region:label}\", \", \"))\r\n| extend CloudProvider = iff((SourceName contains \"Azure\"), \"Azure\", \"Amazon Web Services\")\r\n| where CloudProvider in (split(\"{CloudProvider:label}\", \", \"))\r\n| extend classifications = split(Classification, ',')\r\n| mv-expand classifications\r\n| where Classification != \"\"\r\n| where \"{UserSelectedClassification:label}\" == \"All\" or Classification contains \"{UserSelectedClassification:label}\";\r\n\r\nClassificationsDrilldown | join ClassificationCountColumn on AssetPath\r\n| summarize arg_max(TimeGenerated, PurviewTenantId, PurviewAccountName, PurviewRegion, SourceName, SourceType, SourcePath, SourceSubscriptionId, SourceRegion, SourceCollectionName, AssetName, AssetPath, AssetType, AssetCreationTime, AssetModifiedTime, AssetLastScanTime, FileExtension, FileSize, ActivityType, ClassificationTrigger, Classification, ClassificationCount, ClassificationDetails, SourceScanId) by AssetPath \r\n| project TimeGenerated, PurviewTenantId, PurviewAccountName, PurviewRegion, AssetLastScanTime, AssetName, AssetPath, AssetType, AssetCreationTime, AssetModifiedTime, FileExtension, FileSize, ActivityType, ClassificationTrigger, Classification, ClassificationCount, ClassificationDetails, SourceName, SourceType, SourcePath, SourceSubscriptionId, SourceRegion, SourceCollectionName, SourceScanId;\r\n\r\nClassificationsDrilldown\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n",
+              "size": 0,
+              "showAnalytics": true,
+              "timeContext": {
+                "durationMs": 2592000000
+              },
+              "timeContextFromParameter": "Time",
+              "showRefreshButton": true,
+              "showExportToExcel": true,
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{Workspace}"
+              ],
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "TimeGenerated",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "PurviewTenantId",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "PurviewAccountName",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "PurviewRegion",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "AssetLastScanTime",
+                    "formatter": 0,
+                    "formatOptions": {
+                      "customColumnWidthSetting": "30ch"
+                    }
+                  },
+                  {
+                    "columnMatch": "AssetName",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "AssetPath",
+                    "formatter": 7,
+                    "formatOptions": {
+                      "linkTarget": "GenericDetails",
+                      "linkIsContextBlade": true,
+                      "customColumnWidthSetting": "70ch"
+                    }
+                  },
+                  {
+                    "columnMatch": "AssetType",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "AssetCreationTime",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "AssetModifiedTime",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "FileExtension",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "FileSize",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "ActivityType",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "Classification",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "ClassificationCount",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "SourceName",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "SourceType",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "SourcePath",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "SourceSubscriptionId",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "SourceRegion",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "SourceCollectionName",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "SourceScanId",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "PurviewSubscriptionId",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "SourceOwner",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "AssetOwner",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "ActivityTrigger",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "SensitivityLabelGuid",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "SensitivityLabelName",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "UserId",
+                    "formatter": 5
+                  }
+                ],
+                "rowLimit": 1000,
+                "filter": true,
+                "sortBy": [
+                  {
+                    "itemKey": "AssetLastScanTime",
+                    "sortOrder": 2
+                  }
+                ],
+                "labelSettings": [
+                  {
+                    "columnId": "AssetLastScanTime",
+                    "label": "Last Scan Time"
+                  },
+                  {
+                    "columnId": "AssetPath",
+                    "label": "Asset Path"
+                  }
+                ]
+              },
+              "sortBy": [
+                {
+                  "itemKey": "AssetLastScanTime",
+                  "sortOrder": 2
+                }
+              ]
+            },
+            "customWidth": "65",
+            "conditionalVisibility": {
+              "parameterName": "Tab",
+              "comparison": "isEqualTo",
+              "value": "Classifications"
+            },
+            "name": "query - 10",
+            "styleSettings": {
+              "showBorder": true
+            }
           }
         ]
       },
@@ -1463,8 +1350,7 @@
         "comparison": "isEqualTo",
         "value": "Classifications"
       },
-      "customWidth": "65",
-      "name": "query - 10",
+      "name": "Classifications Drilldown",
       "styleSettings": {
         "showBorder": true
       }
@@ -1473,14 +1359,13 @@
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
-        "query": "PurviewDataSensitivityLogs\r\n| where ActivityType == \"Labeling\"\r\n| where \"{DataSource:label}\" == \"All\" or SourceType in~ (split(\"{DataSource:label}\", \", \"))\r\n| where \"{Region:label}\" == \"All\" or SourceRegion in~ (split(\"{Region:label}\", \", \"))\r\n| extend CloudProvider = iff((SourceName contains \"Azure\"), \"Azure\", \"Amazon Web Services\")\r\n| where CloudProvider in (split(\"{CloudProvider:label}\", \", \"))\r\n| where SensitivityLabel != \"\"\r\n| summarize LabeledAssetCount = count() by DateClassified = bin(TimeGenerated, 1d), SourceType",
+        "query": "PurviewDataSensitivityLogs\r\n| where ActivityType == \"Labeling\"\r\n| where \"{DataSource:label}\" == \"All\" or SourceType in~ (split(\"{DataSource:label}\", \", \"))\r\n| where \"{Region:label}\" == \"All\" or SourceRegion in~ (split(\"{Region:label}\", \", \"))\r\n| extend CloudProvider = iff((SourceName contains \"Azure\"), \"Azure\", \"Amazon Web Services\")\r\n| where CloudProvider in (split(\"{CloudProvider:label}\", \", \"))\r\n| where SensitivityLabel != \"[]\"\r\n| extend ResourceType = iff(SourceType==\"AzureBlob\", \"Storage accounts\", \"Amazon S3\")\r\n| summarize LabeledAssetCount = count() by DateClassified = bin(TimeGenerated, 1d), ResourceType",
         "size": 0,
         "showAnalytics": true,
-        "title": "Labeling events",
+        "title": "Sensitivity labeling events logged",
         "timeContext": {
-          "durationMs": 0
+          "durationMs": 2592000000
         },
-        "timeContextFromParameter": "Time",
         "exportFieldName": "DateClassified",
         "exportParameterName": "UserSelectedTime",
         "exportDefaultValue": "All",
@@ -1492,7 +1377,7 @@
         "visualization": "categoricalbar",
         "chartSettings": {
           "xAxis": "DateClassified",
-          "group": "SourceType",
+          "group": "ResourceType",
           "createOtherGroup": 0
         }
       },
@@ -1505,72 +1390,278 @@
       "name": "query - 24 - Copy"
     },
     {
-      "type": 3,
+      "type": 1,
       "content": {
-        "version": "KqlItem/1.0",
-        "query": "let SensitivityLabels = PurviewDataSensitivityLogs\r\n| where ActivityType == \"Labeling\" \r\n| where \"{DataSource:label}\" == \"All\" or SourceType in~ (split(\"{DataSource:label}\", \", \"))\r\n| where \"{Region:label}\" == \"All\" or SourceRegion in~ (split(\"{Region:label}\", \", \"))\r\n| extend CloudProvider = iff((SourceName contains \"Azure\"), \"Azure\", \"Amazon Web Services\")\r\n| where CloudProvider in (split(\"{CloudProvider:label}\", \", \"))\r\n| mv-expand SensitivityLabel\r\n| extend newSensitivityLabel = tostring(SensitivityLabel) //iff(SensitivityLabel== \"\", \"No Label\", SensitivityLabel)\r\n| summarize arg_max(newSensitivityLabel, SourceType, FileSize) by AssetPath \r\n| summarize AssetCount = count() by newSensitivityLabel\r\n| sort by AssetCount;\r\n\r\nSensitivityLabels\r\n\r\n",
-        "size": 0,
-        "title": "Sensitivity Labels",
-        "timeContext": {
-          "durationMs": 2592000000
-        },
-        "timeContextFromParameter": "Time",
-        "exportFieldName": "newSensitivityLabel",
-        "exportParameterName": "UserSelectedLabel",
-        "exportDefaultValue": "All",
-        "queryType": 0,
-        "resourceType": "microsoft.operationalinsights/workspaces",
-        "crossComponentResources": [
-          "{Workspace}"
-        ],
-        "gridSettings": {
-          "formatters": [
-            {
-              "columnMatch": "newSensitivityLabel",
-              "formatter": 0,
-              "numberFormat": {
-                "unit": 0,
-                "options": {
-                  "style": "decimal"
-                },
-                "emptyValCustomText": "No Label"
-              }
-            },
-            {
-              "columnMatch": "AssetCount",
-              "formatter": 4,
-              "formatOptions": {
-                "palette": "blue"
-              }
-            },
-            {
-              "columnMatch": "FileSize",
-              "formatter": 8,
-              "formatOptions": {
-                "palette": "blue"
-              }
-            }
-          ],
-          "filter": true,
-          "labelSettings": [
-            {
-              "columnId": "newSensitivityLabel",
-              "label": "Sensitivity Label"
-            },
-            {
-              "columnId": "AssetCount",
-              "label": "Asset Count"
-            }
-          ]
-        }
+        "json": "### Labeling events\r\n- A labeling event is generated when an asset is scanned, and the classifications found match the auto-labeling rules in the tenant. \r\n- With incremental scans, a labeling event is generated only if the asset has been modified from the last scan. \r\n- If the same asset is scanned multiple times over a period of time, then multiple labeling events will be logged within Log Analytics. \r\n\r\n##### The number of labeling events shown here may exceed the total number of assets in the resource.",
+        "style": "info"
       },
       "conditionalVisibility": {
         "parameterName": "Tab",
         "comparison": "isEqualTo",
         "value": "Labels"
       },
-      "customWidth": "35",
-      "name": "query - 14 - Copy",
+      "name": "text - 20 - Copy"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
+          {
+            "type": 1,
+            "content": {
+              "json": "### Sensitivity Labels Drilldown\r\n\r\n- Use the table on the left to filter the table on the right. \r\n- The table on the left shows the classifications and unique asset count. \r\n- The table on the right shows the assets that contain the selected classification."
+            },
+            "name": "text - 21 - Copy"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "let SensitivityLabels = PurviewDataSensitivityLogs\r\n| where ActivityType == \"Labeling\" \r\n| where \"{DataSource:label}\" == \"All\" or SourceType in~ (split(\"{DataSource:label}\", \", \"))\r\n| where \"{Region:label}\" == \"All\" or SourceRegion in~ (split(\"{Region:label}\", \", \"))\r\n| extend CloudProvider = iff((SourceName contains \"Azure\"), \"Azure\", \"Amazon Web Services\")\r\n| where CloudProvider in (split(\"{CloudProvider:label}\", \", \"))\r\n| mv-expand SensitivityLabel\r\n| extend newSensitivityLabel = tostring(SensitivityLabel) //iff(SensitivityLabel== \"\", \"No Label\", SensitivityLabel)\r\n| summarize arg_max(newSensitivityLabel, SourceType, FileSize) by AssetPath \r\n| summarize AssetCount = count() by newSensitivityLabel\r\n| sort by AssetCount;\r\n\r\nSensitivityLabels\r\n\r\n",
+              "size": 0,
+              "title": "Sensitivity Labels",
+              "timeContext": {
+                "durationMs": 2592000000
+              },
+              "timeContextFromParameter": "Time",
+              "exportFieldName": "newSensitivityLabel",
+              "exportParameterName": "UserSelectedLabel",
+              "exportDefaultValue": "All",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{Workspace}"
+              ],
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "newSensitivityLabel",
+                    "formatter": 0,
+                    "numberFormat": {
+                      "unit": 0,
+                      "options": {
+                        "style": "decimal"
+                      },
+                      "emptyValCustomText": "No Label"
+                    }
+                  },
+                  {
+                    "columnMatch": "AssetCount",
+                    "formatter": 4,
+                    "formatOptions": {
+                      "palette": "gray"
+                    }
+                  },
+                  {
+                    "columnMatch": "FileSize",
+                    "formatter": 8,
+                    "formatOptions": {
+                      "palette": "blue"
+                    }
+                  }
+                ],
+                "filter": true,
+                "labelSettings": [
+                  {
+                    "columnId": "newSensitivityLabel",
+                    "label": "Sensitivity Label"
+                  },
+                  {
+                    "columnId": "AssetCount",
+                    "label": "Unique Assets"
+                  }
+                ]
+              }
+            },
+            "customWidth": "35",
+            "conditionalVisibility": {
+              "parameterName": "Tab",
+              "comparison": "isEqualTo",
+              "value": "Labels"
+            },
+            "name": "query - 14 - Copy",
+            "styleSettings": {
+              "showBorder": true
+            }
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "PurviewDataSensitivityLogs\r\n| where ActivityType == \"Labeling\" \r\n| where \"{DataSource:label}\" == \"All\" or SourceType in~ (split(\"{DataSource:label}\", \", \"))\r\n| where \"{Region:label}\" == \"All\" or SourceRegion in~ (split(\"{Region:label}\", \", \"))\r\n| extend CloudProvider = iff((SourceName contains \"Azure\"), \"Azure\", \"Amazon Web Services\")\r\n| where CloudProvider in (split(\"{CloudProvider:label}\", \", \"))\r\n| mv-expand SensitivityLabel to typeof(string)\r\n| mv-expand SensitivityLabelDetails to typeof(string)\r\n| where \"{UserSelectedLabel:label}\" == \"All\" or \"{UserSelectedLabel:label}\" == SensitivityLabel\r\n| summarize arg_max(TimeGenerated, PurviewTenantId, PurviewAccountName, PurviewRegion, SourceName, SourceType, SourcePath, SourceSubscriptionId, SourceRegion, SourceCollectionName, AssetName, AssetPath, AssetType, AssetCreationTime, AssetModifiedTime, AssetLastScanTime, FileExtension, FileSize, ActivityType, SensitivityLabelTrigger, SensitivityLabel, SensitivityLabelDetails, SourceScanId) by AssetPath\r\n| project TimeGenerated, PurviewTenantId, PurviewAccountName, PurviewRegion, AssetLastScanTime, AssetName, AssetPath, AssetType, AssetCreationTime, AssetModifiedTime, FileExtension, FileSize, ActivityType, SensitivityLabelTrigger, SensitivityLabel, SensitivityLabelDetails, SourceName, SourceType, SourcePath, SourceSubscriptionId, SourceRegion, SourceCollectionName, SourceScanId\r\n| sort by AssetLastScanTime desc",
+              "size": 0,
+              "title": "Sensitivity Labels Drilldown- Asset Level",
+              "timeContext": {
+                "durationMs": 2592000000
+              },
+              "timeContextFromParameter": "Time",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "crossComponentResources": [
+                "{Workspace}"
+              ],
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "TimeGenerated",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "PurviewTenantId",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "PurviewAccountName",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "PurviewRegion",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "AssetName",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "AssetPath",
+                    "formatter": 7,
+                    "formatOptions": {
+                      "linkTarget": "GenericDetails",
+                      "linkIsContextBlade": true
+                    }
+                  },
+                  {
+                    "columnMatch": "AssetType",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "AssetCreationTime",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "AssetModifiedTime",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "FileExtension",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "FileSize",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "ActivityType",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "SensitivityLabelTrigger",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "SensitivityLabel",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "SensitivityLabelDetails",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "SourceName",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "SourceType",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "SourcePath",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "SourceSubscriptionId",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "SourceRegion",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "SourceCollectionName",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "SourceScanId",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "ClassificationCount",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "PurviewSubscriptionId",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "SourceOwner",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "AssetOwner",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "ActivityTrigger",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "Classification",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "SensitivityLabelGuid",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "UserId",
+                    "formatter": 5
+                  }
+                ],
+                "rowLimit": 1000,
+                "filter": true,
+                "labelSettings": [
+                  {
+                    "columnId": "AssetLastScanTime",
+                    "label": "Last Scan Time"
+                  },
+                  {
+                    "columnId": "AssetPath",
+                    "label": "Asset Path"
+                  }
+                ]
+              }
+            },
+            "customWidth": "65",
+            "conditionalVisibility": {
+              "parameterName": "Tab",
+              "comparison": "isEqualTo",
+              "value": "Labels"
+            },
+            "name": "query - 15",
+            "styleSettings": {
+              "showBorder": true
+            }
+          }
+        ]
+      },
+      "conditionalVisibility": {
+        "parameterName": "Tab",
+        "comparison": "isEqualTo",
+        "value": "Labels"
+      },
+      "name": "Labeling",
       "styleSettings": {
         "showBorder": true
       }
@@ -1579,11 +1670,99 @@
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
-        "query": "PurviewDataSensitivityLogs\r\n| where ActivityType == \"Labeling\" \r\n| where \"{DataSource:label}\" == \"All\" or SourceType in~ (split(\"{DataSource:label}\", \", \"))\r\n| where \"{Region:label}\" == \"All\" or SourceRegion in~ (split(\"{Region:label}\", \", \"))\r\n| extend CloudProvider = iff((SourceName contains \"Azure\"), \"Azure\", \"Amazon Web Services\")\r\n| where CloudProvider in (split(\"{CloudProvider:label}\", \", \"))\r\n| mv-expand SensitivityLabel to typeof(string)\r\n| mv-expand SensitivityLabelDetails to typeof(string)\r\n| where \"{UserSelectedLabel:label}\" == \"All\" or \"{UserSelectedLabel:label}\" == SensitivityLabel\r\n| summarize arg_max(TimeGenerated, PurviewTenantId, PurviewAccountName, PurviewRegion, SourceName, SourceType, SourcePath, SourceSubscriptionId, SourceRegion, SourceCollectionName, AssetName, AssetPath, AssetType, AssetCreationTime, AssetModifiedTime, AssetLastScanTime, FileExtension, FileSize, ActivityType, SensitivityLabelTrigger, SensitivityLabel, SensitivityLabelDetails, SourceScanId) by AssetPath\r\n| project TimeGenerated, PurviewTenantId, PurviewAccountName, PurviewRegion, AssetLastScanTime, AssetName, AssetPath, AssetType, AssetCreationTime, AssetModifiedTime, FileExtension, FileSize, ActivityType, SensitivityLabelTrigger, SensitivityLabel, SensitivityLabelDetails, SourceName, SourceType, SourcePath, SourceSubscriptionId, SourceRegion, SourceCollectionName, SourceScanId\r\n| sort by AssetLastScanTime desc",
+        "query": "PurviewDataSensitivityLogs\r\n| where ActivityType == \"Classification\"\r\n| where \"{DataSource:label}\" == \"All\" or SourceType in~ (split(\"{DataSource:label}\", \", \"))\r\n| where \"{Region:label}\" == \"All\" or SourceRegion in~ (split(\"{Region:label}\", \", \"))\r\n| extend CloudProvider = iff((SourceName contains \"Azure\"), \"Azure\", \"Amazon Web Services\")\r\n| where CloudProvider in (split(\"{CloudProvider:label}\", \", \"))\r\n| join (PurviewScanStatusLogs\r\n    | where OperationName == \"StatusChangeNotification\"\r\n    | where ScanTotalRunTimeInSeconds != 0)\r\n    on $left.SourceScanId == $right.ScanResultId\r\n| project TimeGenerated, SourceScanId, ResultType, SourceName, SourceType, SourceRegion, SourcePath, AssetsDiscovered, AssetsClassified, ScanQueueTimeInSeconds, ScanTotalRunTimeInSeconds\r\n| summarize count() by TimeGenerated, ResultType",
         "size": 0,
-        "title": "Sensitivity Labels Drilldown- Asset Level",
+        "title": "Scan Status",
         "timeContext": {
-          "durationMs": 0
+          "durationMs": 2592000000
+        },
+        "timeContextFromParameter": "Time",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "{Workspace}"
+        ],
+        "visualization": "barchart",
+        "chartSettings": {
+          "seriesLabelSettings": [
+            {
+              "seriesName": "Succeeded",
+              "label": "Successfully scanned",
+              "color": "green"
+            },
+            {
+              "seriesName": "Canceled",
+              "label": "Scanning stopped",
+              "color": "gray"
+            },
+            {
+              "seriesName": "Failed",
+              "label": "Scanning issues",
+              "color": "redBright"
+            }
+          ]
+        }
+      },
+      "conditionalVisibility": {
+        "parameterName": "Tab",
+        "comparison": "isEqualTo",
+        "value": "Hidden"
+      },
+      "name": "query - 16"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "PurviewScanStatusLogs\r\n    | where ResultType in (\"Succeeded\",\"Failed\")\r\n    | summarize count() by TimeGenerated, ResultType",
+        "size": 0,
+        "title": "Scan Status",
+        "timeContext": {
+          "durationMs": 2592000000
+        },
+        "timeContextFromParameter": "Time",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "{Workspace}"
+        ],
+        "visualization": "barchart",
+        "chartSettings": {
+          "seriesLabelSettings": [
+            {
+              "seriesName": "Succeeded",
+              "label": "Successfully scanned",
+              "color": "green"
+            },
+            {
+              "seriesName": "Canceled",
+              "label": "Scanning stopped",
+              "color": "gray"
+            },
+            {
+              "seriesName": "Failed",
+              "label": "Scanning issues",
+              "color": "redBright"
+            }
+          ]
+        }
+      },
+      "conditionalVisibility": {
+        "parameterName": "Tab",
+        "comparison": "isEqualTo",
+        "value": "Scans"
+      },
+      "name": "query - 16 - Copy"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "PurviewDataSensitivityLogs\r\n| where ActivityType == \"Classification\"\r\n| where \"{DataSource:label}\" == \"All\" or SourceType in~ (split(\"{DataSource:label}\", \", \"))\r\n| where \"{Region:label}\" == \"All\" or SourceRegion in~ (split(\"{Region:label}\", \", \"))\r\n| extend CloudProvider = iff((SourceName contains \"Azure\"), \"Azure\", \"Amazon Web Services\")\r\n| where CloudProvider in (split(\"{CloudProvider:label}\", \", \"))\r\n| join (PurviewScanStatusLogs\r\n    | where ResultType == \"Succeeded\"\r\n    | extend ResourceType = iff(DataSourceType==\"AzureStorage\", \"Storage account\", DataSourceType))\r\n    on $left.SourceScanId == $right.ScanResultId\r\n| project TimeGenerated, SourcePath, ResourceType, SourceRegion, ResultType, SourceScanId, AssetsDiscovered, AssetsClassified, ScanTotalRunTimeInSeconds",
+        "size": 3,
+        "title": "Successful scanned resources",
+        "timeContext": {
+          "durationMs": 2592000000
         },
         "timeContextFromParameter": "Time",
         "queryType": 0,
@@ -1592,142 +1771,42 @@
           "{Workspace}"
         ],
         "gridSettings": {
-          "formatters": [
-            {
-              "columnMatch": "TimeGenerated",
-              "formatter": 5
-            },
-            {
-              "columnMatch": "PurviewTenantId",
-              "formatter": 5
-            },
-            {
-              "columnMatch": "PurviewAccountName",
-              "formatter": 5
-            },
-            {
-              "columnMatch": "PurviewRegion",
-              "formatter": 5
-            },
-            {
-              "columnMatch": "AssetName",
-              "formatter": 5
-            },
-            {
-              "columnMatch": "AssetPath",
-              "formatter": 7,
-              "formatOptions": {
-                "linkTarget": "GenericDetails",
-                "linkIsContextBlade": true
-              }
-            },
-            {
-              "columnMatch": "AssetType",
-              "formatter": 5
-            },
-            {
-              "columnMatch": "AssetCreationTime",
-              "formatter": 5
-            },
-            {
-              "columnMatch": "AssetModifiedTime",
-              "formatter": 5
-            },
-            {
-              "columnMatch": "FileExtension",
-              "formatter": 5
-            },
-            {
-              "columnMatch": "FileSize",
-              "formatter": 5
-            },
-            {
-              "columnMatch": "ActivityType",
-              "formatter": 5
-            },
-            {
-              "columnMatch": "SensitivityLabelTrigger",
-              "formatter": 5
-            },
-            {
-              "columnMatch": "SensitivityLabel",
-              "formatter": 5
-            },
-            {
-              "columnMatch": "SensitivityLabelDetails",
-              "formatter": 5
-            },
-            {
-              "columnMatch": "SourceName",
-              "formatter": 5
-            },
-            {
-              "columnMatch": "SourceType",
-              "formatter": 5
-            },
-            {
-              "columnMatch": "SourcePath",
-              "formatter": 5
-            },
-            {
-              "columnMatch": "SourceSubscriptionId",
-              "formatter": 5
-            },
-            {
-              "columnMatch": "SourceRegion",
-              "formatter": 5
-            },
-            {
-              "columnMatch": "SourceCollectionName",
-              "formatter": 5
-            },
-            {
-              "columnMatch": "SourceScanId",
-              "formatter": 5
-            },
-            {
-              "columnMatch": "ClassificationCount",
-              "formatter": 5
-            },
-            {
-              "columnMatch": "PurviewSubscriptionId",
-              "formatter": 5
-            },
-            {
-              "columnMatch": "SourceOwner",
-              "formatter": 5
-            },
-            {
-              "columnMatch": "AssetOwner",
-              "formatter": 5
-            },
-            {
-              "columnMatch": "ActivityTrigger",
-              "formatter": 5
-            },
-            {
-              "columnMatch": "Classification",
-              "formatter": 5
-            },
-            {
-              "columnMatch": "SensitivityLabelGuid",
-              "formatter": 5
-            },
-            {
-              "columnMatch": "UserId",
-              "formatter": 5
-            }
-          ],
-          "rowLimit": 1000,
-          "filter": true,
           "labelSettings": [
             {
-              "columnId": "AssetLastScanTime",
-              "label": "Last Scan Time"
+              "columnId": "TimeGenerated",
+              "label": "Timestamp"
             },
             {
-              "columnId": "AssetPath",
-              "label": "Asset Path"
+              "columnId": "SourcePath",
+              "label": "Resource"
+            },
+            {
+              "columnId": "ResourceType",
+              "label": "Resource Type"
+            },
+            {
+              "columnId": "SourceRegion",
+              "label": "Region"
+            },
+            {
+              "columnId": "ResultType",
+              "label": "Result"
+            },
+            {
+              "columnId": "SourceScanId",
+              "label": "Scan Id"
+            },
+            {
+              "columnId": "AssetsDiscovered",
+              "label": "Assets Discovered"
+            },
+            {
+              "columnId": "AssetsClassified",
+              "label": "Assets Classified"
+            },
+            {
+              "columnId": "ScanTotalRunTimeInSeconds",
+              "label": "Scan duration (seconds)"
             }
           ]
         }
@@ -1735,13 +1814,69 @@
       "conditionalVisibility": {
         "parameterName": "Tab",
         "comparison": "isEqualTo",
-        "value": "Labels"
+        "value": "Scans"
       },
-      "customWidth": "65",
-      "name": "query - 15",
-      "styleSettings": {
-        "showBorder": true
-      }
+      "name": "query - 17"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "PurviewScanStatusLogs\r\n    | where ResultType == \"Failed\"\r\n    | extend ResourceType = iff(DataSourceType==\"AzureStorage\", \"Storage account\", DataSourceType)\r\n    | extend error = parse_json(ErrorDetails)\r\n    | project TimeGenerated, DataSourceName, ResourceType, ResultType, ScanResultId, error.Message, ScanQueueTimeInSeconds, ScanTotalRunTimeInSeconds",
+        "size": 0,
+        "title": "Resources with scanning issues",
+        "timeContext": {
+          "durationMs": 2592000000
+        },
+        "timeContextFromParameter": "Time",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "{Workspace}"
+        ],
+        "gridSettings": {
+          "labelSettings": [
+            {
+              "columnId": "TimeGenerated",
+              "label": "Timestamp"
+            },
+            {
+              "columnId": "DataSourceName",
+              "label": "Resource"
+            },
+            {
+              "columnId": "ResourceType",
+              "label": "Resource Type"
+            },
+            {
+              "columnId": "ResultType",
+              "label": "Result"
+            },
+            {
+              "columnId": "ScanResultId",
+              "label": "Scan Id"
+            },
+            {
+              "columnId": "error_Message",
+              "label": "Detailed error message"
+            },
+            {
+              "columnId": "ScanQueueTimeInSeconds",
+              "label": "Scan queue time (seconds)"
+            },
+            {
+              "columnId": "ScanTotalRunTimeInSeconds",
+              "label": "Scan duration (seconds)"
+            }
+          ]
+        }
+      },
+      "conditionalVisibility": {
+        "parameterName": "Tab",
+        "comparison": "isEqualTo",
+        "value": "Scans"
+      },
+      "name": "query - 21"
     },
     {
       "type": 9,
@@ -1763,13 +1898,11 @@
             "crossComponentResources": [
               "{Workspace}"
             ],
-            "value": [
-              "value::all"
-            ],
             "typeSettings": {
               "additionalResourceOptions": [
                 "value::all"
-              ]
+              ],
+              "showDefault": false
             },
             "timeContext": {
               "durationMs": 0
@@ -1928,16 +2061,27 @@
       "name": "parameters - 14"
     },
     {
+      "type": 1,
+      "content": {
+        "json": "### Asset search\r\n\r\n- Use the table below to find specific assets within all the data that has been scanned and logged.\r\n- Click on the **Asset Name** to see the details\r\n- Click on the **Source Path** to go to the resource (applicable only for Azure resources)"
+      },
+      "conditionalVisibility": {
+        "parameterName": "Tab",
+        "comparison": "isEqualTo",
+        "value": "Search"
+      },
+      "name": "text - 22"
+    },
+    {
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
-        "query": "let classifiedAssets = PurviewDataSensitivityLogs\r\n| where ActivityType == \"Classification\" \r\n| extend LastScanTime = format_datetime(AssetLastScanTime, 'M/d/yyyy')\r\n| where \"{LastScanTime:label}\" == \"Any one\" or \"{LastScanTime:label}\" == LastScanTime\r\n| where \"{DataSource:label}\" == \"All\" or SourceType in~ (split(\"{DataSource:label}\", \", \"))\r\n| where \"{Region:label}\" == \"All\" or SourceRegion in~ (split(\"{Region:label}\", \", \"))\r\n| where \"{PurviewAccount:label}\" == \"All\" or PurviewAccountName in~ (split(\"{PurviewAccount:label}\", \", \"))\r\n| where \"{Subscription:label}\" == \"All\" or SourceSubscriptionId in~ (split(\"{Subscription:label}\", \", \"))\r\n| extend CloudProvider = iff((SourceName contains \"Azure\"), \"Azure\", \"Amazon Web Services\")\r\n| where CloudProvider in (split(\"{CloudProvider:label}\", \", \"))\r\n| where \"{Resource:label}\" == \"All\" or SourceName in (split(\"{Resource:label}\", \", \"))\r\n| where \"{Classification:label}\" == \"All\" or Classification contains \"{Classification:label}\"\r\n| extend AssetLastScanTime = format_datetime(AssetLastScanTime, 'M/d/yyyy')\r\n| summarize arg_max(TimeGenerated, PurviewTenantId, PurviewAccountName, PurviewRegion, AssetName, AssetPath, AssetType, AssetCreationTime, AssetModifiedTime, AssetLastScanTime, FileExtension, FileSize, ActivityType, ClassificationTrigger, Classification, ClassificationDetails, SensitivityLabelTrigger, SensitivityLabel, SensitivityLabelDetails, SourceName, SourceType, SourcePath, SourceSubscriptionId, SourceRegion, SourceCollectionName, SourceScanId) by AssetPath \r\n| project TimeGenerated, PurviewTenantId, PurviewAccountName, PurviewRegion, AssetName, AssetPath, AssetType, AssetCreationTime, AssetModifiedTime, AssetLastScanTime, FileExtension, FileSize, ActivityType, ClassificationTrigger, Classification, ClassificationDetails, SensitivityLabelTrigger, SensitivityLabel, SensitivityLabelDetails, SourceName, SourceType, SourcePath, SourceSubscriptionId, SourceRegion, SourceCollectionName, SourceScanId;\r\n\r\nlet labeledAssets = PurviewDataSensitivityLogs\r\n| where ActivityType == \"Labeling\"  \r\n| where \"{DataSource:label}\" == \"All\" or SourceType in~ (split(\"{DataSource:label}\", \", \"))\r\n| where \"{Region:label}\" == \"All\" or SourceRegion in~ (split(\"{Region:label}\", \", \"))\r\n| extend CloudProvider = iff((SourceName contains \"Azure\"), \"Azure\", \"Amazon Web Services\")\r\n| where CloudProvider in (split(\"{CloudProvider:label}\", \", \"))\r\n| where \"{Resource:label}\" == \"All\" or SourceName in (split(\"{Resource:label}\", \", \"))\r\n| where \"{PurviewAccount:label}\" == \"All\" or PurviewAccountName in~ (split(\"{PurviewAccount:label}\", \", \"))\r\n| where \"{Subscription:label}\" == \"All\" or SourceSubscriptionId in~ (split(\"{Subscription:label}\", \", \"))\r\n| mv-expand SensitivityLabel to typeof(string)\r\n| mv-expand SensitivityLabelDetails to typeof(string)\r\n| summarize arg_max(TimeGenerated, SensitivityLabel, SourceType, SensitivityLabelDetails, SensitivityLabelTrigger) by AssetPath\r\n| project AssetPath, SensitivityLabel, SensitivityLabelDetails, SensitivityLabelTrigger;\r\n\r\nlet table = labeledAssets\r\n| join kind= fullouter classifiedAssets on AssetPath\r\n| extend Classification = iff((Classification == \"[]\"), \"No Classifications\", Classification)\r\n| where \"{Label:label}\" == \"All\" or (split(\"{Label:label}\", \", \")) contains SensitivityLabel\r\n| project TimeGenerated, PurviewTenantId, PurviewAccountName, PurviewRegion, AssetLastScanTime, AssetName, AssetPath, AssetType, AssetCreationTime, AssetModifiedTime, FileExtension, FileSize, ActivityType, ClassificationTrigger, Classification, ClassificationDetails, SensitivityLabelTrigger, SensitivityLabel, SensitivityLabelDetails, SourceName, SourceType, SourcePath, SourceSubscriptionId, SourceRegion, SourceCollectionName, SourceScanId;\r\n\r\ntable",
+        "query": "let classifiedAssets = PurviewDataSensitivityLogs\r\n| where ActivityType == \"Classification\" \r\n| extend LastScanTime = format_datetime(AssetLastScanTime, 'M/d/yyyy')\r\n| where \"{LastScanTime:label}\" == \"Any one\" or \"{LastScanTime:label}\" == LastScanTime\r\n| where \"{DataSource:label}\" == \"All\" or SourceType in~ (split(\"{DataSource:label}\", \", \"))\r\n| where \"{Region:label}\" == \"All\" or SourceRegion in~ (split(\"{Region:label}\", \", \"))\r\n| where \"{PurviewAccount:label}\" == \"All\" or PurviewAccountName in~ (split(\"{PurviewAccount:label}\", \", \"))\r\n| where \"{Subscription:label}\" == \"All\" or SourceSubscriptionId in~ (split(\"{Subscription:label}\", \", \"))\r\n| extend CloudProvider = iff((SourceName contains \"Azure\"), \"Azure\", \"Amazon Web Services\")\r\n| where CloudProvider in (split(\"{CloudProvider:label}\", \", \"))\r\n| where \"{Resource:label}\" == \"All\" or SourceName in (split(\"{Resource:label}\", \", \"))\r\n| where \"{Classification:label}\" == \"All\" or Classification contains \"{Classification:label}\"\r\n| extend AssetLastScanTime = format_datetime(AssetLastScanTime, 'M/d/yyyy')\r\n| summarize arg_max(TimeGenerated, PurviewTenantId, PurviewAccountName, PurviewRegion, AssetName, AssetPath, AssetType, AssetCreationTime, AssetModifiedTime, AssetLastScanTime, FileExtension, FileSize, ActivityType, ClassificationTrigger, Classification, ClassificationDetails, SensitivityLabelTrigger, SensitivityLabel, SensitivityLabelDetails, SourceName, SourceType, SourcePath, SourceSubscriptionId, SourceRegion, SourceCollectionName, SourceScanId) by AssetPath \r\n| project TimeGenerated, PurviewTenantId, PurviewAccountName, PurviewRegion, AssetName, AssetPath, AssetType, AssetCreationTime, AssetModifiedTime, AssetLastScanTime, FileExtension, FileSize, ActivityType, ClassificationTrigger, Classification, ClassificationDetails, SensitivityLabelTrigger, SensitivityLabel, SensitivityLabelDetails, SourceName, SourceType, SourcePath, SourceSubscriptionId, SourceRegion, SourceCollectionName, SourceScanId;\r\n\r\nlet labeledAssets = PurviewDataSensitivityLogs\r\n| where ActivityType == \"Labeling\"  \r\n| where \"{DataSource:label}\" == \"All\" or SourceType in~ (split(\"{DataSource:label}\", \", \"))\r\n| where \"{Region:label}\" == \"All\" or SourceRegion in~ (split(\"{Region:label}\", \", \"))\r\n| extend CloudProvider = iff((SourceName contains \"Azure\"), \"Azure\", \"Amazon Web Services\")\r\n| where CloudProvider in (split(\"{CloudProvider:label}\", \", \"))\r\n| where \"{Resource:label}\" == \"All\" or SourceName in (split(\"{Resource:label}\", \", \"))\r\n| where \"{PurviewAccount:label}\" == \"All\" or PurviewAccountName in~ (split(\"{PurviewAccount:label}\", \", \"))\r\n| where \"{Subscription:label}\" == \"All\" or SourceSubscriptionId in~ (split(\"{Subscription:label}\", \", \"))\r\n| mv-expand SensitivityLabel to typeof(string)\r\n| mv-expand SensitivityLabelDetails to typeof(string)\r\n| summarize arg_max(TimeGenerated, SensitivityLabel, SourceType, SensitivityLabelDetails, SensitivityLabelTrigger) by AssetPath\r\n| project AssetPath, SensitivityLabel, SensitivityLabelDetails, SensitivityLabelTrigger;\r\n\r\nlet table = labeledAssets\r\n| join kind= fullouter classifiedAssets on AssetPath\r\n| extend Classification = iff((Classification == \"[]\"), \"No Classifications\", Classification)\r\n| where \"{Label:label}\" == \"All\" or (split(\"{Label:label}\", \", \")) contains SensitivityLabel\r\n| project TimeGenerated, PurviewTenantId, PurviewAccountName, PurviewRegion, AssetLastScanTime, AssetName, AssetPath, AssetType, AssetCreationTime, AssetModifiedTime, FileExtension, FileSize, ActivityType, ClassificationTrigger, Classification, ClassificationDetails, SensitivityLabelTrigger, SensitivityLabel, SensitivityLabelDetails, SourceType, SourcePath, SourceSubscriptionId, SourceRegion, SourceCollectionName, SourceScanId;\r\n\r\ntable",
         "size": 0,
         "title": "Asset Drilldown",
         "timeContext": {
-          "durationMs": 0
+          "durationMs": 2592000000
         },
-        "timeContextFromParameter": "Time",
         "queryType": 0,
         "resourceType": "microsoft.operationalinsights/workspaces",
         "crossComponentResources": [
@@ -2120,10 +2264,6 @@
               "label": "Sensitivity Label"
             },
             {
-              "columnId": "SourceName",
-              "label": "Source Name"
-            },
-            {
               "columnId": "SourcePath",
               "label": "Source Path"
             }
@@ -2140,6 +2280,80 @@
       "styleSettings": {
         "showBorder": true
       }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "PurviewDataSensitivityLogs\r\n| where ActivityType == \"Classification\" \r\n| where SourceType contains \"Azure\"\r\n| summarize arg_max(AssetPath, SourcePath, FileExtension) by AssetPath \r\n| summarize count() by FileExtension\r\n| sort by count_ desc\r\n| take 5",
+        "size": 0,
+        "title": "Top 5 File Extensions",
+        "timeContext": {
+          "durationMs": 0
+        },
+        "timeContextFromParameter": "Time",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "{Workspace}"
+        ],
+        "visualization": "barchart",
+        "gridSettings": {
+          "labelSettings": [
+            {
+              "columnId": "FileExtension",
+              "label": "File Extension"
+            },
+            {
+              "columnId": "count_",
+              "label": "Count"
+            }
+          ]
+        }
+      },
+      "conditionalVisibility": {
+        "parameterName": "Tab",
+        "comparison": "isEqualTo",
+        "value": "FileExtension"
+      },
+      "name": "query - 6"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "PurviewDataSensitivityLogs\r\n| where ActivityType == \"Classification\" \r\n| where SourceType contains \"Azure\"\r\n| summarize arg_max(AssetPath, SourcePath, FileExtension) by AssetPath \r\n| summarize count() by FileExtension\r\n| sort by count_ desc",
+        "size": 0,
+        "title": "File Extensions",
+        "timeContext": {
+          "durationMs": 0
+        },
+        "timeContextFromParameter": "Time",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "{Workspace}"
+        ],
+        "visualization": "table",
+        "gridSettings": {
+          "labelSettings": [
+            {
+              "columnId": "FileExtension",
+              "label": "File Extension"
+            },
+            {
+              "columnId": "count_",
+              "label": "Count"
+            }
+          ]
+        }
+      },
+      "conditionalVisibility": {
+        "parameterName": "Tab",
+        "comparison": "isEqualTo",
+        "value": "FileExtension"
+      },
+      "name": "query - 6 - Copy"
     }
   ],
   "fallbackResourceIds": [
