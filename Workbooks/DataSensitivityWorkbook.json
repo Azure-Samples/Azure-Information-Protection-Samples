@@ -276,7 +276,7 @@
             "type": 3,
             "content": {
               "version": "KqlItem/1.0",
-              "query": "let MostRecentScanLogs = PurviewDataSensitivityLogs\r\n| where ActivityType == \"Classification\" \r\n| where SourceType contains \"Azure\"\r\n| extend ResourceType = iff(SourceType==\"Azure\", \"Storage account\", \"Amazon S3\")\r\n| summarize arg_max( AssetLastScanTime, *) by AssetPath, ActivityType;\r\n\r\nlet Sources = MostRecentScanLogs\r\n| summarize count() by SourceName, ResourceType;\r\n\r\nlet SourcesCount = Sources\r\n| summarize ResourcesCount = count() by ResourceType;\r\n\r\nlet Assets = MostRecentScanLogs\r\n| summarize AssetCount = count() by ResourceType;\r\n\r\nlet ClassifiedAssets = MostRecentScanLogs\r\n| where Classification != \"[]\"\r\n| summarize AssetClassifiedCount = count() by ResourceType;\r\n\r\nlet ClassifiedAssetsByResourceType = Assets\r\n| join kind= leftouter ClassifiedAssets on ResourceType\r\n| extend ClassifiedPercentage = round((100.0 * AssetClassifiedCount / AssetCount),2)\r\n| join kind= leftouter SourcesCount on ResourceType\r\n| project ResourceType, ResourcesCount, AssetCount, AssetClassifiedCount, ClassifiedPercentage;\r\n\r\nClassifiedAssetsByResourceType\r\n\r\n",
+              "query": "let MostRecentScanLogs = PurviewDataSensitivityLogs\r\n| where ActivityType == \"Classification\" \r\n| where SourceType contains \"Azure\"\r\n| extend ResourceType = iff(SourceType contains \"Azure\", \"Storage account\", \"Amazon S3\")\r\n| summarize arg_max( AssetLastScanTime, *) by AssetPath, ActivityType;\r\n\r\nlet Sources = MostRecentScanLogs\r\n| summarize count() by SourceName, ResourceType;\r\n\r\nlet SourcesCount = Sources\r\n| summarize ResourcesCount = count() by ResourceType;\r\n\r\nlet Assets = MostRecentScanLogs\r\n| summarize AssetCount = count() by ResourceType;\r\n\r\nlet ClassifiedAssets = MostRecentScanLogs\r\n| where Classification != \"[]\"\r\n| summarize AssetClassifiedCount = count() by ResourceType;\r\n\r\nlet ClassifiedAssetsByResourceType = Assets\r\n| join kind= leftouter ClassifiedAssets on ResourceType\r\n| extend ClassifiedPercentage = round((100.0 * AssetClassifiedCount / AssetCount),2)\r\n| join kind= leftouter SourcesCount on ResourceType\r\n| project ResourceType, ResourcesCount, AssetCount, AssetClassifiedCount, ClassifiedPercentage;\r\n\r\nClassifiedAssetsByResourceType\r\n\r\n",
               "size": 3,
               "timeContext": {
                 "durationMs": 0
@@ -415,7 +415,7 @@
             "type": 3,
             "content": {
               "version": "KqlItem/1.0",
-              "query": "let ResourcebyRegion = PurviewDataSensitivityLogs\r\n| where ActivityType == \"Classification\" \r\n| where SourceType contains \"Azure\"\r\n| extend ResourceType = iff(SourceType==\"AzureBlob\", \"Storage account\", \"Amazon S3\")\r\n| summarize arg_max( AssetLastScanTime, *) by AssetPath, ActivityType\r\n| distinct SourcePath, SourceRegion\r\n| summarize AssetCount = count() by SourceRegion;\r\n\r\nResourcebyRegion",
+              "query": "let ResourcebyRegion = PurviewDataSensitivityLogs\r\n| where ActivityType == \"Classification\" \r\n| where SourceType contains \"Azure\"\r\n| extend ResourceType = iff(SourceType contains \"Azure\", \"Storage account\", \"Amazon S3\")\r\n| summarize arg_max( AssetLastScanTime, *) by AssetPath, ActivityType\r\n| distinct SourcePath, SourceRegion\r\n| summarize AssetCount = count() by SourceRegion;\r\n\r\nResourcebyRegion",
               "size": 0,
               "title": "Resource region",
               "timeContext": {
@@ -590,6 +590,7 @@
         "groupType": "editable",
         "title": "Amazon",
         "expandable": true,
+        "expanded": true,
         "loadType": "always",
         "items": [
           {
@@ -608,7 +609,7 @@
             "type": 3,
             "content": {
               "version": "KqlItem/1.0",
-              "query": "let MostRecentScanLogs = PurviewDataSensitivityLogs\r\n| where ActivityType == \"Classification\" \r\n| where SourceType contains \"Amazon\"\r\n| extend ResourceType = iff(SourceType==\"Azure\", \"Storage account\", \"Amazon S3\")\r\n| summarize arg_max( AssetLastScanTime, *) by AssetPath, ActivityType;\r\n\r\nlet Sources = MostRecentScanLogs\r\n| summarize count() by SourceName, ResourceType;\r\n\r\nlet SourcesCount = Sources\r\n| summarize ResourcesCount = count() by ResourceType;\r\n\r\nlet Assets = MostRecentScanLogs\r\n| summarize AssetCount = count() by ResourceType;\r\n\r\nlet ClassifiedAssets = MostRecentScanLogs\r\n| where Classification != \"[]\"\r\n| summarize AssetClassifiedCount = count() by ResourceType;\r\n\r\nlet ClassifiedAssetsByResourceType = Assets\r\n| join kind= leftouter ClassifiedAssets on ResourceType\r\n| extend ClassifiedPercentage = round((100.0 * AssetClassifiedCount / AssetCount),2)\r\n| join kind= leftouter SourcesCount on ResourceType\r\n| project ResourceType, ResourcesCount, AssetCount, AssetClassifiedCount, ClassifiedPercentage;\r\n\r\nClassifiedAssetsByResourceType\r\n\r\n",
+              "query": "let MostRecentScanLogs = PurviewDataSensitivityLogs\r\n| where ActivityType == \"Classification\" \r\n| where SourceType contains \"Amazon\"\r\n| extend ResourceType = iff(SourceType contains \"Azure\", \"Storage account\", \"Amazon S3\")\r\n| summarize arg_max( AssetLastScanTime, *) by AssetPath, ActivityType;\r\n\r\nlet Sources = MostRecentScanLogs\r\n| summarize count() by SourceName, ResourceType;\r\n\r\nlet SourcesCount = Sources\r\n| summarize ResourcesCount = count() by ResourceType;\r\n\r\nlet Assets = MostRecentScanLogs\r\n| summarize AssetCount = count() by ResourceType;\r\n\r\nlet ClassifiedAssets = MostRecentScanLogs\r\n| where Classification != \"[]\"\r\n| summarize AssetClassifiedCount = count() by ResourceType;\r\n\r\nlet ClassifiedAssetsByResourceType = Assets\r\n| join kind= leftouter ClassifiedAssets on ResourceType\r\n| extend ClassifiedPercentage = round((100.0 * AssetClassifiedCount / AssetCount),2)\r\n| join kind= leftouter SourcesCount on ResourceType\r\n| project ResourceType, ResourcesCount, AssetCount, AssetClassifiedCount, ClassifiedPercentage;\r\n\r\nClassifiedAssetsByResourceType\r\n\r\n",
               "size": 3,
               "noDataMessage": "Scan AWS resources to populate query. If no AWS resources located in data estate, delete this query.",
               "timeContext": {
@@ -748,7 +749,7 @@
             "type": 3,
             "content": {
               "version": "KqlItem/1.0",
-              "query": "let ResourcebyRegion = PurviewDataSensitivityLogs\r\n| where ActivityType == \"Classification\" \r\n| where SourceType contains \"Amazon\"\r\n| extend ResourceType = iff(SourceType==\"Azure\", \"Storage account\", \"Amazon S3\")\r\n| summarize arg_max( AssetLastScanTime, *) by AssetPath, ActivityType\r\n| distinct SourcePath, SourceRegion\r\n| summarize AssetCount = count() by SourceRegion;\r\n\r\nResourcebyRegion",
+              "query": "let ResourcebyRegion = PurviewDataSensitivityLogs\r\n| where ActivityType == \"Classification\" \r\n| where SourceType contains \"Amazon\"\r\n| extend ResourceType = iff(SourceType contains \"Azure\", \"Storage account\", \"Amazon S3\")\r\n| summarize arg_max( AssetLastScanTime, *) by AssetPath, ActivityType\r\n| distinct SourcePath, SourceRegion\r\n| summarize AssetCount = count() by SourceRegion;\r\n\r\nResourcebyRegion",
               "size": 0,
               "title": "Resource region",
               "noDataMessage": "Scan AWS resources to populate query. If no AWS resources located in data estate, delete this query.",
