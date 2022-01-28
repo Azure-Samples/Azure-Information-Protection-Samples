@@ -71,8 +71,8 @@
             "quote": "'",
             "delimiter": ",",
             "value": [
-              "Amazon",
-              "Azure"
+              "Azure",
+              "Amazon"
             ],
             "typeSettings": {
               "additionalResourceOptions": [],
@@ -460,7 +460,7 @@
               "size": 4,
               "title": "Top sensitivity labels found",
               "timeContext": {
-                "durationMs": 0
+                "durationMs": 2592000000
               },
               "timeContextFromParameter": "Time",
               "queryType": 0,
@@ -1434,14 +1434,14 @@
             "type": 3,
             "content": {
               "version": "KqlItem/1.0",
-              "query": "let SensitivityLabels = PurviewDataSensitivityLogs\r\n| where ActivityType == \"Labeling\" \r\n| where \"{DataSource:label}\" == \"All\" or SourceType in~ (split(\"{DataSource:label}\", \", \"))\r\n| where \"{Region:label}\" == \"All\" or SourceRegion in~ (split(\"{Region:label}\", \", \"))\r\n| extend CloudProvider1 = iff((SourceType contains \"Amazon\"), \"Amazon\", SourceType)\r\n| extend CloudProvider = iff((SourceType contains \"Azure\"), \"Azure\", CloudProvider1)\r\n| where CloudProvider in (split(\"{CloudProvider:label}\", \", \"))\r\n| extend ResourceType = iff(SourceType contains \"Azure\", \"Storage accounts\", \"Amazon S3\")\r\n| extend newSensitivityLabel = iff(SensitivityLabel[0] == \"\", \"No Label\", SensitivityLabel[0])\r\n| summarize arg_max( AssetLastScanTime, *) by AssetPath, ActivityType \r\n| summarize AssetCount = count() by newSensitivityLabel\r\n| sort by AssetCount;\r\n\r\nSensitivityLabels\r\n\r\n",
+              "query": "let SensitivityLabels = PurviewDataSensitivityLogs\r\n| where ActivityType == \"Labeling\" \r\n| where \"{DataSource:label}\" == \"All\" or SourceType in~ (split(\"{DataSource:label}\", \", \"))\r\n| where \"{Region:label}\" == \"All\" or SourceRegion in~ (split(\"{Region:label}\", \", \"))\r\n| extend CloudProvider1 = iff((SourceType contains \"Amazon\"), \"Amazon\", SourceType)\r\n| extend CloudProvider = iff((SourceType contains \"Azure\"), \"Azure\", CloudProvider1)\r\n| where CloudProvider in (split(\"{CloudProvider:label}\", \", \"))\r\n| extend ResourceType = iff(SourceType contains \"Azure\", \"Storage accounts\", \"Amazon S3\")\r\n| extend newSensitivityLabel = iff(SensitivityLabel[0] == \"\", \"No Label\", SensitivityLabel[0])\r\n| extend Label = replace(@\"\\\\\", \"/\", newSensitivityLabel)\r\n| summarize arg_max( AssetLastScanTime, *) by AssetPath, ActivityType \r\n| summarize AssetCount = count() by newSensitivityLabel, Label\r\n| sort by AssetCount;\r\n\r\nSensitivityLabels\r\n\r\n",
               "size": 0,
               "title": "Sensitivity Labels",
               "timeContext": {
-                "durationMs": 2592000000
+                "durationMs": 0
               },
               "timeContextFromParameter": "Time",
-              "exportFieldName": "newSensitivityLabel",
+              "exportFieldName": "Label",
               "exportParameterName": "UserSelectedLabel",
               "exportDefaultValue": "All",
               "queryType": 0,
@@ -1507,11 +1507,11 @@
             "type": 3,
             "content": {
               "version": "KqlItem/1.0",
-              "query": "PurviewDataSensitivityLogs\r\n| where ActivityType == \"Labeling\" \r\n| where \"{DataSource:label}\" == \"All\" or SourceType in~ (split(\"{DataSource:label}\", \", \"))\r\n| where \"{Region:label}\" == \"All\" or SourceRegion in~ (split(\"{Region:label}\", \", \"))\r\n| extend CloudProvider1 = iff((SourceType contains \"Amazon\"), \"Amazon\", SourceType)\r\n| extend CloudProvider = iff((SourceType contains \"Azure\"), \"Azure\", CloudProvider1)\r\n| where CloudProvider in (split(\"{CloudProvider:label}\", \", \"))\r\n| extend ResourceType = iff(SourceType contains \"Azure\", \"Storage accounts\", \"Amazon S3\")\r\n| extend SensitivityLabel = iff(SensitivityLabel[0] == \"\", \"No Label\", SensitivityLabel[0])\r\n| where \"{UserSelectedLabel:label}\" == \"All\" or \"{UserSelectedLabel:label}\" == SensitivityLabel\r\n| summarize arg_max( AssetLastScanTime, *) by AssetPath, ActivityType\r\n| project TimeGenerated, PurviewTenantId, PurviewAccountName, PurviewRegion, AssetLastScanTime, AssetName, AssetPath, AssetType, AssetCreationTime, AssetModifiedTime, FileExtension, FileSize, ActivityType, SensitivityLabelTrigger, SensitivityLabel, SensitivityLabelDetails, SourceName, SourceType, SourcePath, SourceSubscriptionId, SourceRegion, SourceCollectionName, SourceScanId\r\n| sort by AssetLastScanTime desc",
+              "query": "PurviewDataSensitivityLogs\r\n| where ActivityType == \"Labeling\" \r\n| where \"{DataSource:label}\" == \"All\" or SourceType in~ (split(\"{DataSource:label}\", \", \"))\r\n| where \"{Region:label}\" == \"All\" or SourceRegion in~ (split(\"{Region:label}\", \", \"))\r\n| extend CloudProvider1 = iff((SourceType contains \"Amazon\"), \"Amazon\", SourceType)\r\n| extend CloudProvider = iff((SourceType contains \"Azure\"), \"Azure\", CloudProvider1)\r\n| where CloudProvider in (split(\"{CloudProvider:label}\", \", \"))\r\n| extend ResourceType = iff(SourceType contains \"Azure\", \"Storage accounts\", \"Amazon S3\")\r\n| extend SensitivityLabel = iff(SensitivityLabel[0] == \"\", \"No Label\", SensitivityLabel[0])\r\n| extend Label = replace(@\"\\\\\", \"/\", SensitivityLabel)\r\n| where \"{UserSelectedLabel:label}\" == \"All\" or \"{UserSelectedLabel:label}\" == Label\r\n| summarize arg_max( AssetLastScanTime, *) by AssetPath, ActivityType\r\n| project TimeGenerated, PurviewTenantId, PurviewAccountName, PurviewRegion, AssetLastScanTime, AssetName, AssetPath, AssetType, AssetCreationTime, AssetModifiedTime, FileExtension, FileSize, ActivityType, SensitivityLabelTrigger, SensitivityLabel, SensitivityLabelDetails, SourceName, SourceType, SourcePath, SourceSubscriptionId, SourceRegion, SourceCollectionName, SourceScanId\r\n| sort by AssetLastScanTime desc",
               "size": 0,
               "title": "Sensitivity Labels Drilldown- Asset Level",
               "timeContext": {
-                "durationMs": 2592000000
+                "durationMs": 0
               },
               "timeContextFromParameter": "Time",
               "queryType": 0,
@@ -2254,7 +2254,7 @@
         "size": 0,
         "title": "Asset Drilldown",
         "timeContext": {
-          "durationMs": 0
+          "durationMs": 2592000000
         },
         "timeContextFromParameter": "Time",
         "queryType": 0,
