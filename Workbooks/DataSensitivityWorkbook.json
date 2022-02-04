@@ -5,6 +5,9 @@
       "type": 9,
       "content": {
         "version": "KqlParameterItem/1.0",
+        "crossComponentResources": [
+          "{Workspace}"
+        ],
         "parameters": [
           {
             "id": "bd13d665-f86b-49f2-b081-4eaed3a7674d",
@@ -93,9 +96,6 @@
             "crossComponentResources": [
               "{Workspace}"
             ],
-            "value": [
-              "value::all"
-            ],
             "typeSettings": {
               "additionalResourceOptions": [
                 "value::all"
@@ -118,7 +118,7 @@
             "multiSelect": true,
             "quote": "'",
             "delimiter": ",",
-            "query": "PurviewDataSensitivityLogs\r\n| where SourceRegion != \"\"\r\n| summarize arg_max(TimeGenerated, *) by SourceRegion\r\n| project SourceRegion",
+            "query": "PurviewDataSensitivityLogs\r\n| distinct SourceRegion",
             "crossComponentResources": [
               "{Workspace}"
             ],
@@ -134,10 +134,7 @@
             "timeContextFromParameter": "Time",
             "defaultValue": "value::all",
             "queryType": 0,
-            "resourceType": "microsoft.operationalinsights/workspaces",
-            "value": [
-              "value::all"
-            ]
+            "resourceType": "microsoft.operationalinsights/workspaces"
           }
         ],
         "style": "pills",
@@ -278,6 +275,7 @@
               "version": "KqlItem/1.0",
               "query": "let MostRecentScanLogs = PurviewDataSensitivityLogs\r\n| where ActivityType == \"Classification\" \r\n| where SourceType contains \"Azure\"\r\n| extend ResourceType = iff(SourceType contains \"Azure\", \"Storage account\", \"Amazon S3\")\r\n| summarize arg_max( AssetLastScanTime, *) by AssetPath, ActivityType;\r\n\r\nlet Sources = MostRecentScanLogs\r\n| summarize count() by SourceName, ResourceType;\r\n\r\nlet SourcesCount = Sources\r\n| summarize ResourcesCount = count() by ResourceType;\r\n\r\nlet Assets = MostRecentScanLogs\r\n| summarize AssetCount = count() by ResourceType;\r\n\r\nlet ClassifiedAssets = MostRecentScanLogs\r\n| where Classification != \"[]\"\r\n| summarize AssetClassifiedCount = count() by ResourceType;\r\n\r\nlet ClassifiedAssetsByResourceType = Assets\r\n| join kind= leftouter ClassifiedAssets on ResourceType\r\n| extend ClassifiedPercentage = round((100.0 * AssetClassifiedCount / AssetCount),2)\r\n| join kind= leftouter SourcesCount on ResourceType\r\n| project ResourceType, ResourcesCount, AssetCount, AssetClassifiedCount, ClassifiedPercentage;\r\n\r\nClassifiedAssetsByResourceType\r\n\r\n",
               "size": 3,
+              "noDataMessage": "No Azure data found within the time range. ",
               "timeContext": {
                 "durationMs": 2592000000
               },
@@ -418,6 +416,7 @@
               "query": "let ResourcebyRegion = PurviewDataSensitivityLogs\r\n| where ActivityType == \"Classification\" \r\n| where SourceType contains \"Azure\"\r\n| extend ResourceType = iff(SourceType contains \"Azure\", \"Storage account\", \"Amazon S3\")\r\n| summarize arg_max( AssetLastScanTime, *) by AssetPath, ActivityType\r\n| distinct SourcePath, SourceRegion\r\n| summarize AssetCount = count() by SourceRegion;\r\n\r\nResourcebyRegion",
               "size": 0,
               "title": "Resource region",
+              "noDataMessage": "No Azure data found within the time range. ",
               "timeContext": {
                 "durationMs": 2592000000
               },
@@ -459,6 +458,7 @@
               "query": "let SensitivityLabels = PurviewDataSensitivityLogs\r\n| where ActivityType == \"Labeling\" \r\n| where SourceType contains \"Azure\"\r\n| extend newSensitivityLabel = iff(SensitivityLabel[0] == \"\", \"No Label\", SensitivityLabel[0])\r\n| summarize arg_max( AssetLastScanTime, *) by AssetPath, ActivityType\r\n| summarize AssetCount = count() by newSensitivityLabel\r\n| top 4 by AssetCount;\r\n\r\n\r\nSensitivityLabels",
               "size": 4,
               "title": "Top sensitivity labels found",
+              "noDataMessage": "No Azure data found within the time range. ",
               "timeContext": {
                 "durationMs": 2592000000
               },
@@ -509,6 +509,7 @@
               "query": "let Classifications = PurviewDataSensitivityLogs\r\n| where ActivityType == \"Classification\"\r\n| where SourceType contains \"Azure\"\r\n| summarize arg_max( AssetLastScanTime, *) by AssetPath, ActivityType\r\n| extend classifications = split(Classification, ',')\r\n| mv-expand classifications\r\n| extend Classification = trim(@\"[^\\w]+\", tostring(classifications))\r\n| where Classification != \"\"\r\n| summarize AssetCount = count() by Classification\r\n| project Classification, AssetCount\r\n| top 4 by AssetCount;\r\n\r\nClassifications",
               "size": 1,
               "title": "Top classifications found",
+              "noDataMessage": "No Azure data found within the time range. ",
               "timeContext": {
                 "durationMs": 2592000000
               },
@@ -611,7 +612,7 @@
               "version": "KqlItem/1.0",
               "query": "let MostRecentScanLogs = PurviewDataSensitivityLogs\r\n| where ActivityType == \"Classification\" \r\n| where SourceType contains \"Amazon\"\r\n| extend ResourceType = iff(SourceType contains \"Azure\", \"Storage account\", \"Amazon S3\")\r\n| summarize arg_max( AssetLastScanTime, *) by AssetPath, ActivityType;\r\n\r\nlet Sources = MostRecentScanLogs\r\n| summarize count() by SourceName, ResourceType;\r\n\r\nlet SourcesCount = Sources\r\n| summarize ResourcesCount = count() by ResourceType;\r\n\r\nlet Assets = MostRecentScanLogs\r\n| summarize AssetCount = count() by ResourceType;\r\n\r\nlet ClassifiedAssets = MostRecentScanLogs\r\n| where Classification != \"[]\"\r\n| summarize AssetClassifiedCount = count() by ResourceType;\r\n\r\nlet ClassifiedAssetsByResourceType = Assets\r\n| join kind= leftouter ClassifiedAssets on ResourceType\r\n| extend ClassifiedPercentage = round((100.0 * AssetClassifiedCount / AssetCount),2)\r\n| join kind= leftouter SourcesCount on ResourceType\r\n| project ResourceType, ResourcesCount, AssetCount, AssetClassifiedCount, ClassifiedPercentage;\r\n\r\nClassifiedAssetsByResourceType\r\n\r\n",
               "size": 3,
-              "noDataMessage": "Scan AWS resources to populate query. If no AWS resources located in data estate, delete this query.",
+              "noDataMessage": "No Amazon data found within the time range. ",
               "timeContext": {
                 "durationMs": 2592000000
               },
@@ -752,7 +753,7 @@
               "query": "let ResourcebyRegion = PurviewDataSensitivityLogs\r\n| where ActivityType == \"Classification\" \r\n| where SourceType contains \"Amazon\"\r\n| extend ResourceType = iff(SourceType contains \"Azure\", \"Storage account\", \"Amazon S3\")\r\n| summarize arg_max( AssetLastScanTime, *) by AssetPath, ActivityType\r\n| distinct SourcePath, SourceRegion\r\n| summarize SourceCount = count() by SourceRegion;\r\n\r\nResourcebyRegion",
               "size": 0,
               "title": "Resource region",
-              "noDataMessage": "Scan AWS resources to populate query. If no AWS resources located in data estate, delete this query.",
+              "noDataMessage": "No Amazon data found within the time range. ",
               "timeContext": {
                 "durationMs": 2592000000
               },
@@ -794,7 +795,7 @@
               "query": "let SensitivityLabels = PurviewDataSensitivityLogs\r\n| where ActivityType == \"Labeling\" \r\n| where SourceType contains \"Amazon\"\r\n| extend newSensitivityLabel = iff(SensitivityLabel[0] == \"\", \"No Label\", SensitivityLabel[0])\r\n| summarize arg_max( AssetLastScanTime, *) by AssetPath, ActivityType \r\n| summarize AssetCount = count() by newSensitivityLabel\r\n| top 4 by AssetCount;\r\n\r\n\r\nSensitivityLabels",
               "size": 4,
               "title": "Top sensitivity labels found",
-              "noDataMessage": "Scan AWS resources to populate query. If no AWS resources located in data estate, delete this query.",
+              "noDataMessage": "No Amazon data found within the time range. ",
               "timeContext": {
                 "durationMs": 2592000000
               },
@@ -845,7 +846,7 @@
               "query": "let Classifications = PurviewDataSensitivityLogs\r\n| where ActivityType == \"Classification\"\r\n| where SourceType contains \"Amazon\"\r\n| summarize arg_max( AssetLastScanTime, *) by AssetPath, ActivityType\r\n| extend classifications = split(Classification, ',')\r\n| mv-expand classifications\r\n| extend Classification = trim(@\"[^\\w]+\", tostring(classifications))\r\n| where Classification != \"\"\r\n| summarize AssetCount = count() by Classification\r\n| project Classification, AssetCount\r\n| top 4 by AssetCount;\r\n\r\nClassifications",
               "size": 1,
               "title": "Top classifications found",
-              "noDataMessage": "Scan AWS resources to populate query. If no AWS resources located in data estate, delete this query.",
+              "noDataMessage": "No Amazon data found within the time range. ",
               "timeContext": {
                 "durationMs": 2592000000
               },
@@ -1068,7 +1069,7 @@
               "size": 0,
               "showAnalytics": true,
               "timeContext": {
-                "durationMs": 604800000
+                "durationMs": 2592000000
               },
               "timeContextFromParameter": "Time",
               "showRefreshButton": true,
@@ -1171,7 +1172,7 @@
               "size": 0,
               "showAnalytics": true,
               "timeContext": {
-                "durationMs": 604800000
+                "durationMs": 0
               },
               "timeContextFromParameter": "Time",
               "showRefreshButton": true,
@@ -1308,12 +1309,12 @@
                     "formatter": 5
                   }
                 ],
-                "rowLimit": 1000,
+                "rowLimit": 10000,
                 "filter": true,
                 "hierarchySettings": {
                   "treeType": 1,
                   "groupBy": [
-                    "SourceName"
+                    "SourcePath"
                   ]
                 },
                 "sortBy": [
@@ -1438,7 +1439,7 @@
               "size": 0,
               "title": "Sensitivity Labels",
               "timeContext": {
-                "durationMs": 604800000
+                "durationMs": 2592000000
               },
               "timeContextFromParameter": "Time",
               "exportFieldName": "Label",
@@ -1511,7 +1512,7 @@
               "size": 0,
               "title": "Sensitivity Labels Drilldown- Asset Level",
               "timeContext": {
-                "durationMs": 604800000
+                "durationMs": 2592000000
               },
               "timeContextFromParameter": "Time",
               "queryType": 0,
@@ -1651,7 +1652,7 @@
                 "hierarchySettings": {
                   "treeType": 1,
                   "groupBy": [
-                    "SourceName"
+                    "SourcePath"
                   ]
                 },
                 "labelSettings": [
@@ -2069,7 +2070,7 @@
             "multiSelect": true,
             "quote": "'",
             "delimiter": ",",
-            "query": "PurviewDataSensitivityLogs\r\n| summarize by SourcePath\r\n| project SourcePath",
+            "query": "PurviewDataSensitivityLogs\r\n| distinct SourcePath",
             "crossComponentResources": [
               "{Workspace}"
             ],
@@ -2085,7 +2086,10 @@
             "timeContextFromParameter": "Time",
             "defaultValue": "value::all",
             "queryType": 0,
-            "resourceType": "microsoft.operationalinsights/workspaces"
+            "resourceType": "microsoft.operationalinsights/workspaces",
+            "value": [
+              "value::all"
+            ]
           },
           {
             "id": "a9d75fe2-c2a8-4603-a78c-aaab104eedf5",
@@ -2095,12 +2099,9 @@
             "multiSelect": true,
             "quote": "'",
             "delimiter": ",",
-            "query": "PurviewDataSensitivityLogs\r\n| where ActivityType == \"Classification\"\r\n| summarize arg_max(TimeGenerated, Classification, FileSize, AssetType) by AssetPath \r\n| extend classifications = split(Classification, ',')\r\n| mv-expand classifications\r\n| extend Classification = trim(@\"[^\\w]+\", tostring(classifications))\r\n| where Classification != \"\"\r\n| summarize by Classification\r\n| sort by Classification asc",
+            "query": "PurviewDataSensitivityLogs\r\n| where ActivityType == \"Classification\"\r\n| where Classification != \"[]\"\r\n| extend classifications = split(Classification, ',')\r\n| mv-expand classifications\r\n| extend Classification = trim(@\"[^\\w]+\", tostring(classifications))\r\n| distinct Classification\r\n| sort by Classification asc",
             "crossComponentResources": [
               "{Workspace}"
-            ],
-            "value": [
-              "value::all"
             ],
             "typeSettings": {
               "additionalResourceOptions": [
@@ -2116,67 +2117,11 @@
             "resourceType": "microsoft.operationalinsights/workspaces"
           },
           {
-            "id": "cdb167c0-786f-458a-978a-1956df8953b0",
-            "version": "KqlParameterItem/1.0",
-            "name": "Label",
-            "type": 2,
-            "multiSelect": true,
-            "quote": "'",
-            "delimiter": ",",
-            "query": "PurviewDataSensitivityLogs\r\n| where ActivityType == \"Labeling\"\r\n| mv-expand SensitivityLabel to typeof(string)\r\n| where SensitivityLabel != \"\"\r\n| summarize by SensitivityLabel\r\n| project SensitivityLabel",
-            "crossComponentResources": [
-              "{Workspace}"
-            ],
-            "typeSettings": {
-              "additionalResourceOptions": [
-                "value::all"
-              ],
-              "showDefault": false
-            },
-            "timeContext": {
-              "durationMs": 2592000000
-            },
-            "defaultValue": "value::all",
-            "queryType": 0,
-            "resourceType": "microsoft.operationalinsights/workspaces",
-            "value": [
-              "value::all"
-            ]
-          },
-          {
-            "id": "a91d7359-42d9-4cda-a9bb-5b111b8d6d72",
-            "version": "KqlParameterItem/1.0",
-            "name": "PurviewAccount",
-            "type": 2,
-            "multiSelect": true,
-            "quote": "'",
-            "delimiter": ",",
-            "query": "PurviewDataSensitivityLogs\r\n| summarize by PurviewAccountName\r\n| project PurviewAccountName",
-            "crossComponentResources": [
-              "{Workspace}"
-            ],
-            "typeSettings": {
-              "additionalResourceOptions": [
-                "value::all"
-              ]
-            },
-            "timeContext": {
-              "durationMs": 0
-            },
-            "timeContextFromParameter": "Time",
-            "defaultValue": "value::all",
-            "queryType": 0,
-            "resourceType": "microsoft.operationalinsights/workspaces",
-            "value": [
-              "value::all"
-            ]
-          },
-          {
             "id": "f39fb857-18e7-41d0-9012-30a05b8578f2",
             "version": "KqlParameterItem/1.0",
             "name": "LastScanTime",
             "type": 2,
-            "query": "PurviewDataSensitivityLogs\r\n| where AssetLastScanTime != \"\"\r\n| extend formattedLastScanTime = format_datetime(AssetLastScanTime, 'M/d/yyyy')\r\n| summarize by formattedLastScanTime\r\n| project formattedLastScanTime ",
+            "query": "PurviewDataSensitivityLogs\r\n| where AssetLastScanTime != \"\"\r\n| extend formattedLastScanTime = format_datetime(AssetLastScanTime, 'M/d/yyyy')\r\n| distinct formattedLastScanTime",
             "crossComponentResources": [
               "{Workspace}"
             ],
@@ -2250,11 +2195,11 @@
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
-        "query": "let classifiedAssets = PurviewDataSensitivityLogs\r\n| where ActivityType == \"Classification\" \r\n| extend LastScanTime = format_datetime(AssetLastScanTime, 'M/d/yyyy')\r\n| where \"{LastScanTime:label}\" == \"Any one\" or \"{LastScanTime:label}\" == LastScanTime\r\n| where \"{DataSource:label}\" == \"All\" or SourceType in~ (split(\"{DataSource:label}\", \", \"))\r\n| where \"{Region:label}\" == \"All\" or SourceRegion in~ (split(\"{Region:label}\", \", \"))\r\n| where \"{PurviewAccount:label}\" == \"All\" or PurviewAccountName in~ (split(\"{PurviewAccount:label}\", \", \"))\r\n| where \"{Subscription:label}\" == \"All\" or SourceSubscriptionId in~ (split(\"{Subscription:label}\", \", \"))\r\n| extend CloudProvider = iff((SourceType contains \"Azure\"), \"Azure\", \"Amazon Web Services\")\r\n| where \"{DataSource:label}\" == \"All\" or SourceType in~ (split(\"{DataSource:label}\", \", \"))\r\n| where \"{Region:label}\" == \"All\" or SourceRegion in~ (split(\"{Region:label}\", \", \"))\r\n| extend CloudProvider1 = iff((SourceType contains \"Amazon\"), \"Amazon\", SourceType)\r\n| extend CloudProvider = iff((SourceType contains \"Azure\"), \"Azure\", CloudProvider1)\r\n| where CloudProvider in (split(\"{CloudProvider:label}\", \", \"))\r\n| extend ResourceType = iff(SourceType contains \"Azure\", \"Storage accounts\", \"Amazon S3\")\r\n| where \"{Resource:label}\" == \"All\" or SourceType in (split(\"{Resource:label}\", \", \"))\r\n| where \"{Classification:label}\" == \"All\" or set_intersect(Classification, split(\"{Classification:label}\", \", \"))!=\"[]\"\r\n| extend AssetLastScanTime = format_datetime(AssetLastScanTime, 'M/d/yyyy')\r\n| summarize arg_max( AssetLastScanTime, *) by AssetPath, ActivityType\r\n| project TimeGenerated, PurviewTenantId, PurviewAccountName, PurviewRegion, AssetName, AssetPath, AssetType, AssetCreationTime, AssetModifiedTime, AssetLastScanTime, FileExtension, FileSize, ActivityType, ClassificationTrigger, Classification, ClassificationDetails, SensitivityLabelTrigger, SensitivityLabel, SensitivityLabelDetails, SourceName, SourceType, SourcePath, SourceSubscriptionId, SourceRegion, SourceCollectionName, SourceScanId;\r\n\r\nlet labeledAssets = PurviewDataSensitivityLogs\r\n| where ActivityType == \"Labeling\"  \r\n| where \"{DataSource:label}\" == \"All\" or SourceType in~ (split(\"{DataSource:label}\", \", \"))\r\n| where \"{Region:label}\" == \"All\" or SourceRegion in~ (split(\"{Region:label}\", \", \"))\r\n| where \"{DataSource:label}\" == \"All\" or SourceType in~ (split(\"{DataSource:label}\", \", \"))\r\n| where \"{Region:label}\" == \"All\" or SourceRegion in~ (split(\"{Region:label}\", \", \"))\r\n| extend CloudProvider1 = iff((SourceType contains \"Amazon\"), \"Amazon\", SourceType)\r\n| extend CloudProvider = iff((SourceType contains \"Azure\"), \"Azure\", CloudProvider1)\r\n| where CloudProvider in (split(\"{CloudProvider:label}\", \", \"))\r\n| extend ResourceType = iff(SourceType contains \"Azure\", \"Storage accounts\", \"Amazon S3\")\r\n| where \"{Resource:label}\" == \"All\" or SourcePath in (split(\"{Resource:label}\", \", \"))\r\n| where \"{PurviewAccount:label}\" == \"All\" or PurviewAccountName in~ (split(\"{PurviewAccount:label}\", \", \"))\r\n| where \"{Subscription:label}\" == \"All\" or SourceSubscriptionId in~ (split(\"{Subscription:label}\", \", \"))\r\n| mv-expand SensitivityLabel to typeof(string)\r\n| mv-expand SensitivityLabelDetails to typeof(string)\r\n| summarize arg_max( AssetLastScanTime, *) by AssetPath, ActivityType\r\n| project AssetPath, SensitivityLabel, SensitivityLabelDetails, SensitivityLabelTrigger;\r\n\r\nlet table = labeledAssets\r\n| join kind= fullouter classifiedAssets on AssetPath\r\n| extend Classification = iff((Classification == \"[]\"), \"No Classifications\", Classification)\r\n| where \"{Label:label}\" == \"All\" or (split(\"{Label:label}\", \", \")) contains SensitivityLabel\r\n| where AssetName != \"\"\r\n| project TimeGenerated, PurviewTenantId, PurviewAccountName, PurviewRegion, AssetLastScanTime, AssetName, AssetPath, AssetType, AssetCreationTime, AssetModifiedTime, FileExtension, FileSize, ActivityType, ClassificationTrigger, Classification, ClassificationDetails, SensitivityLabelTrigger, SensitivityLabel, SensitivityLabelDetails, SourceName, SourceType, SourcePath, SourceSubscriptionId, SourceRegion, SourceCollectionName, SourceScanId;\r\n\r\ntable",
+        "query": "let filteredData = PurviewDataSensitivityLogs\r\n    | where ActivityType == \"Classification\"\r\n    | extend LastScanTime = format_datetime(AssetLastScanTime, 'M/d/yyyy')\r\n    | where \"{LastScanTime:label}\" == \"Any one\" or \"{LastScanTime:label}\" == LastScanTime\r\n    | where \"{DataSource:label}\" == \"All\" or SourceType in~ (split(\"{DataSource:label}\", \", \"))\r\n    | where \"{Region:label}\" == \"All\" or SourceRegion in~ (split(\"{Region:label}\", \", \"))\r\n    | where \"{Subscription:label}\" == \"All\" or SourceSubscriptionId in~ (split(\"{Subscription:label}\", \", \"))\r\n    | extend CloudProvider = iff((SourceType contains \"Azure\"), \"Azure\", \"Amazon Web Services\")\r\n    | where \"{DataSource:label}\" == \"All\" or SourceType in~ (split(\"{DataSource:label}\", \", \"))\r\n    | where \"{Region:label}\" == \"All\" or SourceRegion in~ (split(\"{Region:label}\", \", \"))\r\n    | extend CloudProvider1 = iff((SourceType contains \"Amazon\"), \"Amazon\", SourceType)\r\n    | extend CloudProvider = iff((SourceType contains \"Azure\"), \"Azure\", CloudProvider1)\r\n    | where CloudProvider in (split(\"{CloudProvider:label}\", \", \"))\r\n    | extend ResourceType = iff(SourceType contains \"Azure\", \"Storage accounts\", \"Amazon S3\")\r\n    | where \"{Resource:label}\" == \"All\" or SourcePath in (split(\"{Resource:label}\", \", \"))\r\n    | where \"{Classification:label}\" == \"All\" or set_intersect(Classification, split(\"{Classification:label}\", \", \"))!=\"[]\"\r\n    | where AssetName != \"\"\r\n    | take 30000\r\n    | summarize arg_max(AssetLastScanTime, *) by AssetPath\r\n    | extend Classification = iff((Classification == \"[]\"), \"No Classifications\", Classification)\r\n    | project\r\n        TimeGenerated,\r\n        PurviewTenantId,\r\n        PurviewAccountName,\r\n        PurviewRegion,\r\n        AssetName,\r\n        AssetPath,\r\n        AssetType,\r\n        AssetCreationTime,\r\n        AssetModifiedTime,\r\n        AssetLastScanTime,\r\n        FileExtension,\r\n        FileSize,\r\n        ActivityType,\r\n        ClassificationTrigger,\r\n        Classification,\r\n        ClassificationDetails,\r\n        SourceName,\r\n        SourceType,\r\n        SourcePath,\r\n        SourceSubscriptionId,\r\n        SourceRegion,\r\n        SourceCollectionName,\r\n        SourceScanId;\r\nfilteredData",
         "size": 0,
         "title": "Asset Drilldown",
         "timeContext": {
-          "durationMs": 2592000000
+          "durationMs": 0
         },
         "timeContextFromParameter": "Time",
         "queryType": 0,
@@ -2425,10 +2370,6 @@
           },
           "labelSettings": [
             {
-              "columnId": "AssetLastScanTime",
-              "label": "Asset Last Scan"
-            },
-            {
               "columnId": "AssetName",
               "label": "Asset Name"
             },
@@ -2437,8 +2378,8 @@
               "label": "Asset Path"
             },
             {
-              "columnId": "SensitivityLabel",
-              "label": "Sensitivity Label"
+              "columnId": "AssetLastScanTime",
+              "label": "Asset Last Scan"
             },
             {
               "columnId": "SourceName",
