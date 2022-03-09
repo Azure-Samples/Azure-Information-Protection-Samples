@@ -45,7 +45,7 @@
             "name": "Time",
             "type": 4,
             "value": {
-              "durationMs": 2592000000
+              "durationMs": 604800000
             },
             "typeSettings": {
               "selectableValues": [
