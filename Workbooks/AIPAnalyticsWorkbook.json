@@ -1,0 +1,158 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 1,
+      "content": {
+        "json": "## AIP Analytics"
+      },
+      "name": "text - 2"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "Unifiedlog_CL\r\n| join kind=innerunique  Labels_CL on $left.SensitivityLabelEventData_SensitivityLabelId_g==$right.Guid_g\r\n| summarize value = count() by DisplayName_s\r\n| order by value",
+        "size": 3,
+        "title": "Labels",
+        "timeContext": {
+          "durationMs": 604800000
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "visualization": "piechart",
+        "chartSettings": {
+          "createOtherGroup": 20,
+          "ySettings": {
+            "numberFormatSettings": {
+              "unit": 0,
+              "options": {
+                "style": "decimal",
+                "useGrouping": true
+              }
+            }
+          }
+        }
+      },
+      "customWidth": "50",
+      "name": "query - 1"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "Unifiedlog_CL\r\n| join kind=innerunique  Labels_CL on $left.SensitivityLabelEventData_SensitivityLabelId_g==$right.Guid_g\r\n| summarize LabelCount = count() by Common_ProcessName_s",
+        "size": 3,
+        "title": "Labels by Application",
+        "timeContext": {
+          "durationMs": 86400000
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "visualization": "piechart",
+        "chartSettings": {
+          "createOtherGroup": 20,
+          "ySettings": {
+            "numberFormatSettings": {
+              "unit": 0,
+              "options": {
+                "style": "decimal",
+                "useGrouping": true
+              }
+            }
+          }
+        }
+      },
+      "customWidth": "50",
+      "name": "query - 2"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let Logs = InformationProtectionLogs_CL | extend MachineName_s = columnifexists(\"MachineName_s\",\"\"), ObjectId_s = columnifexists(\"ObjectId_s\",\"\"), Activity_s = columnifexists(\"Activity_s\",\"\"), LabelId_g = columnifexists(\"LabelId_g\",\"\"), Protected_b = columnifexists(\"Protected_b\",false);\r\nlet minTime = toscalar(Logs | where isnotempty(MachineName_s) | summarize min(TimeGenerated));\r\nlet dates = range [\"date\"] from bin(minTime, {TimeRange:grain}) to now() step {TimeRange:grain};\r\nLogs\r\n| where isnotempty(MachineName_s)\r\n| summarize labels=countif(isnotempty(ObjectId_s) and Activity_s in (\"NewLabel\", \"UpgradeLabel\", \"DowngradeLabel\", \"RemoveProtection\", \"NewProtection\", \"ChangeProtection\") and isnotempty(LabelId_g)),\r\nprotected=countif(isnotempty(ObjectId_s) and Activity_s in (\"NewLabel\", \"UpgradeLabel\", \"DowngradeLabel\", \"RemoveProtection\", \"NewProtection\", \"ChangeProtection\") and Protected_b) by bin(TimeGenerated, {TimeRange:grain})\r\n| join kind= rightouter (\r\n    dates\r\n)\r\non $left.TimeGenerated == $right.[\"date\"]\r\n| project [\"date\"], Labels = coalesce(labels, 0), [\"Protected Labels\"] = coalesce(protected, 0)",
+        "size": 0,
+        "timeContext": {
+          "durationMs": 86400000
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces"
+      },
+      "name": "query - 7"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "Unifiedlog_CL\r\n| join kind=innerunique  Labels_CL on $left.SensitivityLabelEventData_SensitivityLabelId_g==$right.Guid_g\r\n| project ObjectId_s, UserId_s",
+        "size": 0,
+        "title": "File Details",
+        "timeContext": {
+          "durationMs": 86400000
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "gridSettings": {
+          "filter": true,
+          "labelSettings": [
+            {
+              "columnId": "ObjectId_s",
+              "label": "File Name"
+            },
+            {
+              "columnId": "UserId_s",
+              "label": "User ID"
+            }
+          ]
+        }
+      },
+      "name": "query - 3"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "Unifiedlog_CL\r\n| join kind=innerunique  Labels_CL on $left.SensitivityLabelEventData_SensitivityLabelId_g==$right.Guid_g\r\n| extend\r\n    ResultStatus_s = column_ifexists(\"ResultStatus_s\", \"\"),\r\n    LabelId_g = column_ifexists(\"LabelId_g\", \"\"),\r\n    ObjectId_s = column_ifexists(\"ObjectId_s\", \"\")\r\n| where TimeGenerated > ago(31d)\r\n| where isnotempty(ObjectId_s)\r\n//| where Operation_s =~ \"Change\" and Activity_s !~ \"RemoveLabel\"\r\n//| where isnotempty(Protected_b) or isnotempty(LabelId_g)\r\n| where ResultStatus_s !~ \"Failed\"\r\n| project\r\n    TimeGenerated,\r\n    ObjectId_s = column_ifexists(\"ObjectId_s\", \"\"),\r\n    Activity_s = column_ifexists(\"Activity_s\", \"\"),\r\n    ApplicationName_s = column_ifexists(\"ApplicationName_s\", \"\"),\r\n    LabelId_g = column_ifexists(\"LabelId_g\", \"\"),\r\n    LabelName_s = column_ifexists(\"LabelName_s\", \"\"),\r\n    MachineName_s = column_ifexists(\"MachineName_s\", \"\"),\r\n    UserId_s = column_ifexists(\"UserId_s\", \"\"),\r\n  //  Protected_b = column_ifexists(\"Protected_b\", false),\r\n    ProtectionType_s = column_ifexists(\"ProtectionType_s\", \"\"),\r\n    MatchedLabelName_s = column_ifexists(\"MatchedLabelName_s\", \"\"),\r\n    RecommendedLabelName_s = column_ifexists(\"RecommendedLabelName_s\", \"\")\r\n| sort by TimeGenerated desc\r\n| render table",
+        "size": 0,
+        "timeContext": {
+          "durationMs": 2592000000
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces"
+      },
+      "name": "query - 4"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "Unifiedlog_CL\r\n| join kind=innerunique  Labels_CL on $left.SensitivityLabelEventData_SensitivityLabelId_g==$right.Guid_g",
+        "size": 0,
+        "timeContext": {
+          "durationMs": 2592000000
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces"
+      },
+      "name": "query - 5"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "Unifiedlog_CL\r\n| join kind=innerunique  Labels_CL on $left.SensitivityLabelEventData_SensitivityLabelId_g==$right.Guid_g\r\n| extend LabelName_s = columnifexists(\"LabelName_s\",\"\"), LabelId_g = columnifexists(\"LabelId_g\",\"\"), ObjectId_s = columnifexists(\"ObjectId_s\",\"\"), Activity_s = columnifexists(\"Activity_s\",\"\")\r\n| where isnotempty(LabelId_g)\r\n| where isnotempty(ObjectId_s)\r\n//| where Activity_s in (\"NewLabel\", \"UpgradeLabel\", \"DowngradeLabel\", \"RemoveProtection\", \"NewProtection\", \"ChangeProtection\")\r\n| summarize value=count() by LabelName_s\r\n| order by value",
+        "size": 0,
+        "timeContext": {
+          "durationMs": 2592000000
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces"
+      },
+      "name": "query - 6"
+    }
+  ],
+  "fallbackResourceIds": [
+    "/subscriptions/38e210c9-f725-420d-a307-5a739f45f830/resourceGroups/azureloganalyticswp/providers/microsoft.operationalinsights/workspaces/testloganalyticsworkspace"
+  ],
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}
