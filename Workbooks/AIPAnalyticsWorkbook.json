@@ -67,7 +67,118 @@
         "type": 3,
         "content": {
           "version": "KqlItem/1.0",
-          "query": "let Logs = Unifiedlog_CL \r\n| join kind=innerunique  Labels_CL on $left.SensitivityLabelEventData_SensitivityLabelId_g==$right.Guid_g\r\n| extend MachineName_s = columnifexists(\"Common_DeviceName_s\",\"\");\r\n\r\nlet SummarizedLogs = Logs\r\n| where isnotempty(MachineName_s)                \r\n| summarize type = \"Devices\", value=dcountif(MachineName_s, TimeGenerated >= ago({TimeRange:grain})),                            \r\n    previousValue=dcountif(MachineName_s, TimeGenerated < ago({TimeRange:grain}));\r\n\r\nSummarizedLogs\r\n| extend percentChange = strcat(tostring(((value - previousValue) / previousValue) * 100),'%')       \r\n",
+          "query": "let Logs = Unifiedlog_CL \r\n| join kind=innerunique  Labels_CL on $left.SensitivityLabelEventData_SensitivityLabelId_g==$right.Guid_g\r\n| extend LabelId_g = columnifexists(\"Id_g\",\"\");\r\n\r\nlet SummarizedLogs = Logs\r\n| where isnotempty(ObjectId_s) \r\n//| where Operation_s =~ \"Change\" and Activity_s !~ \"RemoveLabel\"                \r\n| where isnotempty(LabelId_g)                \r\n| summarize type = \"Label activity\", value=countif(TimeGenerated >= {TimeRange:start}),                            \r\n    previousValue=countif(TimeGenerated < {TimeRange:start});\r\n    \r\nSummarizedLogs\r\n| extend percentChange = strcat(tostring((((value + 1) - (previousValue + 1)) / (previousValue + 1)) * 100),'%')       ",
+          "size": 4,
+          "queryType": 0,
+          "resourceType": "microsoft.operationalinsights/workspaces",
+          "visualization": "tiles",
+          "tileSettings": {
+            "titleContent": {
+              "columnMatch": "type"
+            },
+            "leftContent": {
+              "columnMatch": "value",
+              "formatter": 12,
+              "formatOptions": {
+                "palette": "blue"
+              }
+            },
+            "rightContent": {
+              "columnMatch": "percentChange",
+              "formatter": 3,
+              "formatOptions": {
+                "palette": "blue",
+                "compositeBarSettings": {
+                  "labelText": "",
+                  "columnSettings": []
+                }
+              }
+            },
+            "showBorder": false
+          }
+        },
+        "customWidth": "25",
+        "name": "query - 6 - Copy"
+      },
+      {
+        "type": 3,
+        "content": {
+          "version": "KqlItem/1.0",
+          "query": "let Logs = Unifiedlog_CL \r\n| join kind=innerunique  Labels_CL on $left.SensitivityLabelEventData_SensitivityLabelId_g==$right.Guid_g\r\n| extend Protected_b = columnifexists(\"ProtectionEventData_IsProtected_b\",\"\");\r\n\r\nlet SummarizedLogs = Logs\r\n| where isnotempty(ObjectId_s) \r\n//| where Operation_s =~ \"Change\" and Activity_s !~ \"RemoveLabel\"                \r\n| where Protected_b == true                \r\n| summarize type = \"Protect activity\", value=countif(TimeGenerated >= {TimeRange:start}),                            \r\n    previousValue=countif(TimeGenerated < {TimeRange:start});\r\n    \r\nSummarizedLogs\r\n| extend percentChange = strcat(tostring((((value + 1) - (previousValue + 1)) / (previousValue + 1)) * 100),'%')       ",
+          "size": 4,
+          "queryType": 0,
+          "resourceType": "microsoft.operationalinsights/workspaces",
+          "visualization": "tiles",
+          "tileSettings": {
+            "titleContent": {
+              "columnMatch": "type"
+            },
+            "leftContent": {
+              "columnMatch": "value",
+              "formatter": 12,
+              "formatOptions": {
+                "palette": "blue"
+              }
+            },
+            "rightContent": {
+              "columnMatch": "percentChange",
+              "formatter": 3,
+              "formatOptions": {
+                "palette": "blue",
+                "compositeBarSettings": {
+                  "labelText": "",
+                  "columnSettings": []
+                }
+              }
+            },
+            "showBorder": false
+          }
+        },
+        "customWidth": "25",
+        "name": "query - 6 - Copy - Copy"
+      },
+      {
+        "type": 3,
+        "content": {
+          "version": "KqlItem/1.0",
+          "query": "let Logs = Unifiedlog_CL \r\n| join kind=innerunique  Labels_CL on $left.SensitivityLabelEventData_SensitivityLabelId_g==$right.Guid_g\r\n| extend UserId_s = columnifexists(\"UserId_s\",\"\");\r\n\r\nlet SummarizedLogs = Logs\r\n| where isnotempty(UserId_s) \r\n| where Workload_s != \"RMS\"               \r\n| summarize type = \"Users\", value=dcountif(UserId_s, TimeGenerated>= {TimeRange:start}),                            \r\n    previousValue=dcountif(UserId_s, TimeGenerated < {TimeRange:start});\r\n    \r\nSummarizedLogs\r\n| extend percentChange = strcat(tostring((((value + 1) - (previousValue + 1)) / (previousValue + 1)) * 100),'%') \r\n",
+          "size": 4,
+          "queryType": 0,
+          "resourceType": "microsoft.operationalinsights/workspaces",
+          "visualization": "tiles",
+          "tileSettings": {
+            "titleContent": {
+              "columnMatch": "type"
+            },
+            "leftContent": {
+              "columnMatch": "value",
+              "formatter": 12,
+              "formatOptions": {
+                "palette": "blue"
+              }
+            },
+            "rightContent": {
+              "columnMatch": "percentChange",
+              "formatter": 3,
+              "formatOptions": {
+                "palette": "blue",
+                "compositeBarSettings": {
+                  "labelText": "",
+                  "columnSettings": []
+                }
+              }
+            },
+            "showBorder": false
+          }
+        },
+        "customWidth": "25",
+        "name": "query - 6 - Copy - Copy - Copy"
+      },
+      {
+        "type": 3,
+        "content": {
+          "version": "KqlItem/1.0",
+          "query": "let Logs = Unifiedlog_CL \r\n| join kind=innerunique  Labels_CL on $left.SensitivityLabelEventData_SensitivityLabelId_g==$right.Guid_g\r\n| extend MachineName_s = columnifexists(\"Common_DeviceName_s\",\"\");\r\n\r\nlet SummarizedLogs = Logs\r\n| where isnotempty(MachineName_s)                \r\n| summarize type = \"Devices\", value=dcountif(MachineName_s, TimeGenerated >= {TimeRange:start}),                            \r\n    previousValue=dcountif(MachineName_s, TimeGenerated < {TimeRange:start});\r\n\r\nSummarizedLogs\r\n| extend percentChange = strcat(tostring((((value + 1) - (previousValue + 1)) / (previousValue + 1)) * 100),'%')      \r\n",
           "size": 4,
           "timeContextFromParameter": "TimeRange",
           "queryType": 0,
@@ -98,14 +209,14 @@
             "showBorder": false
           }
         },
-        "customWidth": "100",
+        "customWidth": "25",
         "name": "query - 6"
       },
       {
         "type": 3,
         "content": {
           "version": "KqlItem/1.0",
-          "query": "let Logs = Unifiedlog_CL\r\n| join kind=innerunique  Labels_CL on $left.SensitivityLabelEventData_SensitivityLabelId_g==$right.Guid_g \r\n| extend MachineName_s = columnifexists(\"Common_DeviceName_s\",\"\"), ObjectId_s = columnifexists(\"ObjectId_s\",\"\"), Activity_s = columnifexists(\"Operation_s\",\"\"), LabelId_g = columnifexists(\"Id_g\",\"\"), Protected_b = columnifexists(\"Protected_b\",FALSE);\r\nlet minTime = toscalar(Logs | where isnotempty(Common_DeviceName_s) | summarize min(TimeGenerated));\r\nlet dates = range [\"date\"] from bin(minTime, {TimeRange:grain}) to now() step {TimeRange:grain};\r\n\r\nLogs\r\n| where isnotempty(Common_DeviceName_s)\r\n| summarize labels=countif(isnotempty(ObjectId_s) and isnotempty(Activity_s) and isnotempty(LabelId_g)),\r\nprotected=countif(isnotempty(ObjectId_s) and isnotempty(Activity_s) and Protected_b) by bin(TimeGenerated, {TimeRange:grain})\r\n| join kind= rightouter (\r\n    dates\r\n)\r\non $left.TimeGenerated == $right.[\"date\"]\r\n| project [\"date\"], Labels = coalesce(labels, 0), [\"Protected Labels\"] = coalesce(protected, 0)\r\n",
+          "query": "let Logs = Unifiedlog_CL\r\n| join kind=innerunique  Labels_CL on $left.SensitivityLabelEventData_SensitivityLabelId_g==$right.Guid_g \r\n| extend MachineName_s = columnifexists(\"Common_DeviceName_s\",\"\"), ObjectId_s = columnifexists(\"ObjectId_s\",\"\"), Activity_s = columnifexists(\"Operation_s\",\"\"), LabelId_g = columnifexists(\"Id_g\",\"\"), Protected_b = columnifexists(\"Protected_b\",FALSE);\r\nlet minTime = toscalar(Logs | where isnotempty(Common_DeviceName_s) | summarize min(TimeGenerated));\r\nlet dates = range [\"date\"] from bin({TimeRange:start}, {TimeRange:grain}) to {TimeRange:end} step {TimeRange:grain};\r\n\r\nLogs\r\n| where isnotempty(Common_DeviceName_s)\r\n| summarize labels=countif(isnotempty(ObjectId_s) and isnotempty(Activity_s) and isnotempty(LabelId_g)),\r\nprotected=countif(isnotempty(ObjectId_s) and isnotempty(Activity_s) and Protected_b) by bin(TimeGenerated, {TimeRange:grain})\r\n| join kind= rightouter (\r\n    dates\r\n)\r\non $left.TimeGenerated == $right.[\"date\"]\r\n| project [\"date\"], Labels = coalesce(labels, 0), [\"Protected Labels\"] = coalesce(protected, 0)\r\n",
           "size": 0,
           "title": "Label and Protect Activity",
           "timeContextFromParameter": "TimeRange",
@@ -135,7 +246,7 @@
         "type": 3,
         "content": {
           "version": "KqlItem/1.0",
-          "query": "let Logs = Unifiedlog_CL\r\n| join kind=innerunique  Labels_CL on $left.SensitivityLabelEventData_SensitivityLabelId_g==$right.Guid_g\r\n| extend MachineName_s = columnifexists(\"Common_DeviceName_s\",\"\"), UserId_s = columnifexists(\"UserId_s\",\"\");\r\nlet minTime = toscalar(Logs | where isnotempty(MachineName_s) | summarize min(TimeGenerated));\r\nlet dates = range [\"date\"] from bin(minTime, {TimeRange:grain}) to now() step {TimeRange:grain};\r\nLogs\r\n| where isnotempty(MachineName_s)\r\n| summarize users=dcount(UserId_s), devices = dcount(MachineName_s) by bin(TimeGenerated, {TimeRange:grain})\r\n| join kind= rightouter\r\n(\r\n    dates\r\n)\r\non $left.TimeGenerated == $right.[\"date\"]\r\n| project [\"date\"], users = coalesce(users, 0), devices = coalesce(devices, 0)\r\n",
+          "query": "let Logs = Unifiedlog_CL\r\n| join kind=innerunique  Labels_CL on $left.SensitivityLabelEventData_SensitivityLabelId_g==$right.Guid_g\r\n| extend MachineName_s = columnifexists(\"Common_DeviceName_s\",\"\"), UserId_s = columnifexists(\"UserId_s\",\"\");\r\nlet minTime = toscalar(Logs | where isnotempty(MachineName_s) | summarize min(TimeGenerated));\r\nlet dates = range [\"date\"] from bin({TimeRange:start}, {TimeRange:grain}) to {TimeRange:end} step {TimeRange:grain};\r\nLogs\r\n| where isnotempty(MachineName_s)\r\n| summarize users=dcount(UserId_s), devices = dcount(MachineName_s) by bin(TimeGenerated, {TimeRange:grain})\r\n| join kind= rightouter\r\n(\r\n    dates\r\n)\r\non $left.TimeGenerated == $right.[\"date\"]\r\n| project [\"date\"], users = coalesce(users, 0), devices = coalesce(devices, 0)\r\n",
           "size": 0,
           "title": "Users and Devices",
           "timeContextFromParameter": "TimeRange",
