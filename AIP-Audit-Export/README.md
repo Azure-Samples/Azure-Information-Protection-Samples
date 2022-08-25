@@ -11,6 +11,8 @@ urlFragment: AIP-Audit-Export
 
 # AIP Audit Export
 
+## PowerShell Script
+
 ## AIP Information Protection Analytics Workbook
 
 ### Getting Started 
