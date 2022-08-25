@@ -37,7 +37,7 @@ The KPI cards at the top display the label and protect activity as well as user 
 
 A specific breakdown of the time that labeling and protection activity occurred can be found within the **Label and Protect Activity** time chart.  
 
-![image](https://user-images.githubusercontent.com/25543918/186781891-3576b144-0611-45c7-9cbf-ff4c80970af5.png)
+![image](https://user-images.githubusercontent.com/25543918/186782443-c38bd52b-d48f-4b03-ac83-2dcfc1bdad25.png)
 
 In addition, a specific breakdown of when users and devices were active can be found within the **Users and Devices** time chart.  
 
