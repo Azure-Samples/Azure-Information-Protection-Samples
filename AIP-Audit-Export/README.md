@@ -17,7 +17,7 @@ urlFragment: AIP-Audit-Export
 
 1. To get started with the Azure Information Protection Analytics workbook, navigate to a log analytics workspace, select the workbooks tab, and create a new workbook.
 2. Select the Advanced Editor icon within the new workbook.  
-3. Go to the AIPAnalyticsWorkbook.json file within GitHub and copy the contents. 
+3. Go to the [AIPAnalyticsWorkbook.json](https://github.com/Azure-Samples/Azure-Information-Protection-Samples/blob/2c32c959bf354c00757dadf74eddabde829edca3/AIP-Audit-Export/AIPAnalyticsWorkbook.json) file within GitHub and copy the contents. 
 4. Paste the copied contents into the advanced editor text book, removing any existing code that might already be there.  
 5. Apply the changes and save the workbook. If the logs are properly set up, visualizations should start to populate within the workbook. 
 
