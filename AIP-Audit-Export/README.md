@@ -13,6 +13,19 @@ urlFragment: AIP-Audit-Export
 
 ## PowerShell Script
 
+
+Before you use the AIP Audit Export review the following 
+https://docs.microsoft.com/en-us/microsoft-365/compliance/audit-log-search-script?view=o365-worldwide#before-you-run-the-script to understand about permission and access requirement.
+
+To learn about ExchangeOnlineManagement - review https://docs.microsoft.com/en-us/powershell/exchange/exchange-online-powershell-v2?view=exchange-ps
+
+The solution uses Search-UnifiedAuditLog powershell will be used to extract the audit information as first Step , the script will  Connect to Exchange Online PowerShell and then execute retrieve audit records.
+
+Information regarding permission and enablement.
+1. Microsoft 365 audit log search must be turned on for the audit log connector to work. More information: Turn audit log search on or off
+2.You must have access to the audit log.  More information: Search the audit log in the Security & Compliance Center
+3. Your tenant must have a subscription that supports unified audit logging. More information: Security & Compliance Center availability for business and enterprise plans.
+
 ## AIP Information Protection Analytics Workbook
 
 ### Getting Started 
