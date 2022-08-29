@@ -10,19 +10,31 @@ urlFragment: AIP-Audit-Export
 ---
 
 # AIP Audit Export
+Azure Log Analytics is an interactive workspace that enables ingestion and storage of massive amounts of data, indexes the data, and allows complex querying through an interface or API using the Kusto Query Language. This AIP Audit Export folder includes the tools to ingest data into a Azure Log Analytics workspace with custom logs and view the data in a customizable dashboard.
 
-## PowerShell Script
-Before you use the AIP Audit Export review the following https://docs.microsoft.com/en-us/microsoft-365/compliance/audit-log-search-script?view=o365-worldwide#before-you-run-the-script to understand about permission and access requirement.
+The following PowerShell Script and Azure Workbook samples will describe how to:
+-  [PowerShell Script](https://github.com/Azure-Samples/Azure-Information-Protection-Samples/edit/master/AIP-Audit-Export/README.md#powershell-script): Continuously export data from the unified audit log to Azure Log Analytics
+-  [Azure Workbook](https://github.com/Azure-Samples/Azure-Information-Protection-Samples/edit/master/AIP-Audit-Export/README.md#aip-information-protection-analytics-workbook): Set up a customizable dashboard with charting and custom queries for audit logs
 
-To learn about ExchangeOnlineManagement - review https://docs.microsoft.com/en-us/powershell/exchange/exchange-online-powershell-v2?view=exchange-ps
+For more information about auditing solutions with Microsoft Purview, review the [Microsoft tech community blog](https://techcommunity.microsoft.com/t5/security-compliance-and-identity/admin-guide-to-auditing-and-reporting-for-the-aip-unified/ba-p/3610727) for an admin guide to auditing and reporting for the AIP Unified Labeling client.
 
-The solution uses Search-UnifiedAuditLog powershell will be used to extract the audit information as first Step , the script will Connect to Exchange Online PowerShell and then execute retrieve audit records.
+## PowerShell Script to Export Audit Data from Unified Audit Log to Azure Log Analytics Workspace
+Microsoft Purview provides PowerShell commands to export data from the unified audit log. To continuously export data from the unified audit log to Azure Log Analytics, this sample PowerShell script will help you ingest the audit data into a custom table of your choice. The fields of this custom Log Analytics table are aligned with the fields in the unified audit log and are similar to the InformationProtectionLogs_CL table used with AIP analytics. 
 
-Information regarding permission and enablement.
+**NOTE:** The script simplifies the export of AIP data in an easy-to-consume table structure. However, the script has limits. Microsoft guidance is to use the Office 365 Management API for scale and performance when millions of records need to be exported.
 
-1.	Microsoft 365 audit log search must be turned on for the audit log connector to work.  
-2.	You must have access to the audit log. More information: Search the audit log in the Microsoft Purview compliance portal - Microsoft Purview (compliance) | Microsoft Docs
-3.	Your tenant must have a subscription that supports unified audit logging. More information: Microsoft 365 guidance for security & compliance - Service Descriptions | Microsoft Docs
+### Run the PowerShell Script
+Download, save and run the [AIP Audit Export Powershell script](https://github.com/Azure-Samples/Azure-Information-Protection-Samples/blob/081992f37cc148087875da7b163340abfd868271/AIP-Audit-Export/Export-AIPAuditLogOperations.ps1).
+
+The script uses the following cmdlets:
+- `Search-UnifiedAuditLog` is used by the script to extract audit information from the unified audit log.
+- `Connect-ExchangeOnline` is used to authenticate.
+
+### Troubleshooting
+Find documentation about PowerShell cmdlets used in the script:
+- Prerequisites and permissions: Audit logging is enabled by default for all organizations. If `UnifiedAuditLogIngestionEnabled` is false, review the guide for [using PowerShell to search the unified audit log](https://docs.microsoft.com/en-us/microsoft-365/compliance/audit-log-search-script?view=o365-worldwide#before-you-run-the-script).
+- Exchange Online PowerShell: This script uses Exchange Online PowerShell to authenticate. For more information about the `Connect-ExchangeOnline` cmdlet, review the [Exchange Online PowerShell documentation](https://docs.microsoft.com/en-us/powershell/exchange/exchange-online-powershell-v2?view=exchange-ps).
+
 
 ## AIP Information Protection Analytics Workbook
 
