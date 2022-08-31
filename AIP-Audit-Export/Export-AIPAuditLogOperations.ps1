@@ -28,15 +28,15 @@ SOFTWARE.
 Script      : AzureDataResourcesEnumeration.ps1
 Author      : Krishna V
 Co-Author   : Aashish Ramdas
-Version     : 1.0.0
+Version     : 1.0.5
 Description : The script exports AIP data from the M365 Unified Audit Log and pushes it into a customer-specified Log Analytics table
 #>
 
 
 
 param (
-    # Log Analytics table where the data is written to
-    [string]$TableName = "AzureInformationProtectionLogs_CL",
+    # Log Analytics table where the data is written to. Log Analytics will add an _CL to this name.
+    [string]$TableName = "UnifiedLog",
 
     # Script pause interval / Sleep internal. After retrieving the logs, the script will sleep until the next run.
     [int16]$SleepIntervalMinutes = 60,
@@ -45,22 +45,23 @@ param (
     [datetime]$StartTime = [DateTime]::UtcNow.AddHours(-1),
 
     # If an end time is specified, the script will run only once with the logs retrieved until the specified time. If an end time is not specified, the script will loop until stopped
-    [datetime]$EndTime = $null,
-
-    [bool]$Verbose = $true  ## ACTIONITEM: Convert this from value-param "-Verbose $true" to a flag-param "-Verbose"
+    [datetime]$EndTime
 )
 
-if($Verbose -eq $true) { $VerbosePreference = "Continue";}  ## ACTIONITEM:  Update the if-condition once -Verbose becomes a flag param
+# your Log Analytics workspace ID
+$LogAnalyticsWorkspaceId = "d7936737-b7f9-4e35-939e-cbcd2a00fccf"   #""
 
-# Log analytics information. Learn how to find the right values here: <<find link>>
-$CustomerId = "d7936737-b7f9-4e35-939e-cbcd2a00fccf"  
-$SharedKey =  "rXjBssgozWg/QGvpijDkMCLYGxxO5WZhMeiGJ118NMRuxHK7XovP7CoqicQ47rzcEiS6Ulsl8v7dTT1evlp1NQ=="   # Primary key for your Log Analytics workspace
+# Use either the primary or the secondary Connected Sources client authentication key   
+$LogAnalyticsPrimaryKey =  "rXjBssgozWg/QGvpijDkMCLYGxxO5WZhMeiGJ118NMRuxHK7XovP7CoqicQ47rzcEiS6Ulsl8v7dTT1evlp1NQ=="   #"" 
 
-# Only AIP-related operations are selected for export. For Full list review here: https://docs.microsoft.com/en-us/microsoft-365/compliance/search-the-audit-log-in-security-and-compliance?view=o365-worldwide
-$record = "AipDiscover","AipSensitivityLabelAction","AipProtectionAction","AipFileDeleted","AipHeartBeat"
+if($LogAnalyticsWorkspaceId -eq "") { throw "Log Analytics workspace Id is missing! Update the script and run again" }
+if($LogAnalyticsPrimaryKey -eq "")  { throw "Log Analytics primary key is missing! Update the script and run again" }
 
 # Audit export size
 $resultSize = 100 
+
+# File where the Search-UnifiedAuditLog input parameters StartDate and EndDate values are stored. Useful if you want to know when the last time data was successfully exported to Log Analytics
+$file_PersistTimeStamp = "./endTimestamp.txt"
 
 
 
@@ -125,15 +126,14 @@ Function Post-LogAnalyticsData($body, $LogAnalyticsTableName) {
     $response = Invoke-WebRequest -Uri $uri -Method Post -Headers $headers -ContentType $contentType -Body $bodyJsonUTF8 -UseBasicParsing
 
     if ($Response.StatusCode -eq 200) {   
-        Write-Information -MessageData "Logs are Successfully Stored in Log Analytics Workspace" -InformationAction Continue
-        
-        ## ACTIONITEM: Write $EndTime into a file - appended. 
+        $rows = $body.Count
+        Write-Information -MessageData "   $rows rows written to Log Analytics workspace $uri" -InformationAction Continue
     }
 
 }
 
 
-Function Export-AuditLogData($start, $end) {
+Function Export-AuditLogData([datetime]$start, [datetime]$end, [string]$recordType) {
     # ---------------------------------------------------------------   
     #    Name           : Export-AuditLogData
     #    Value          : Creates a single session defined by start and end times, and exports data within this session to Log Analytics
@@ -142,22 +142,71 @@ Function Export-AuditLogData($start, $end) {
     #    Return         : None
     # ---------------------------------------------------------------
     
+
     $sessionID = "ExtractLogs_" + $start.ToString("yyyyMMddHHmmssfff") + "_" + $end.ToString("yyyyMMddHHmmssfff")
-    Write-Verbose "Start SessionId: ($sessionID);  Retrieving audit records between $($start) and $($end)"
+    Write-Information -MessageData "Retrieving $recordType records between $start and $end" -InformationAction Continue
 
     do {
         # Run the commandlet to search through the Audit logs and get the AIP events in the specified timeframe
-        $auditLogSearchResults = Search-UnifiedAuditLog -StartDate $start -EndDate $end -RecordType $record -SessionId $sessionID -SessionCommand ReturnLargeSet -ResultSize $resultSize
-
-        # Check if there is data, and push to Log Analytics
-        if (($auditLogSearchResults | Measure-Object).Count -ne 0) {  Post-LogAnalyticsData($auditLogSearchResults, $TableName);  } 
+        $auditLogSearchResults = Search-UnifiedAuditLog -StartDate $start -EndDate $end -RecordType $recordType -SessionId $sessionID -SessionCommand ReturnLargeSet -ResultSize $resultSize
         
+
+        if($auditLogSearchResults -eq $null   )    { $auditLogSearchResults = @() }  
+        if($auditLogSearchResults -isnot [array] ) { $auditLogSearchResults = @($auditLogSearchResults)  }
+
         # Status update
-        Write-Verbose "- Retrieved and pushed " + ($auditLogSearchResults | Measure-Object).Count.ToString() + " to Log Analytics"
+        $recordsCount = $auditLogSearchResults.Count
+        Write-Information -MessageData "   $recordsCount rows returned by Search-UnifiedAuditLog" -InformationAction Continue
 
+        # If there is no data, skip
+        if ($auditLogSearchResults.Count -eq 0) { continue; }
+
+        # Else format for Log Analytics
+        $log_analytics_array = @()            
+        foreach($i in $auditLogSearchResults) {
+            $auditData = $i.AuditData | ConvertFrom-Json
+            $newitem = [PSCustomObject]@{    
+                RunspaceId               = $i.RunspaceId
+                ApplicationName          = $auditData.Common.ApplicationName
+                Common_ProcessName_s     = $auditData.Common.ProcessName 
+                Common_DeviceName_s      = $auditData.Common.DeviceName
+                Common_Location          = $auditData.Common.Location
+                Common_ProductVersion    = $auditData.Common.ProductVersion
+                RecordType               = $auditData.RecordType
+                Workload_s               = $auditData.workload
+                UserId                   = $auditData.UserId
+                UserKey                  = $auditData.UserKey
+                ClientIP                 = $auditData.ClientIP
+                CreationTime             = $auditData.CreationTime
+                Operation                = $auditData.Operation
+                OrganizationId           = $auditData.OrganizationId
+            }
+
+            $value = [System.Web.HttpUtility]::UrlEncode($auditData.objectId)
+            $newitem | Add-Member -MemberType NoteProperty -Name ObjectId -Value $value
+
+            $value= if($auditData.SensitivityLabelEventData.LabelEventType -eq $null)  { "" } else { $auditData.SensitivityLabelEventData.LabelEventType }
+            $newitem | Add-Member -MemberType NoteProperty -Name LabelEventType -Value $value
+
+            $value = if($auditData.SensitivityLabelEventData.ActionSource -eq $null)   { "" } else { $auditData.SensitivityLabelEventData.ActionSource }
+            $newitem | Add-Member -MemberType NoteProperty -Name ActionSource -Value $value
+
+            $value = if($auditData.SensitivityLabelEventData.SensitivityLabelId -eq $null) { "" } else { $auditData.SensitivityLabelEventData.SensitivityLabelId }
+            $newitem | Add-Member -MemberType NoteProperty -Name SensitivityLabelEventData_SensitivityLabelId_g -Value $value
+
+            $value = if($auditData.ProtectionEventData.ProtectionEventType -eq $null)      { "" } else { $auditData.ProtectionEventData.ProtectionEventType }
+            $newitem | Add-Member -MemberType NoteProperty -Name ProtectionEventType -Value $value
+
+            $value = if($auditData.ProtectionEventData.PreviousProtectionOwner -eq $null)  { "" } else { $auditData.ProtectionEventData.PreviousProtectionOwner }
+            $newitem | Add-Member -MemberType NoteProperty -Name PreviousProtectionOwner -Value $value
+
+            $log_analytics_array += $newitem
+        }
+
+        # Push data to Log Analytics
+        Post-LogAnalyticsData -LogAnalyticsTableName $TableName -body $log_analytics_array
+        
     } while (($auditLogSearchResults | Measure-Object).Count -ne 0)   # loop until the session has no records left to retrieve
-
-    Write-Verbose "End SessionId: ($sessionID)"
 }
 
 
@@ -168,23 +217,32 @@ Import-Module ExchangeOnlineManagement
 #connect to exchangeonline
 Connect-ExchangeOnline
 
+$isContinuousLoop = if($PSBoundParameters.ContainsKey('EndTime')) { $false} else { $true }
+
 # main code
-while ($true) {
-    # set end time for one-time export
-    if($null -eq $EndTime) { $temp_EndTime = [DateTime]::UtcNow }
-    
-    # main export operation
-    Export-AuditLogData($StartTime, $temp_EndTime)    
+do {
+    # set end time for continuous export
+    $temp_EndTime = if ($true -eq $isContinuousLoop) { [DateTime]::UtcNow } else { $EndTime }
+
+    # Main export operation. Only AIP-related operations are selected for export. For Full list review here: https://docs.microsoft.com/en-us/microsoft-365/compliance/search-the-audit-log-in-security-and-compliance?view=o365-worldwide
+    Export-AuditLogData -start $StartTime -end $temp_EndTime -recordType "AipDiscover"
+    Export-AuditLogData -start $StartTime -end $temp_EndTime -recordType "AipSensitivityLabelAction"
+    Export-AuditLogData -start $StartTime -end $temp_EndTime -recordType "AipProtectionAction"
+    Export-AuditLogData -start $StartTime -end $temp_EndTime -recordType "AipFileDeleted"
+    Export-AuditLogData -start $StartTime -end $temp_EndTime -recordType "AipHeartBeat"
 
     # persist end timestamp
-    "Export complete for audit logs between Start-time: " + $temp_EndTime.ToString("yyyyMMddHHmmssfff") + " and End-Time: " $temp_EndTime.ToString("yyyyMMddHHmmssfff") | Out-File "./endTimestamp.txt" -Append 
+    $logstring = "Export complete for audit logs between Start-time: " + $temp_EndTime.ToString("yyyyMMddHHmmssfff") + " and End-Time: " + $temp_EndTime.ToString("yyyyMMddHHmmssfff") 
+    $logstring | Out-File $file_PersistTimeStamp -Append
     
-    # break if one-time operation
-    if($null -eq $EndTime) { break; }  
+    # check if loop or one-time
+    if($true -eq $isContinuousLoop) {
+        # adjust start value
+        $StartTime = $temp_EndTime   
 
-    # adjust start value
-    $StartTime = $temp_EndTime   
+        # sleep if it is a continuous loop
+        Write-Information -MessageData "Starting sleep for $SleepIntervalMinutes minutes" -InformationAction Continue
+        Start-Sleep -Seconds ($SleepIntervalMinutes * 60)
+    }  
 
-    # sleep if there is no end time
-    Start-Sleep -Seconds ($SleepIntervalMinutes * 60)
-}
+} while ($true -eq $isContinuousLoop)
