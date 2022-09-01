@@ -49,10 +49,10 @@ param (
 )
 
 # your Log Analytics workspace ID
-$LogAnalyticsWorkspaceId = "d7936737-b7f9-4e35-939e-cbcd2a00fccf"   #""
+$LogAnalyticsWorkspaceId = ""
 
 # Use either the primary or the secondary Connected Sources client authentication key   
-$LogAnalyticsPrimaryKey =  "rXjBssgozWg/QGvpijDkMCLYGxxO5WZhMeiGJ118NMRuxHK7XovP7CoqicQ47rzcEiS6Ulsl8v7dTT1evlp1NQ=="   #"" 
+$LogAnalyticsPrimaryKey = "" 
 
 if($LogAnalyticsWorkspaceId -eq "") { throw "Log Analytics workspace Id is missing! Update the script and run again" }
 if($LogAnalyticsPrimaryKey -eq "")  { throw "Log Analytics primary key is missing! Update the script and run again" }
@@ -168,12 +168,12 @@ Function Export-AuditLogData([datetime]$start, [datetime]$end, [string]$recordTy
             $newitem = [PSCustomObject]@{    
                 RunspaceId               = $i.RunspaceId
                 ApplicationName          = $auditData.Common.ApplicationName
-                Common_ProcessName_s     = $auditData.Common.ProcessName 
-                Common_DeviceName_s      = $auditData.Common.DeviceName
+                Common_ProcessName       = $auditData.Common.ProcessName 
+                Common_DeviceName        = $auditData.Common.DeviceName
                 Common_Location          = $auditData.Common.Location
                 Common_ProductVersion    = $auditData.Common.ProductVersion
                 RecordType               = $auditData.RecordType
-                Workload_s               = $auditData.workload
+                Workload                 = $auditData.workload
                 UserId                   = $auditData.UserId
                 UserKey                  = $auditData.UserKey
                 ClientIP                 = $auditData.ClientIP
@@ -182,7 +182,8 @@ Function Export-AuditLogData([datetime]$start, [datetime]$end, [string]$recordTy
                 OrganizationId           = $auditData.OrganizationId
             }
 
-            $value = [System.Web.HttpUtility]::UrlEncode($auditData.objectId)
+            #$value = [System.Web.HttpUtility]::UrlEncode($auditData.objectId)
+            $value = $auditData.objectId
             $newitem | Add-Member -MemberType NoteProperty -Name ObjectId -Value $value
 
             $value= if($auditData.SensitivityLabelEventData.LabelEventType -eq $null)  { "" } else { $auditData.SensitivityLabelEventData.LabelEventType }
@@ -192,7 +193,7 @@ Function Export-AuditLogData([datetime]$start, [datetime]$end, [string]$recordTy
             $newitem | Add-Member -MemberType NoteProperty -Name ActionSource -Value $value
 
             $value = if($auditData.SensitivityLabelEventData.SensitivityLabelId -eq $null) { "" } else { $auditData.SensitivityLabelEventData.SensitivityLabelId }
-            $newitem | Add-Member -MemberType NoteProperty -Name SensitivityLabelEventData_SensitivityLabelId_g -Value $value
+            $newitem | Add-Member -MemberType NoteProperty -Name SensitivityLabelEventData_SensitivityLabelId -Value $value
 
             $value = if($auditData.ProtectionEventData.ProtectionEventType -eq $null)      { "" } else { $auditData.ProtectionEventData.ProtectionEventType }
             $newitem | Add-Member -MemberType NoteProperty -Name ProtectionEventType -Value $value
@@ -223,7 +224,7 @@ $isContinuousLoop = if($PSBoundParameters.ContainsKey('EndTime')) { $false} else
 do {
     # set end time for continuous export
     $temp_EndTime = if ($true -eq $isContinuousLoop) { [DateTime]::UtcNow } else { $EndTime }
-
+   
     # Main export operation. Only AIP-related operations are selected for export. For Full list review here: https://docs.microsoft.com/en-us/microsoft-365/compliance/search-the-audit-log-in-security-and-compliance?view=o365-worldwide
     Export-AuditLogData -start $StartTime -end $temp_EndTime -recordType "AipDiscover"
     Export-AuditLogData -start $StartTime -end $temp_EndTime -recordType "AipSensitivityLabelAction"
