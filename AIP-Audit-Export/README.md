@@ -27,8 +27,8 @@ Microsoft Purview provides PowerShell commands to export data from the unified a
 Download, save and run the [AIP Audit Export Powershell script](https://github.com/Azure-Samples/Azure-Information-Protection-Samples/blob/081992f37cc148087875da7b163340abfd868271/AIP-Audit-Export/Export-AIPAuditLogOperations.ps1).
 
 The script uses the following cmdlets:
-- `Search-UnifiedAuditLog` is used to extract audit information from the unified audit log.
-- `Connect-ExchangeOnline` is used to authenticate.
+- `Search-UnifiedAuditLog` to extract audit information from the unified audit log.
+- `Connect-ExchangeOnline` to authenticate.
 
 ### Troubleshooting
 Find documentation about PowerShell cmdlets used in the script:
