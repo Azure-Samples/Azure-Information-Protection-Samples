@@ -5,7 +5,7 @@ languages:
 products:
 - m365
 - office-365
-description: "Export AIP audit events to Azure log analytics with PowerShell cript sample and Azure Workbook sample"
+description: "Export AIP audit events to Azure log analytics with PowerShell script sample and Azure Workbook sample"
 urlFragment: AIP-Audit-Export
 ---
 
@@ -27,7 +27,7 @@ Microsoft Purview provides PowerShell commands to export data from the unified a
 Download, save and run the [AIP Audit Export Powershell script](https://github.com/Azure-Samples/Azure-Information-Protection-Samples/blob/081992f37cc148087875da7b163340abfd868271/AIP-Audit-Export/Export-AIPAuditLogOperations.ps1).
 
 The script uses the following cmdlets:
-- `Search-UnifiedAuditLog` is used by the script to extract audit information from the unified audit log.
+- `Search-UnifiedAuditLog` is used to extract audit information from the unified audit log.
 - `Connect-ExchangeOnline` is used to authenticate.
 
 ### Troubleshooting
