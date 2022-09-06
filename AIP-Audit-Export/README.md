@@ -24,7 +24,7 @@ Microsoft Purview provides PowerShell commands to export data from the unified a
 **NOTE:** The script simplifies the export of AIP data in an easy-to-consume table structure. However, the script has limits. Microsoft guidance is to use the Office 365 Management API for scale and performance when millions of records need to be exported.
 
 ### Run the PowerShell Script
-Download, save and run the [AIP Audit Export Powershell script](https://github.com/Azure-Samples/Azure-Information-Protection-Samples/blob/081992f37cc148087875da7b163340abfd868271/AIP-Audit-Export/Export-AIPAuditLogOperations.ps1).
+Download, save and run the [AIP Audit Export Powershell script](https://github.com/Azure-Samples/Azure-Information-Protection-Samples/blob/71a6a805e66c10d8553c48cc92e4688cf50ecf48/AIP-Audit-Export/Export-AIPAuditLogOperations.ps1).
 
 The script uses the following cmdlets:
 - `Search-UnifiedAuditLog` to extract audit information from the unified audit log.
