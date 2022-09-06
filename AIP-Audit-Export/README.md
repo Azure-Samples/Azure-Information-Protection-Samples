@@ -14,7 +14,7 @@ Azure Log Analytics is an interactive workspace that enables ingestion and stora
 
 The following PowerShell Script and Azure Workbook samples will describe how to:
 -  [PowerShell Script](https://github.com/Azure-Samples/Azure-Information-Protection-Samples/blob/master/AIP-Audit-Export/README.md#powershell-script-to-export-audit-data-from-unified-audit-log-to-azure-log-analytics-workspace): Continuously export data from the unified audit log to Azure Log Analytics
--  [Azure Workbook](https://github.com/Azure-Samples/Azure-Information-Protection-Samples/tree/master/AIP-Audit-Export#aip-information-protection-analytics-workbook): Set up a customizable dashboard with charting and custom queries for audit logs
+-  [Azure Workbook](https://github.com/Azure-Samples/Azure-Information-Protection-Samples/blob/master/AIP-Audit-Export#aip-information-protection-analytics-workbook): Set up a customizable dashboard with charting and custom queries for audit logs
 
 For more information about auditing solutions with Microsoft Purview, review the [Microsoft tech community blog](https://techcommunity.microsoft.com/t5/security-compliance-and-identity/admin-guide-to-auditing-and-reporting-for-the-aip-unified/ba-p/3610727) for an admin guide to auditing and reporting for the AIP Unified Labeling client.
 
