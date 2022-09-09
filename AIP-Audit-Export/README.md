@@ -5,7 +5,7 @@ languages:
 products:
 - m365
 - office-365
-description: "Export AIP audit events to Azure log analytics with PowerShell script sample and Azure Workbook sample"
+description: "Export AIP audit events to Azure log analytics with a PowerShell script sample and Azure Workbook sample"
 urlFragment: AIP-Audit-Export
 ---
 
