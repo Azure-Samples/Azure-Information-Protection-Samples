@@ -25,7 +25,7 @@ SOFTWARE.
 
 
 <#
-Script      : AIPCreateLabel.ps1
+Script      : Export-LabelData.ps1
 Author      : Krishna V
 Co-Author   : Aashish Ramdas
 Version     : 1.0.0
