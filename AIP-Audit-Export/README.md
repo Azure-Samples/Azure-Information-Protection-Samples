@@ -28,14 +28,14 @@ Microsoft Purview provides PowerShell commands to export data from the unified a
 This script uses the [Get-Label](https://learn.microsoft.com/powershell/module/exchange/get-label) cmdlet and pushes label data into a custom Log Analytics table named Labels_CL by default. This label name can be configured and renamed by your organization.
 
 ### Run the Data PowerShell Script
-Download, save and run the [AIP Audit Export Data Powershell script](https://github.com/Azure-Samples/Azure-Information-Protection-Samples/blob/71a6a805e66c10d8553c48cc92e4688cf50ecf48/AIP-Audit-Export/Export-AIPAuditLogOperations.ps1).
+Download, save and run the [AIP Audit Export Data Powershell script](https://github.com/Azure-Samples/Azure-Information-Protection-Samples/blob/master/AIP-Audit-Export/Export-AIPAuditLogOperations.ps1).
 
 The script uses the following cmdlets:
 - `Search-UnifiedAuditLog` to extract audit information from the unified audit log.
 - `Connect-ExchangeOnline` to authenticate.
 
 ### Run the Label PowerShell Script
-Download, save and run the [AIP Audit Label Data Powershell script](https://github.com/Azure-Samples/Azure-Information-Protection-Samples/blob/71a6a805e66c10d8553c48cc92e4688cf50ecf48/AIP-Audit-Export/Export-LabelData.ps1).
+Download, save and run the [AIP Audit Label Data Powershell script](https://github.com/Azure-Samples/Azure-Information-Protection-Samples/blob/master/AIP-Audit-Export/Export-LabelData.ps1).
 
 The script uses the following cmdlets:
 - `Export-LabelData` to extract data from Get-Label into Log analytics workspace tables
