@@ -29,7 +29,7 @@ Script      : AIPCreateLabel.ps1
 Author      : Krishna V
 Co-Author   : Aashish Ramdas
 Version     : 1.0.0
-Description : The script exports AIP Label from the GEt-Label and pushes into a customer-specified Log Analytics table. Please note if you change the name of the table - you need to update Workbook sample that displays the report , appropriately. Do ensure older table is deleted before creating the new table - as it will create duplicates and Log analytics workspace dosent support Upserts or updates.
+Description : The script exports AIP Label from Get-Label and pushes into a customer-specified Log Analytics table. Please note if you change the name of the table - you need to update Workbook sample that displays the report , appropriately. Do ensure the older table is deleted before creating the new table - it will create duplicates and Log analytics workspace doesn't support upserts or updates.
 #>
 
 
@@ -41,7 +41,7 @@ param (
 )
 
 
-# your Log Analytics workspace ID
+# Your Log Analytics workspace ID
 $LogAnalyticsWorkspaceId = ""
 
 # Use either the primary or the secondary Connected Sources client authentication key   
@@ -121,7 +121,7 @@ Function Post-LogAnalyticsData($body, $LogAnalyticsTableName) {
 Function Export-LabelData() {
     # ---------------------------------------------------------------   
     #    Name           : Export-LabelData
-    #    Desc           : Extracts data from Get-Label into Log analytics workspace tables for reporting purposes.
+    #    Desc           : Extracts data from Get-Label into Log analytics workspace tables for reporting purposes
     #    Return         : None
     # ---------------------------------------------------------------
     
