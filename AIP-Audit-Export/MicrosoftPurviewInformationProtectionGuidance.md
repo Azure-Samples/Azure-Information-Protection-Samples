@@ -143,6 +143,32 @@ _ResourceId | | |
 
 ## How to get label names with Microsoft Purview Information Protection Logs 
 
-To retrieve label name using Microsoft Purview Information Protection logs, use this custom script: 
+To retrieve label name using the Microsoft Purview Information Protection logs, use the [Export-LabelData PowerShell script](Export-LabelData.ps1). Before running the script, edit the script to include your log analytics workspace ID and the primary authentication key. Then, follow these PowerShell commandlets.  
 
+```powershell
+# If needed to run PowerShell scripts on machine, adjust the Execution Policy 
+-ExecutionPolicy Unrestircted -Scope Process
+```
+
+```powershell
+# Connect to Exchange Online 
+Connect-IPPSSession
+Import-Module ExchangeOnlineManagement
+Connect-ExchangeOnline
+```
+
+```powershell
+# Run the PowerShell script
+./Export-LabelData.ps1
+```
+
+After running the script, a table will be created in the log analytics workspace that is specified in the script. The table will be called Labels_CL. The table can be joined with the MicrosoftPurviewInformationProtection table in log analytics by joining the tables on label id. Here is an example on how to join the two tables:
+
+```
+let Logs = MicrosoftPurviewInformationProtection 
+| join kind=leftouter Labels_CL on $left.SensitivityLabelId==$right.Guid_g 
+```
+## Guidance on how to import log analytics data into PowerBI
+
+From log analytics, the data can then be imported into PowerBI using this guidance: [Integrate Log Analytics with Power BI](https://learn.microsoft.com/azure/azure-monitor/logs/log-powerbi)
 
