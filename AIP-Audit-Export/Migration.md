@@ -1,9 +1,47 @@
-## Migrate analytics from Azure Information Protection to Microsoft Purview Information Protection 
+# Migrate analytics from Azure Information Protection to Microsoft Purview Information Protection 
 
-1. Compare events from Azure Information Protection and Microsoft Purview Information Protection
+Azure Information Protection analytics, a pipeline that brought AIP data into log analytics, was retired on September 30, 2022. Logs for Azure Information Protection were modernized and brought into the Office 365 Unified Audit Log. The unified audit logs can be accessed through the unified log search tool, the Search-UnifiedAuditLog powershell commandlet, and the Office 365 Management Activity API. In addition, unified audit log events for Azure Information Protection can be sent to log analytics using the Microsoft Purview Information Protection connector. 
 
-## Comparison of Azure Information Protection and Microsoft Purview Information Protection events
+Azure Information Protection events within the Unified Audit Log:
+- [AipDiscover](https://learn.microsoft.com/office/office-365-management-api/aipdiscover)
+- [AipSensitivityLabelAction](https://learn.microsoft.com/office/office-365-management-api/aipsensitivitylabelaction)
+- [AipProtectionAction](https://learn.microsoft.com/office/office-365-management-api/aipprotectionaction)
+- [AipFileDeleted](https://learn.microsoft.com/office/office-365-management-api/aipfiledeleted)
+- [AipHeartBeat](https://learn.microsoft.com/office/office-365-management-api/aipheartbeat)
 
+This guide walks through how to send Azure Information Protection logs within the Unified Audit Log to log analytics using the following steps.
+1) Enable the Microsoft Purview Information Protection connector in Sentinel.
+2) Compare data fields and transition queries
+3) Import label names using a script 
+4) Guidance on how to import log analytics data into PowerBI
+
+## Enable the Microsoft Purview Information Protection connector in Sentinel
+The Microsoft Purview Information Protection connector was introduced into Sentinel on January 9, 2023. The Microsoft Purview Information Protection connector streams data to a log analytics table (MicrosoftPurviewInformationProtection) and contains events related to Azure Information Protection - these events are similiar to what used to show up within the Azure Information Protection log analytics table (InformationProtectionLogs_CL). The Microsoft Purview Information Protection connector must be enabled within Microsoft Sentinel in order to see events populate in the new table and the same log analytics workspace can be used that previously stored the Azure Information Protection table. 
+
+Guidance on how to set up this connector can be found here: [Stream data from Microsoft Purview Information Protection to Microsoft Sentinel](https://learn.microsoft.com/azure/sentinel/connect-microsoft-purview)
+
+## Compare date fields and transition queries
+
+The next step is to compare the data fields within the Azure Information Protection table (InformationProtectionLogs_CL) and the Microsoft Purview Information Protection table (MicrosoftPurviewInformationProtection) and adjust existing queries.
+
+A Sentinel workbook has been created to show how to transition queries from the the Azure Information Protection table (InformationProtectionLogs_CL) to the Microsoft Purview Information Protection table (MicrosoftPurviewInformationProtection). It replicates visualizations that used to appear within the Azure Information Protection workbook. 
+
+### KQL query for data fields with JSON
+
+There are some fields within these tables that have JSON as the result of a data field. These data fields require an extra step in order to retrieve the data with KQL.
+
+Example Data Field
+```
+[{"SensitiveInfoTypeId":"50842eb7-edc8-4019-85dd-5a5c1f2bb085","Count":1,"Confidence":85,"SensitiveInfoTypeName":"Credit Card Number"}]
+```
+
+Query to extract SensitiveInfoTypeId
+```powershell
+let Logs = MicrosoftPurviewInformationProtection 
+| extend SensitiveInfo = parse_json(SensitiveInfoTypeData) 
+| project SensitiveInfo.SensitiveInfoTypeId
+```
+### Comparison of Azure Information Protection and Microsoft Purview Information Protection events
 Azure Information Protection (InformationProtectionLogs_CL) | Example | Microsoft Purview Information Protection (MicrosoftPurviewInformationProtection) | Example
 ---|---|---|---
 **Tenant Information** | | |
@@ -103,58 +141,8 @@ _ResourceId | | |
 | | | PolicyName	
 | | | PolicyVersion	
 
-## KQL query for data fields with JSON
-
-There are some fields that have JSON as the result. These data fields require an extra step in order to retrieve the data with KQL.
-
-Example Data Field
-```
-[{"SensitiveInfoTypeId":"50842eb7-edc8-4019-85dd-5a5c1f2bb085","Count":1,"Confidence":85,"SensitiveInfoTypeName":"Credit Card Number"}]
-```
-
-Query to extract SensitiveInfoTypeId
-```powershell
-let Logs = MicrosoftPurviewInformationProtection 
-| extend SensitiveInfo = parse_json(SensitiveInfoTypeData) 
-| project SensitiveInfo.SensitiveInfoTypeId
-```
-
-## KQL query for data fields with JSON
-
-There are some fields that have JSON as the result. These data fields require an extra step in order to retrieve the data with KQL.
-
-Example Data Field
-```
-[{"SensitiveInfoTypeId":"50842eb7-edc8-4019-85dd-5a5c1f2bb085","Count":1,"Confidence":85,"SensitiveInfoTypeName":"Credit Card Number"}]
-```
-
-Query to extract SensitiveInfoTypeId
-```powershell
-let Logs = MicrosoftPurviewInformationProtection 
-| extend SensitiveInfo = parse_json(SensitiveInfoTypeData) 
-| project SensitiveInfo.SensitiveInfoTypeId
-```
-
 ## How to get label names with Microsoft Purview Information Protection Logs 
 
-There are some fields that have JSON as the result. These data fields require an extra step in order to retrieve the data with KQL.
+To retrieve label name using Microsoft Purview Information Protection logs, use this custom script: 
 
-Example Data Field
-```
-[{"SensitiveInfoTypeId":"50842eb7-edc8-4019-85dd-5a5c1f2bb085","Count":1,"Confidence":85,"SensitiveInfoTypeName":"Credit Card Number"}]
-```
 
-Query to extract SensitiveInfoTypeId
-```powershell
-let Logs = MicrosoftPurviewInformationProtection 
-| extend SensitiveInfo = parse_json(SensitiveInfoTypeData) 
-| project SensitiveInfo.SensitiveInfoTypeId
-```
-
-## Map Operations between the two fields 
-
-Activity =  "UpgradeLabel" -> Operation = "SensitivityLabelUpdated"
-Activity - "DowngradeLevel" -> Operation = "SensitivityLabelUpdated"
-Activity = "RemoveProtection" -> Operation = SensitivityLabelRemoved"
-Acitivity = "NewProtection" -> Operation = SensitivityLabelRemoved"
-Acitivity = "ChangeProtection" -> Operation = SensitivityLabelRemoved"
