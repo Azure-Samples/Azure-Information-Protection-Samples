@@ -1,6 +1,6 @@
 # Migrate analytics from Azure Information Protection to Microsoft Purview Information Protection 
 
-Azure Information Protection analytics, a pipeline that brought AIP data into log analytics, was retired on September 30, 2022. Logs for Azure Information Protection were modernized and brought into the Office 365 Unified Audit Log. The unified audit logs can be accessed through the unified log search tool, the Search-UnifiedAuditLog powershell commandlet, and the Office 365 Management Activity API. In addition, unified audit log events for Azure Information Protection can be sent to log analytics using the Microsoft Purview Information Protection connector. 
+Azure Information Protection analytics, a pipeline that brought data for Azure Information Protection into log analytics, was retired on September 30, 2022. In order to modernize the Azure Information Protection stack, logs for Azure Information Protection were added into the Office 365 Unified Audit Log and can be accessed through Microsoft Purview Activity Explorer, unified audit log search tool, Search-UnifiedAuditLog powershell commandlet, and Office 365 Management Activity API.
 
 Azure Information Protection events within the Unified Audit Log:
 - [AipDiscover](https://learn.microsoft.com/office/office-365-management-api/aipdiscover)
@@ -9,26 +9,28 @@ Azure Information Protection events within the Unified Audit Log:
 - [AipFileDeleted](https://learn.microsoft.com/office/office-365-management-api/aipfiledeleted)
 - [AipHeartBeat](https://learn.microsoft.com/office/office-365-management-api/aipheartbeat)
 
-This guide walks through how to send Azure Information Protection logs within the Unified Audit Log to log analytics using the following steps.
-1) Enable the Microsoft Purview Information Protection connector in Sentinel.
-2) Compare data fields and transition queries
-3) Import label names using a script 
-4) Guidance on how to import log analytics data into PowerBI
+In addition, Azure Information Protection events within the Unified Audit Log can be sent to log analytics using the Microsoft Purview Information Protection connector, and this guide walks through the steps to do that.
+1) [Enable the Microsoft Purview Information Protection connector in Sentinel.](#enable-the-microsoft-purview-information-protection-connector-in-sentinel)
+2) [Migrate queries to use the Microsoft Purview Information Protection connector.](#migrate-queries-to-use-the-microsoft-purview-information-protection-connector)
+3) [Get label names with Microsoft Purview Information Protection Logs.](#get-label-names-with-microsoft-purview-information-protection-logs) 
 
 ## Enable the Microsoft Purview Information Protection connector in Sentinel
-The Microsoft Purview Information Protection connector was introduced into Sentinel on January 9, 2023. The Microsoft Purview Information Protection connector streams data to a log analytics table (MicrosoftPurviewInformationProtection) and contains events related to Azure Information Protection - these events are similiar to what used to show up within the Azure Information Protection log analytics table (InformationProtectionLogs_CL). The Microsoft Purview Information Protection connector must be enabled within Microsoft Sentinel in order to see events populate in the new table and the same log analytics workspace can be used that previously stored the Azure Information Protection table. 
+The Microsoft Purview Information Protection connector was introduced into Sentinel on January 9, 2023. The Microsoft Purview Information Protection connector streams data to a log analytics table (MicrosoftPurviewInformationProtection) and contains events related to Azure Information Protection. These events are similiar to what used to show up within the Azure Information Protection log analytics table (InformationProtectionLogs_CL) and can be stored in the same log analytics workspace. The Microsoft Purview Information Protection connector must be enabled within Microsoft Sentinel in order to see events populate in log analytics going forward.
 
 Guidance on how to set up this connector can be found here: [Stream data from Microsoft Purview Information Protection to Microsoft Sentinel](https://learn.microsoft.com/azure/sentinel/connect-microsoft-purview)
 
-## Compare date fields and transition queries
+## Migrate queries to use the Microsoft Purview Information Protection connector
 
 The next step is to compare the data fields within the Azure Information Protection table (InformationProtectionLogs_CL) and the Microsoft Purview Information Protection table (MicrosoftPurviewInformationProtection) and adjust existing queries.
 
 A Sentinel workbook has been created to show how to transition queries from the the Azure Information Protection table (InformationProtectionLogs_CL) to the Microsoft Purview Information Protection table (MicrosoftPurviewInformationProtection). It replicates visualizations that used to appear within the Azure Information Protection workbook. 
 
+- [Comparison Workbook](ComparisonWorkbook.json) showing queries from the Azure Information Protection connector and Microsoft Purview Information Protection connector side-by-side
+-  [Microsoft Purview Information Protection workbook](MicrosoftPurviewInformationProtectionWorkbook.json)
+
 ### KQL query for data fields with JSON
 
-There are some fields within these tables that have JSON as the result of a data field. These data fields require an extra step in order to retrieve the data with KQL.
+There are some data fields that use JSON, and these data fields require an extra step in order to retrieve the data with KQL.
 
 Example Data Field
 ```
@@ -141,13 +143,13 @@ _ResourceId | | |
 | | | PolicyName	
 | | | PolicyVersion	
 
-## How to get label names with Microsoft Purview Information Protection Logs 
+## Get label names with Microsoft Purview Information Protection Logs 
 
-To retrieve label name using the Microsoft Purview Information Protection logs, use the [Export-LabelData PowerShell script](Export-LabelData.ps1). Before running the script, edit the script to include your log analytics workspace ID and the primary authentication key. Then, follow these PowerShell commandlets.  
+To retrieve label names to use with the Microsoft Purview Information Protection logs, use the [Export-LabelData PowerShell script](Export-LabelData.ps1). Before running the script, edit the script to include your log analytics workspace ID and the primary authentication key. Then, follow the PowerShell commandlets.  
 
 ```powershell
 # If needed to run PowerShell scripts on machine, adjust the Execution Policy 
--ExecutionPolicy Unrestircted -Scope Process
+Set-ExecutionPolicy -ExecutionPolicy Unrestircted -Scope Process
 ```
 
 ```powershell
@@ -168,7 +170,7 @@ After running the script, a table will be created in the log analytics workspace
 let Logs = MicrosoftPurviewInformationProtection 
 | join kind=leftouter Labels_CL on $left.SensitivityLabelId==$right.Guid_g 
 ```
-## Guidance on how to import log analytics data into PowerBI
+## Additional Resources
 
-From log analytics, the data can then be imported into PowerBI using this guidance: [Integrate Log Analytics with Power BI](https://learn.microsoft.com/azure/azure-monitor/logs/log-powerbi)
-
+- [Integrate Log Analytics with Power BI](https://learn.microsoft.com/azure/azure-monitor/logs/log-powerbi)
+- [Office 365 Management Activity API schema](https://learn.microsoft.com/office/office-365-management-api/office-365-management-activity-api-schema)
