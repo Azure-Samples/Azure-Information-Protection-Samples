@@ -25,7 +25,6 @@ The next step is to compare the data fields within the Azure Information Protect
 
 A Sentinel workbook has been created to show how to transition queries from the the Azure Information Protection table (InformationProtectionLogs_CL) to the Microsoft Purview Information Protection table (MicrosoftPurviewInformationProtection). It replicates visualizations that used to appear within the Azure Information Protection workbook. 
 
-- [Comparison Workbook](ComparisonWorkbook.json) showing queries from the Azure Information Protection connector and Microsoft Purview Information Protection connector side-by-side
 -  [Microsoft Purview Information Protection workbook](MicrosoftPurviewInformationProtectionWorkbook.json)
 
 ### KQL query for data fields with JSON
