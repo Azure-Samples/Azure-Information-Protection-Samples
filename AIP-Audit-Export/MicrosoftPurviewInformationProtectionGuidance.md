@@ -29,7 +29,6 @@ The next step is to compare the data fields within the Azure Information Protect
 
 A Sentinel workbook has been created to show how to transition queries from the the Azure Information Protection table (InformationProtectionLogs_CL) to the Microsoft Purview Information Protection table (MicrosoftPurviewInformationProtection). It replicates visualizations that used to appear within the Azure Information Protection workbook. 
 
-- [Comparison Workbook](ComparisonWorkbook.json) showing queries from the Azure Information Protection connector and Microsoft Purview Information Protection connector side-by-side
 -  [Microsoft Purview Information Protection workbook](MicrosoftPurviewInformationProtectionWorkbook.json)
 
 ### KQL query for data fields with JSON
@@ -48,7 +47,7 @@ let Logs = MicrosoftPurviewInformationProtection
 | project SensitiveInfo.SensitiveInfoTypeId
 ```
 ### Comparison of Azure Information Protection and Microsoft Purview Information Protection events
-Azure Information Protection (InformationProtectionLogs_CL) | Example | Microsoft Purview Information Protection (MicrosoftPurviewInformationProtection) | Example
+Azure Information Protection | Example | Microsoft Purview Information Protection | Example
 ---|---|---|---
 **Tenant Information** | | |
 TenantId	| ff614dc9-a3e5-4c1b-b360-4bdcb342230d | TenantId | ff614dc9-a3e5-4c1b-b360-4bdcb342230d
@@ -60,17 +59,17 @@ IPv4_s | 20.240.128.99 | ClientIP | 20.240.128.99
 | | |  UserKey | 52c88d0c-dcbc-4b4e-a4f0-7f8b9484dd94
 **Device and Application Information** | | |
 SourceSystem | OpsManager | SourceSystem | |
-ApplicationName_s | AIP scanner | Common | {"ApplicationId":"c00e9d32-3c8d-4a7d-832b-029040e7db99","ApplicationName":"Microsoft Azure Information Protection Scanner","ProcessName":"MSIP.Scanner","Platform":1,"DeviceName":"Scanner","ProductVersion":"2.16.16.1","Location":"On-premises file shares"}
-ApplicationId_g | c00e9d32-3c8d-4a7d-832b-029040e7db99 | MgtRuleId | |
-ManagementGroupName | | MachineName | |
-MachineName_s | SCANNER | | |
+ApplicationName_s | AIP scanner | Common | {"ApplicationId":"c00e9d32-3c8d-4a7d-832b-029040e7db99",<br>"ApplicationName":"Microsoft Azure Information Protection Scanner",<br>"ProcessName":"MSIP.Scanner",<br>"Platform":1,<br>"DeviceName":"Scanner",<br>"ProductVersion":"2.16.16.1",<br>"Location":"On-premises file shares"}
+ApplicationId_g | c00e9d32-3c8d-4a7d-832b-029040e7db99 | Application | |
+DeviceId_g | 07468200-3795-40d1-9cb1-5ac556d6417d | DeviceName | |
+MachineName_s | SCANNER | MachineName | |
 Platform_s | Windows Desktop | Platform | Windows
-DeviceId_g | 07468200-3795-40d1-9cb1-5ac556d6417d | Application | |
 ProcessName_s | msip.scanner | Scope | Onprem
-ProductVersion_s | 2.16.16.1 | DeviceName | |
+ProductVersion_s | 2.16.16.1 | MgtRuleId | |
 Location_s | Endpoint | | |
 ProcessVersion_s | | |
 Computer | | | 
+ManagementGroupName | | |
 MG | | | 
 **File Information** | | |
 ObjectId_s	| c:\users\sarah\downloads\scannerfiles\folder (17)\random files\copy_1c_2.pptx	 | 	ObjectId | C:\Users\Sarah\Downloads\ScannerFiles\Folder (26)\Random Files\Copy_1C_19.xlsx
@@ -78,26 +77,21 @@ DataState_s	| Rest |	DataState |	Rest
 LastModifiedBy_s | sarah seftel | | 			
 LastModifiedDate_t [UTC] | 10/3/2022, 9:20:16.986 AM | |	
 **Sensitive Information Type Information** | | |
-DiscoveredInformationTypes_s | [{"Confidence": 85,"Count": 1,"SensitiveType": "50842eb7-edc8-4019-85dd-5a5c1f2bb085","UniqueCount": null, "SensitiveInformationDetections": null,"Name": ""Credit Card Number"}]	|	SensitiveInfoTypeData |[{"SensitiveInfoTypeId":"50842eb7-edc8-4019-85dd-5a5c1f2bb085","Count":1,"Confidence":85,"SensitiveInfoTypeName":"Credit Card Number"}]
-InformationTypesAbove55_s	| ["Credit Card Number"]" | |			
-InformationTypesAbove65_s	| ["Credit Card Number"] | |			
-InformationTypesAbove75_s	| ["Credit Card Number"]
-InformationTypesAbove85_s	| ["Credit Card Number"] | |		
-InformationTypesAbove95_s	| []			
+DiscoveredInformationTypes_s | [{"Confidence": 85,<br>"Count": 1,<br>"SensitiveType": "50842eb7-edc8-4019-85dd-5a5c1f2bb085",<br>"UniqueCount": null,<br> "SensitiveInformationDetections": null,<br>"Name": ""Credit Card Number"}]	|	SensitiveInfoTypeData |[{"SensitiveInfoTypeId":"50842eb7-edc8-4019-85dd-5a5c1f2bb085",<br>"Count":1,<br>"Confidence":85,<br>"SensitiveInfoTypeName":"Credit Card Number"}]	
 InformationTypes_s |	["Credit Card Number"] | |			
 SensitivityChange_s | | |
 **Protection Information** | | |
-ContentId_g | IrmContentId | |	
-ProtectionType_s	|	CurrentProtectionType | |	
-ProtectionTypeBefore_s | PreviousProtectionType | | 	
 Protected_b |	FALSE	|	ProtectionEventData	| {"IsProtected":false} 
-ResultStatus_s	| ResultStatus | |	
-ActionSource_s |	ActionSource | |	
-ContentIdBefore_g	|	CurrentProtectionTypeName | |	
-ProtectedBeforeAction_b	|	PreviousProtectionTypeName | |	
-TemplateId_g	|	ProtectionEventTypeName | |	
-ProtectionTime_t [UTC]	| ActionSourceDetail | |	
-TemplateIdBefore_g	| CorrelationId	| |
+ContentId_g | | IrmContentId | |	
+ProtectionType_s	| |	CurrentProtectionType | |	
+ProtectionTypeBefore_s | | PreviousProtectionType | | 	
+ResultStatus_s	| | ResultStatus | |	
+ActionSource_s |	| ActionSource | |	
+ContentIdBefore_g	|	| CurrentProtectionTypeName | |	
+ProtectedBeforeAction_b	| |	PreviousProtectionTypeName | |	
+TemplateId_g	| |	ProtectionEventTypeName | |	
+ProtectionTime_t [UTC] |	| ActionSourceDetail | |	
+TemplateIdBefore_g	| | CorrelationId	| |
 ProtectionOwnerBefore_s | | |				
 IsProtectionChanged_b	| | |				
 ProtectionOwner_s	| | |				
