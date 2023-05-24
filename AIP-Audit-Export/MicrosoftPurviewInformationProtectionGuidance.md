@@ -10,9 +10,13 @@ Azure Information Protection events within the Unified Audit Log:
 - [AipHeartBeat](https://learn.microsoft.com/office/office-365-management-api/aipheartbeat)
 
 In addition, Azure Information Protection events within the Unified Audit Log can be sent to log analytics using the Microsoft Purview Information Protection connector, and this guide walks through the steps to do that.
-1) [Enable the Microsoft Purview Information Protection connector in Sentinel.](#enable-the-microsoft-purview-information-protection-connector-in-sentinel)
-2) [Migrate queries to use the Microsoft Purview Information Protection connector.](#migrate-queries-to-use-the-microsoft-purview-information-protection-connector)
-3) [Get label names with Microsoft Purview Information Protection Logs.](#get-label-names-with-microsoft-purview-information-protection-logs) 
+- [Migrate analytics from Azure Information Protection to Microsoft Purview Information Protection](#migrate-analytics-from-azure-information-protection-to-microsoft-purview-information-protection)
+  - [Enable the Microsoft Purview Information Protection connector in Sentinel](#enable-the-microsoft-purview-information-protection-connector-in-sentinel)
+  - [Migrate queries to use the Microsoft Purview Information Protection connector](#migrate-queries-to-use-the-microsoft-purview-information-protection-connector)
+    - [KQL query for data fields with JSON](#kql-query-for-data-fields-with-json)
+    - [Comparison of Azure Information Protection and Microsoft Purview Information Protection events](#comparison-of-azure-information-protection-and-microsoft-purview-information-protection-events)
+  - [Get label names with Microsoft Purview Information Protection Logs](#get-label-names-with-microsoft-purview-information-protection-logs)
+  - [Additional Resources](#additional-resources)
 
 ## Enable the Microsoft Purview Information Protection connector in Sentinel
 The Microsoft Purview Information Protection connector was introduced into Sentinel on January 9, 2023. The Microsoft Purview Information Protection connector streams data to a log analytics table (MicrosoftPurviewInformationProtection) and contains events related to Azure Information Protection. These events are similiar to what used to show up within the Azure Information Protection log analytics table (InformationProtectionLogs_CL) and can be stored in the same log analytics workspace. The Microsoft Purview Information Protection connector must be enabled within Microsoft Sentinel in order to see events populate in log analytics going forward.
@@ -110,38 +114,6 @@ Type |	InformationProtectionLogs_CL	|	Type |	MicrosoftPurviewInformationProtecti
 Version_s |	1.1 |	RecordType | 93
 Activity_s |	Discover |	RecordTypeName |	AipDiscover
 _ResourceId | | |
-**Related to other events** | | |
-| | | ExecutionRuleId	
-| | | ExecutionRuleName	
-| | | ExecutionRuleVersion	
-| | | RuleMode	
-| | | Severity	
-| | | SharePointMetaData	
-| | | ExchangeMetaData	
-| | | ConditionMatch	
-| | | RuleActions	
-| | | WorkLoadItemId	
-| | | OverriddenActions	
-| | | SensitiveInfoDetectionIsIncluded	
-| | | IsViewableByExternalUsers	
-| | | OverRideType	
-| | | ItemCreationTime [UTC]	
-| | | ItemLastModifiedTime [UTC]	
-| | | ItemSize	
-| | | OverRideReason	
-| | | AppAccessContext	
-| | | EmailInfo	
-| | | ContentType	
-| | | TargetLocation	
-| | | Sender	
-| | | Receivers	
-| | | ItemName	
-| | | ApplicationMode	
-| | | LabelVersion	
-| | | ScopedLocationId	
-| | | PolicyId	
-| | | PolicyName	
-| | | PolicyVersion	
 
 ## Get label names with Microsoft Purview Information Protection Logs 
 
