@@ -20,12 +20,16 @@ The following PowerShell Scripts and Azure Workbook sample will describe how to:
 For more information about auditing solutions with Microsoft Purview, review the [Microsoft tech community blog](https://techcommunity.microsoft.com/t5/security-compliance-and-identity/admin-guide-to-auditing-and-reporting-for-the-aip-unified/ba-p/3610727) for an admin guide to auditing and reporting for the AIP Unified Labeling client.
 
 ## Data PowerShell Script to Export Audit Data from Unified Audit Log to Azure Log Analytics Workspace
+**UPDATE:** The Data PowerShell Script has been replaced with the [Microsoft Purview Information Protection connector](https://learn.microsoft.com/azure/sentinel/connect-microsoft-purview) which was introduced into Sentinel on January 9, 2023. The Microsoft Purview Information Protection connector streams data to a log analytics table (MicrosoftPurviewInformationProtection) and contains events related to Azure Information Protection. These events are similar to what used to show up within the Azure Information Protection log analytics table (InformationProtectionLogs_CL) and can be stored in the same log analytics workspace. The Microsoft Purview Information Protection connector must be enabled within Microsoft Sentinel to see events populate in log analytics going forward. Guidance on how to adjust transition queries to the new connector within log analytics can be found here: [Migrate analytics from Azure Information Protection to Microsoft Purview Information Protection](https://github.com/Azure-Samples/Azure-Information-Protection-Samples/blob/master/AIP-Audit-Export/MicrosoftPurviewInformationProtectionGuidance.md).
+
 Microsoft Purview provides PowerShell commands to export data from the unified audit log. To continuously export data from the unified audit log to Azure Log Analytics, this sample PowerShell script will help you ingest the audit data into a custom table of your choice. The fields of this custom Log Analytics table are aligned with the fields in the unified audit log and are similar to the InformationProtectionLogs_CL table used with AIP analytics. 
 
 **NOTE:** The script simplifies the export of AIP data in an easy-to-consume table structure. However, the script has limits. Microsoft guidance is to use the Office 365 Management API for scale and performance when millions of records need to be exported.
 
 ## Label PowerShell Script to Import Sensitivity Label Names to Azure Log Analytics and Azure Workbooks
 This script uses the [Get-Label](https://learn.microsoft.com/powershell/module/exchange/get-label) cmdlet and pushes label data into a custom Log Analytics table named Labels_CL by default. This label name can be configured and renamed by your organization.
+
+**NOTE:** If you are using the [Microsoft Purview Information Protection connector](https://learn.microsoft.com/azure/sentinel/connect-microsoft-purview), you can continue to use the Label PowerShell script to import sensitivity label names.
 
 ### Run the Data PowerShell Script
 Download, save and run the [AIP Audit Export Data Powershell script](https://github.com/Azure-Samples/Azure-Information-Protection-Samples/blob/master/AIP-Audit-Export/Export-AIPAuditLogOperations.ps1).
